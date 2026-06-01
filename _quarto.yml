@@ -13,5 +13,5 @@ website:
     contents:
       - href: index.qmd
         text: Home
-      - href: overview.Rmd
+      - href: content/1_introduction_to_nimble/introduction_to_nimble.qmd
         text: Module 1
