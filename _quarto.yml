@@ -13,5 +13,7 @@ website:
     contents:
       - href: index.html
         text: Home
-      - href: overview.html
+      - href: overview.Rmd
         text: Overview
+      - href: overview.Rmd
+        text: Module 1
