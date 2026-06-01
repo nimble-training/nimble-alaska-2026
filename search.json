@@ -6,7 +6,7 @@
     "section": "",
     "text": "To prepare for the workshop:\n\nInstall NIMBLE (see below)\nInstall additional packages (see below)\nDownload these materials (and check back before the workshop on Monday for updates)\n\n\n\nOur user manual is here.\nWe have a ‘cheatsheet’ and a guide to converting from JAGS or WinBUGS to NIMBLE here.\nFor the small number of you who are not already familiar with writing models in WinBUGS, JAGS, or NIMBLE, you may want to look through the first module (Introduction to NIMBLE) or Section 5.2 of our user manual in advance.\nWe’re happy to answer questions about writing models as we proceed through the workshop, but if you have no experience with it, reviewing in advance will greatly lessen the odds you feel lost right at the beginning.\n\n\n\nNIMBLE is an R package on CRAN, so in general it will be straightforward to install as with any R package, but you do need a compiler and related tools on your system.\nIn summary, here are the steps.\n\nInstall compiler tools on your system. https://r-nimble.org/download has more details on how to install Rtools on Windows and how to install the command line tools of Xcode on a Mac. Note that if you have packages requiring a compiler (e.g., Rcpp) on your computer, you should already have the compiler tools installed.\nInstall the nimble package from CRAN in the usual fashion for an R package. More details (including troubleshooting tips) can also be found in Section 4 of the NIMBLE manual.\n\n\nTo test that things are working please run the following code in R:\n\nlibrary(nimble)\ncode &lt;- nimbleCode({\n  y ~ dnorm(0,1)\n})\nmodel &lt;- nimbleModel(code)\ncModel &lt;- compileNimble(model)\nIf that runs without error, you’re all set. If not, please see the troubleshooting tips and email nimble.stats@gmail.com directly if you can’t get things going.\nIn general we encourage you to update to the most recent version of NIMBLE (&gt;=1.4.0).\n\n\n\nSome of the packages we will use (beyond those automatically installed with nimble) can be installed as follows:\ninstall.packages(c(\"compareMCMCs\", \"mcmcplots\", \"CARBayesdata\", \"sp\", \"spdep\", \"classInt\", \"coda\", \"nimbleEcology\", \"nimbleSCR\"))",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
@@ -16,7 +16,7 @@
     "section": "",
     "text": "Our user manual is here.\nWe have a ‘cheatsheet’ and a guide to converting from JAGS or WinBUGS to NIMBLE here.\nFor the small number of you who are not already familiar with writing models in WinBUGS, JAGS, or NIMBLE, you may want to look through the first module (Introduction to NIMBLE) or Section 5.2 of our user manual in advance.\nWe’re happy to answer questions about writing models as we proceed through the workshop, but if you have no experience with it, reviewing in advance will greatly lessen the odds you feel lost right at the beginning.",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
@@ -26,7 +26,7 @@
     "section": "",
     "text": "NIMBLE is an R package on CRAN, so in general it will be straightforward to install as with any R package, but you do need a compiler and related tools on your system.\nIn summary, here are the steps.\n\nInstall compiler tools on your system. https://r-nimble.org/download has more details on how to install Rtools on Windows and how to install the command line tools of Xcode on a Mac. Note that if you have packages requiring a compiler (e.g., Rcpp) on your computer, you should already have the compiler tools installed.\nInstall the nimble package from CRAN in the usual fashion for an R package. More details (including troubleshooting tips) can also be found in Section 4 of the NIMBLE manual.\n\n\nTo test that things are working please run the following code in R:\n\nlibrary(nimble)\ncode &lt;- nimbleCode({\n  y ~ dnorm(0,1)\n})\nmodel &lt;- nimbleModel(code)\ncModel &lt;- compileNimble(model)\nIf that runs without error, you’re all set. If not, please see the troubleshooting tips and email nimble.stats@gmail.com directly if you can’t get things going.\nIn general we encourage you to update to the most recent version of NIMBLE (&gt;=1.4.0).",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
@@ -36,7 +36,7 @@
     "section": "",
     "text": "Some of the packages we will use (beyond those automatically installed with nimble) can be installed as follows:\ninstall.packages(c(\"compareMCMCs\", \"mcmcplots\", \"CARBayesdata\", \"sp\", \"spdep\", \"classInt\", \"coda\", \"nimbleEcology\", \"nimbleSCR\"))",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
@@ -46,7 +46,7 @@
     "section": "Where to find stuff",
     "text": "Where to find stuff\nThe GitHub site (https://github.com/nimble-training/nimble-alaska-2026) is the main repository for materials for the modules; you can also get the individual files from GitHub.\nIf you’re not familiar with Git, you can get these materials by simply going to https://github.com/nimble-training/nimble-alaska-2026 and click on the ‘Download ZIP’ button in the right side of the window or simply click here. See also slide 6 in this document for how to get them using Git or from within RStudio.",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
@@ -56,7 +56,7 @@
     "section": "Asking questions and making comments",
     "text": "Asking questions and making comments\nPlease ask questions and make comments as we go through the material.",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
@@ -66,7 +66,7 @@
     "section": "From a browser",
     "text": "From a browser\nSimply go to https://github.com/nimble-training/nimble-alaska-2026 and click on the ‘Download ZIP’ button in the right side of the window or simply click here.",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
@@ -76,12 +76,102 @@
     "section": "Within RStudio",
     "text": "Within RStudio\nWithin RStudio go to File-&gt;New Project-&gt;Version Control-&gt;Git and enter:\n\n“Repository URL”: https://github.com/nimble-training/nimble-alaska-2026\n“Project Directory Name”: nimble-alaska-2026 (or something else of your choosing)\n“Directory”: ~/Desktop (or somewhere of your choosing)\n\nThen to update from the repository to get any changes we’ve made, you can select (from within RStudio): Tools-&gt;Version Control-&gt;Pull Branches\nor from the Environment/History/Git window, click on the Git tab and then on the blue down arrow.\nBe warned that you probably do not want to make your own notes or changes to the files we are providing. Because if you do, and you then do a “Git Pull” to update the materials, you’ll have to deal with the conflict between your local version and our version. You probably will want to make a personal copy of such files in another directory or by making copies of files with new names.",
     "crumbs": [
-      "Home"
+      "Module 1"
     ]
   },
   {
     "objectID": "overview.html#from-a-terminal-window",
     "href": "overview.html#from-a-terminal-window",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "From a terminal window",
+    "text": "From a terminal window\nRun the following commands:\n\ncd /directory/where/you/want/repository/located\ngit clone https://github.com/nimble-training/nimble-alaska-2026\n\nThen to update from the repository to get any changes we’ve made:\n\ncd /directory/where/you/put/the/repository/nimble-alaska-2026\ngit pull",
+    "crumbs": [
+      "Module 1"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "",
+    "text": "To prepare for the workshop:\n\nInstall NIMBLE (see below)\nInstall additional packages (see below)\nDownload these materials (and check back before the workshop on Monday for updates)\n\n\n\nOur user manual is here.\nWe have a ‘cheatsheet’ and a guide to converting from JAGS or WinBUGS to NIMBLE here.\nFor the small number of you who are not already familiar with writing models in WinBUGS, JAGS, or NIMBLE, you may want to look through the first module (Introduction to NIMBLE) or Section 5.2 of our user manual in advance.\nWe’re happy to answer questions about writing models as we proceed through the workshop, but if you have no experience with it, reviewing in advance will greatly lessen the odds you feel lost right at the beginning.\n\n\n\nNIMBLE is an R package on CRAN, so in general it will be straightforward to install as with any R package, but you do need a compiler and related tools on your system.\nIn summary, here are the steps.\n\nInstall compiler tools on your system. https://r-nimble.org/download has more details on how to install Rtools on Windows and how to install the command line tools of Xcode on a Mac. Note that if you have packages requiring a compiler (e.g., Rcpp) on your computer, you should already have the compiler tools installed.\nInstall the nimble package from CRAN in the usual fashion for an R package. More details (including troubleshooting tips) can also be found in Section 4 of the NIMBLE manual.\n\n\nTo test that things are working please run the following code in R:\n\nlibrary(nimble)\ncode &lt;- nimbleCode({\n  y ~ dnorm(0,1)\n})\nmodel &lt;- nimbleModel(code)\ncModel &lt;- compileNimble(model)\nIf that runs without error, you’re all set. If not, please see the troubleshooting tips and email nimble.stats@gmail.com directly if you can’t get things going.\nIn general we encourage you to update to the most recent version of NIMBLE (&gt;=1.4.0).\n\n\n\nSome of the packages we will use (beyond those automatically installed with nimble) can be installed as follows:\ninstall.packages(c(\"compareMCMCs\", \"mcmcplots\", \"CARBayesdata\", \"sp\", \"spdep\", \"classInt\", \"coda\", \"nimbleEcology\", \"nimbleSCR\"))",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#help-with-nimble",
+    "href": "index.html#help-with-nimble",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "",
+    "text": "Our user manual is here.\nWe have a ‘cheatsheet’ and a guide to converting from JAGS or WinBUGS to NIMBLE here.\nFor the small number of you who are not already familiar with writing models in WinBUGS, JAGS, or NIMBLE, you may want to look through the first module (Introduction to NIMBLE) or Section 5.2 of our user manual in advance.\nWe’re happy to answer questions about writing models as we proceed through the workshop, but if you have no experience with it, reviewing in advance will greatly lessen the odds you feel lost right at the beginning.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#installing-nimble",
+    "href": "index.html#installing-nimble",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "",
+    "text": "NIMBLE is an R package on CRAN, so in general it will be straightforward to install as with any R package, but you do need a compiler and related tools on your system.\nIn summary, here are the steps.\n\nInstall compiler tools on your system. https://r-nimble.org/download has more details on how to install Rtools on Windows and how to install the command line tools of Xcode on a Mac. Note that if you have packages requiring a compiler (e.g., Rcpp) on your computer, you should already have the compiler tools installed.\nInstall the nimble package from CRAN in the usual fashion for an R package. More details (including troubleshooting tips) can also be found in Section 4 of the NIMBLE manual.\n\n\nTo test that things are working please run the following code in R:\n\nlibrary(nimble)\ncode &lt;- nimbleCode({\n  y ~ dnorm(0,1)\n})\nmodel &lt;- nimbleModel(code)\ncModel &lt;- compileNimble(model)\nIf that runs without error, you’re all set. If not, please see the troubleshooting tips and email nimble.stats@gmail.com directly if you can’t get things going.\nIn general we encourage you to update to the most recent version of NIMBLE (&gt;=1.4.0).",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#installing-additional-packages",
+    "href": "index.html#installing-additional-packages",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "",
+    "text": "Some of the packages we will use (beyond those automatically installed with nimble) can be installed as follows:\ninstall.packages(c(\"compareMCMCs\", \"mcmcplots\", \"CARBayesdata\", \"sp\", \"spdep\", \"classInt\", \"coda\", \"nimbleEcology\", \"nimbleSCR\"))",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#where-to-find-stuff",
+    "href": "index.html#where-to-find-stuff",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "Where to find stuff",
+    "text": "Where to find stuff\nThe GitHub site (https://github.com/nimble-training/nimble-alaska-2026) is the main repository for materials for the modules; you can also get the individual files from GitHub.\nIf you’re not familiar with Git, you can get these materials by simply going to https://github.com/nimble-training/nimble-alaska-2026 and click on the ‘Download ZIP’ button in the right side of the window or simply click here. See also slide 6 in this document for how to get them using Git or from within RStudio.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#asking-questions-and-making-comments",
+    "href": "index.html#asking-questions-and-making-comments",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "Asking questions and making comments",
+    "text": "Asking questions and making comments\nPlease ask questions and make comments as we go through the material.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#from-a-browser",
+    "href": "index.html#from-a-browser",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "From a browser",
+    "text": "From a browser\nSimply go to https://github.com/nimble-training/nimble-alaska-2026 and click on the ‘Download ZIP’ button in the right side of the window or simply click here.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#within-rstudio",
+    "href": "index.html#within-rstudio",
+    "title": "NIMBLE Alaska ASA Workshop Overview",
+    "section": "Within RStudio",
+    "text": "Within RStudio\nWithin RStudio go to File-&gt;New Project-&gt;Version Control-&gt;Git and enter:\n\n“Repository URL”: https://github.com/nimble-training/nimble-alaska-2026\n“Project Directory Name”: nimble-alaska-2026 (or something else of your choosing)\n“Directory”: ~/Desktop (or somewhere of your choosing)\n\nThen to update from the repository to get any changes we’ve made, you can select (from within RStudio): Tools-&gt;Version Control-&gt;Pull Branches\nor from the Environment/History/Git window, click on the Git tab and then on the blue down arrow.\nBe warned that you probably do not want to make your own notes or changes to the files we are providing. Because if you do, and you then do a “Git Pull” to update the materials, you’ll have to deal with the conflict between your local version and our version. You probably will want to make a personal copy of such files in another directory or by making copies of files with new names.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#from-a-terminal-window",
+    "href": "index.html#from-a-terminal-window",
     "title": "NIMBLE Alaska ASA Workshop Overview",
     "section": "From a terminal window",
     "text": "From a terminal window\nRun the following commands:\n\ncd /directory/where/you/want/repository/located\ngit clone https://github.com/nimble-training/nimble-alaska-2026\n\nThen to update from the repository to get any changes we’ve made:\n\ncd /directory/where/you/put/the/repository/nimble-alaska-2026\ngit pull",
