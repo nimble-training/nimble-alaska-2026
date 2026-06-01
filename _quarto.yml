@@ -1,0 +1,17 @@
+project:
+  type: website
+
+website:
+  site-url: https://nimble-training.github.io/nimble-alaska-2026
+  sidebar:
+    style: docked
+    title: "NIMBLE Alaska ASA Workshop"
+    tools:
+      - icon: github
+        href: https://github.com/nimble-training/nimble-alaska-2026
+        aria-label: GitHub
+    contents:
+      - href: index.html
+        text: Home
+      - href: overview.html
+        text: Overview
