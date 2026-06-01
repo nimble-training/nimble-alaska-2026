@@ -11,9 +11,7 @@ website:
         href: https://github.com/nimble-training/nimble-alaska-2026
         aria-label: GitHub
     contents:
-      - href: index.html
-        text: Home
       - href: overview.Rmd
-        text: Overview
+        text: Home
       - href: overview.Rmd
         text: Module 1
