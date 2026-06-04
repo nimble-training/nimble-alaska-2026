@@ -14,4 +14,26 @@ website:
       - href: index.qmd
         text: Home
       - href: content/1_introduction_to_nimble/introduction_to_nimble.qmd
-        text: Module 1
+        text: Module 1: Intro
+      - href: content/2_nimble_models/nimble_models.qmd
+        text: Module 2: Models
+      - href: content/3_comparing_and_customizing_mcmc/comparing_and_customizing_mcmc.qmd
+        text: Module 3: MCMC
+      - href: content/4_improving_mcmc/improving_mcmc.qmd
+        text: Module 4: Improving MCMC
+      - href: content/5_spatial_models/spatial_models.qmd
+        text: Module 5: Spatial models
+      - href: content/6_user_defined/extending_models.qmd
+        text: Module 6: Extending models
+      - href: content/7_ecological_models/ecological_models_overview.qmd
+        text: Module 7: Ecological models
+      - href: content/8_intro_nimblefunctions/intro_nimblefunctions.qmd
+        text: Module 8: Introduction to nimbleFunctions
+      - href: content/9_programming/writing_new_mcmc_samplers.qmd
+        text: Module 9: Programming and user samplers
+      - href: content/10_ad/intro_ad.qmd
+        text: Module 10: AD and approximations
+      - href: content/11_future_directions_for_nimble/future_directions_for_nimble.qmd
+        text: Module 11: Towards NIMBLE 2.0
+        
+        

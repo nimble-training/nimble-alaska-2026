@@ -1,0 +1,428 @@
+---
+title: "Strategies for improving MCMC"
+subtitle: "NIMBLE Alaska ASA 2026 Workshop"
+author: "NIMBLE Development Team"
+date: "June 2026"
+format:
+  html:
+    theme: cosmo
+    css: ../styles.css
+    toc: true
+    code-copy: true
+    code-block-background: true
+    code-fold: show
+    code-tools: true
+execute:
+  freeze: auto
+---
+<style>
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(nimble)
+library(compareMCMCs)
+has_rjags <- require(rjags)
+if(!has_rjags)
+  warning("This Rmd file uses package rjags.  Sections using it will be skipped.")
+doComparisons <- FALSE
+```
+
+# Overview
+
+Some strategies for improving MCMC
+
+ - Customize sampler choices. E.g.,
+    - Try sampling standard deviations on a log scale [already seen].
+    - Try slice samplers instead of Metropolis-Hastings [already seen].
+    - Try blocking correlated parameters [already seen; more here]
+    - Try multiple samplers for slow-mixing parameters [not shown].
+ - Reparameterize
+    - Center covariates [already seen]
+    - Centered versus non-centered random effects parameterization [discussed here]
+    - Rotated coordinates to reduce posterior correlation [already seen]
+ - Rewrite the model. E.g.,
+    - Rewrite the model to reduce dependencies 
+    - Vectorize declarations to improve computational efficiency
+    - Marginalize to remove parameters [shown here]
+ - (Advanced) Write new samplers that take advantage of particular model structures [Module 9]
+
+# Load the E. cervi example for later:
+
+```{r load_Ecervi_example}
+source(file.path("..", "examples", "DeerEcervi", "load_DeerEcervi.R"), 
+       chdir = TRUE)
+```
+
+# Sampler choices 
+
+Sampler choices:
+
+- Sampling standard deviations on the  log scale can help, especially when there is posterior support near 0.
+- Slice sampling can help mix a parameter at some computational cost.
+- Hamiltonian Monte Carlo (HMC) can help mix blocks of parameters (often all parameters at once) but at heavy computational cost.
+- Barker sampling can help mix blocks of parameters at less cost but potentially more effectively than a default block sampler.
+- Blocking can help when parameters are correlated *given other parameters*.
+    - If parameters are *marginally correlated* but *conditionally independent*, blocking will not help.
+    - This occurs if parameters are marginally correlated only because they both depend on something else.
+- Model-specific understanding can yield good sampling strategies.
+
+# Centering covariates or random effects
+
+Centering refers to two issues:
+
+- Centering of covariates as they are provided for the analysis.
+    - Think of $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$. 
+    - If the $x_i$ are not centered, then considering $\beta_1 \rightarrow \beta_1'$ is also like adding $(\beta_1' - \beta_1) \bar{x}$ to the intercept.
+    - A standard result in linear regression is that estimates of $\beta_0$ and $\beta_1$ are correlated.
+    - Centering $x_i$ around its mean removes the posterior correlation between $\beta_0$ and $\beta_1$.
+    - In our example, we centered `Length`, but not separately for each sex.
+    
+- Random effects with a mean of zero (non-centered parameterization) versus centered around a mean (centered parameterization).
+    - E.g., `farm_effect ~ N(0, sd)` vs. `farm_effect ~ N(mean, sd)`.
+    - Theory shows either parameterization can be better, depending on the model and data, but with reasonable amount of data, centered is often better.
+    - One can use the `sampler_noncentered` in a centered parameterization to be able to sample both ways (interweaving).
+    - However, for HMC, uncentered is generally better!
+    
+# MCMC for an occupancy model
+
+Occupancy models in ecology:
+
+ - analyze the presence of animal species in relation to covariates across multiple locations (sites) under imperfect detection
+ - disentangling presence from detection based on replication in time
+ - model involve two binary regression components with each related to covariates
+   - detection given presence (occupancy)
+   - occupancy (presence/absence)
+ - mult-species occupancy models add an additional layer of analyzing multiple species, generally tied together using species-level random effects.
+
+# CDFW carnivores model
+
+We analyzed 15 carnivore species in California based on camera trap data from California Department of Fish and Wildlife (CDFW).
+
+```{r}
+#| eval: false
+code <- nimbleCode({   # Model code is specified in R.
+  # (hyper)parameter priors
+  for(k in 1:k_occ) {
+    mu_occ[k] ~ dnorm(0, sd = 100) # Various parameterizations possible; `sd` here.
+    sd_occ[k] ~ dunif(0, 100)      # Avoid inverse-gamma priors per Gelman (2006).
+  }
+  for(k in 1:k_detect) { 
+    mu detect[k] ~ dnorm(0, sd = 100)
+    sd detect[k] ~ dunif(0, 100)
+  }
+  for (i in 1:n_species) {
+    # Random effects distributions for regression coefficients.
+    for(k in 1:k_occ)
+      beta_occ[k, i] ~ dnorm(mu_occ[k], sd = sd_occ[k])
+    for(k in 1:k_detect)
+      beta_detect[k, i] ~ dnorm(mu_detect[k], sd = sd_detect[k])
+
+    # Probability of occupancy with covariates varying by site.
+    logit(prob_occ[1:n_sites,i]) <- X_occ[1:n_sites,1:k_occ] %*% beta_occ[1:k_occ,i]
+
+    # Probability of detection, covariates varying by site-time or site-time-species.
+    logit(prob_detect[1:n_sites, 1:max_num_sites, i]) <- beta_detect[1,i] +
+      beta_detect[2,i] * X_detect1[1:n_sites,1:max_num_sites] +
+      beta_detect[3,i] * X_detect2[1:n_sites,1:max_num_sites] +
+      beta_detect[4,i] * X_detect3[1:n_sites,1:max_num_sites] +
+      beta_detect[5,i] * X_detect4[1:n_sites,1:max_num_sites,i]
+    
+    ## User-defined vectorized distribution for obs. matrix, one term per species.
+    y[1:n_sites, 1:max_num_sites, i] ~ dOcc_multisite(
+      probOcc = prob_occ[1:n_sites,i],
+      probDetect = prob_detect[1:n_sites, 1:max_num_sites, i],
+      reps = reps[1:n_sites],  # Number of time points per site.
+      n_sites = n_sites)
+  }})
+```
+
+
+# User-defined distributions 
+
+`dOcc_multisite` uses a user-defined distribution to achieve:
+
+ - calculation of likelihood across all sites and occasions (time replicates) for a given species at once (vectorization helps speed)
+ - marginalizing over (true) presence indicator to get probability of detection based on presence+detection probabilities (fewer unknown parameters helps speed and mixing (usually))
+
+More on user-defined distributions in Module 6.
+
+# NIMBLE model setup
+
+```{r}
+#| eval: false
+model <- nimbleModel(code, data = list(y = y),
+                     constants = list(n_sites = n_sites, n_species = n_species,
+                       max_num_sites = max_num_sites, reps = reps, k_occ = k_occ,
+                       k_detect = k_detect, X_occ = X_occ,
+                       X_detect1 = X_detect1, X_detect2 = X_detect2,
+                       X_detect3 = X_detect3, X_detect4 = X_detect4),
+                     inits = inits, buildDerivs = TRUE)  # Inits not shown here.
+cmodel <- compileNimble(model)   # Compiled (C++) version of the model.
+```
+
+# MCMC using blocking and gradients: HMC
+
+First, we set up HMC, with all parameters sampled together.
+
+```{r}
+#| eval: false
+library(nimbleHMC)
+monitors <- c('mu_occ','sd_occ','mu_detect','sd_detect','beta_occ','beta_detect')
+conf <- configureHMC(model, control = list(warmupMode = 'iterations',
+                     warmup = 1000), monitors = monitors)
+hmc <- buildMCMC(conf)
+chmc <- compileNimble(hmc, project = model)
+samples_hmc <- runMCMC(chmc, niter = 6000, nburnin = 1000)
+```
+
+# MCMC using blocking and gradients: Barker
+
+After some exploration, we developed a customized MCMC configuration involving Barker-based block sampling on blocks of parameters.
+
+The Barker sampler is an gradient-based adaptive Metropolis-Hastings algorithm that provides more robustness to tuning than Metropolis-adjusted Langevin sampling and is less computationally intensive than HMC.
+
+```{r}
+#| eval: false
+# Set up initial MCMC sampler config just on the means (NIMBLE detects conjugacy).
+conf <- configureMCMC(model, nodes = c('mu_occ','mu_detect'), monitors = monitors)
+sd_nodes <- model$expandNodeNames(c('sd_occ','sd_detect'))
+for(node in sd_nodes) 
+  conf$addSampler(node, type = 'slice')  # Slice sampling for variance components.
+for (i in 1:n_species){
+  # Specialized block (Barker) sampling for random effects (regression coefficients),
+  # with a block for each species within each logistic regression component.
+  blockNodes <- model$expandNodeNames(paste0('beta_occ[,',i,']'))
+  conf$addSampler(blockNodes, type = 'barker')
+  blockNodes <- model$expandNodeNames(paste0('beta_detect[,',i,']'))
+  conf$addSampler(blockNodes, type = 'barker')  }
+
+mcmc <- buildMCMC(conf)
+cmcmc <- compileNimble(mcmc, project = model)
+samples_custom <- runMCMC(cmcmc, 25000, nburnin = 2000)
+```
+
+We also tried using NIMBLE's standard block sampler via:
+
+```
+conf$addSampler(blockNodes, type = 'RW_block')
+```
+
+# MCMC results
+
+HMC took 290 minutes to generate 6000 samples, while our customized sampler took 55 minutes to generate 25000 samples. The effective sample sizes per minute varied by parameter but were generally 2-50 times larger with the customized sampler than HMC. We are not claiming that a customized approach will generally outperform HMC (and indeed effort is involved to determine the customization), but we have found various cases where other MCMC configurations do markedly better than HMC.
+
+Here are MCMC efficiency comparisons for the (hyperparameters).
+
+![MCMC efficiency (estimated by the `mcmcse` method) for parameters](main2_efficiencySummary_mcmcse.jpg)
+
+And here for the random effects.
+
+![MCMC efficiency (estimated by the `mcmcse` method) for random effects](main2_REs_efficiencySummary_mcmcse.jpg)
+
+# Think like a graph: reducing dependencies
+
+Consider a basic state-space model.
+
+Observation equation: $y_t \sim f(y_t | x_t)$.  (Parameters are not shown.)
+
+State equation: $x_t \sim g(x_t | x_{t-1})$
+
+Two equivalent ways to write state-space models:
+
+1. Process-noises are random variables.  States are deterministic given process noises. 
+
+```{r}
+code_heavy <- nimbleCode({
+  for(t in 1:n) 
+    y[t] ~ dnorm(x[t], sd = sigma)
+  for(t in 2:n) {
+    x[t] <- x[t-1] + eps[t-1]
+    eps[t] ~ dnorm(0, sd = omega)
+  }
+})
+```
+
+2. States are random variables.
+
+```{r}
+code_light <- nimbleCode({
+  for(t in 1:n) 
+    y[t] ~ dnorm(x[t], sd = sigma)
+  for(t in 2:n)
+    x[t] ~ dnorm(x[t-1], sd = omega)
+})
+```
+
+# Think like a graph: reducing dependencies (2)
+
+```{r}
+n <- 20
+m_heavy <- nimbleModel(code_heavy, 
+                       data = list(y = rnorm(n)), 
+                       constants = list(n = n))
+m_light <- nimbleModel(code_light, 
+                       data = list(y = rnorm(n)), 
+                       constants = list(n = n))
+```
+
+What calculations are required to update `eps[18]` or `eps[1]` compared to `x[18]` or `x[1]`?
+
+```{r}
+m_heavy$getDependencies('eps[18]')
+m_light$getDependencies('x[18]')
+
+m_heavy$getDependencies('eps[1]')
+m_light$getDependencies('x[1]')
+```
+
+# Think like a graph: when to vectorize
+
+Vectorizing some calculations:
+
+- Can make code more compact.
+- Can make model and MCMC building and compiling faster (fewer nodes).
+- Can improve MCMC efficiency, but sometimes not by much (less looping over nodes).
+- Can hurt MCMC efficiency if done in the wrong places (if unneeded dependencies are introduced).
+
+```{r}
+code <- nimbleCode({
+  intercept ~ dnorm(0, sd = 1000)
+  slope ~ dnorm(0, sd = 1000)
+  sigma ~ dunif(0, 100)
+  predicted.y[1:4] <- intercept + slope * x[1:4] # vectorized node
+  for(i in 1:4) {
+    y[i] ~ dnorm(predicted.y[i], sd = sigma)
+  }
+})
+model <- nimbleModel(code, data = list(y = rnorm(4)))
+
+model$getDependencies('slope')
+```
+
+Here sampling of `slope` (and `intercept`) will probably be a bit more efficient because of the vectorized definition of `predicted.y`, since all observations depend on `slope` (and `intercept`). 
+
+We avoid some overhead by having one `predicted.y[1:4]` node rather than four `predicted.y[1], ..., predicted.y[4]` nodes.
+
+Another (manual) step would be to create a user-defined vectorized `dnorm` distribution so `y[1:4]` is a vector node. 
+
+# Think like a graph: when not to vectorize
+
+However, if `x[2]` (and the other 'x's) were a scalar parameter (in this case a random effect), vectorization is likely a bad idea. Any update for `x[2]` will calculate `predicted.y[1:4]` and `y[1],...,y[4]` when only `predicted.y[2]` and `y[2]` need to be calculated.
+
+```{r}
+code <- nimbleCode({
+  intercept ~ dnorm(0, sd = 1000)
+  slope ~ dnorm(0, sd = 1000)
+  sigma ~ dunif(0, 100)
+  predicted.y[1:4] <- intercept + slope * x[1:4] # vectorized node
+  for(i in 1:4) {
+    x[i] ~ dnorm(0, 1)   # scalar random effects
+    y[i] ~ dnorm(predicted.y[i], sd = sigma)
+  }
+})
+model <- nimbleModel(code, data = list(y = rnorm(4)))
+
+model$getDependencies('x[2]')
+```
+
+In this case, vectorization has made more dependencies for `x[2]` than should be necessary.  This would result in wasted computation during MCMC sampling.
+
+# Marginalization
+
+In a hierarchical model, one can *in principle* always integrate over latent states. However only under certain situations can one do those integrals in closed form (analytically).
+
+Analytic integration is always possible in conjugate situations. For example:
+
+$$ y_i \sim N(\mu_i, \sigma^2); i=1,\ldots,n $$
+$$ \mu_i \sim N(\mu_0, \sigma_0^2),  i=1,\ldots,n $$
+
+Here there is one latent state per observation. We can do MCMC here, but it involves a large number of parameters, n+3.
+
+If we marginalize:
+
+  - We reduce the total number of computations done at each step of the MCMC.
+  - We reduce the dimensionality of the parameter space needing exploration.
+  - In some cases the complexity of calculating the marginalized density offsets some of the benefits above.
+
+Here's the marginalized result, with only 3 parameters.
+
+$$ y_i \sim N(\mu_0, \sigma^2 + \sigma_0^2) $$
+
+(If we want inference on $\mu_i, i=1,\ldots,n$ we need to sample the latent states conditional on the data and the MCMC draws of $\mu_0, \sigma_0^2, \sigma^2$. We'll work on this in Module 9b.)
+
+# Marginalization in the occupancy example
+
+We can always integrate over (finite-valued) discrete random variables by summation, so we can integrate over presence/absence indicators for each species by site.
+
+That's what `dOcc_multisite` does:
+
+```{r}
+#| eval: false
+dOcc_multisite <- nimbleFunction(run =  
+  function(x = double(2), probOcc = double(1), probDetect = double(2),
+    reps = double(1), n_sites = integer(0), log = logical(0, default = TRUE)) {  
+    returnType(double(0))   # Return type annotation for compilation to C++.
+    logProb <- 0
+    for(j in 1:n_sites) {
+      nrep  <- ADbreak(reps[j])   # Avoid differentiation w.r.t. `reps[j]`.
+      logProb_x_given_occupied <- 0
+      prob_x_given_unoccupied <- 1
+      for(i in 1:nrep) { 
+        x_ji <- ADbreak(x[j,i]) # Avoid differentiation w.r.t. x[j,i].
+        if(!is.na(x_ji)) {
+          logProb_x_given_occupied <- logProb_x_given_occupied +
+            dbinom(x[j,i], prob = probDetect[j,i], size = 1, log = TRUE)
+          if(x_ji == 1) prob_x_given_unoccupied <- 0
+        }
+      }
+      logProb <- logProb + log( exp(logProb_x_given_occupied) * probOcc[j] +
+                    prob_x_given_unoccupied * (1 - probOcc[j]) )
+    }
+    if(log) return(logProb) else return(exp(logProb))
+  }, buildDerivs = list(run = list(ignore=c('i','j','x_ji','nrep')))) # Ignore in AD.
+```
+
+To see the idea of marginalization more clearly, let's look at a simpler version for a single site, `dOcc_v` from `nimbleEcology`:
+
+```{r}
+#| eval: false
+dOcc_v <- nimbleFunction(
+  run = function(x = double(1),            # Detection 0/1 indicators (data) over occasion (time)
+                 probOcc = double(0),
+                 probDetect = double(1),   # Detection prob. varies over occasion (time)
+                 len = integer(0, default = 0),
+                 log = logical(0, default = 0)) {
+    if (len != 0) if (len != length(x)) stop("Argument 'len' must match length of data, or be 0.")
+    if (length(x) != length(probDetect)) stop("Length of data does not match length of detection vector.")
+    returnType(double(0))
+    logProb_x_given_occupied <- 0
+    prob_x_given_unoccupied <- 1
+    for(i in 1:length(x)) {      # Iterate over occasions.
+      xi <- ADbreak(x[i])
+      if(!is.na(xi)) { # Handle missing values
+        logProb_x_given_occupied <- logProb_x_given_occupied + dbinom(x[i], prob = probDetect[i], size = 1, log = TRUE)
+        if(xi==1) prob_x_given_unoccupied <- 0
+      }
+    }
+    prob_x_given_occupied <- exp(logProb_x_given_occupied)
+    prob_x <- prob_x_given_occupied * probOcc + prob_x_given_unoccupied * (1 - probOcc)
+    if (log) return(log(prob_x))
+    return(prob_x)
+  }, buildDerivs = list(run = list(ignore = c("i", "xi")))
+)
+```
+
+One can then immediately use the distribution in a model as shown earlier. NIMBLE will compile the user-defined distribution together with everything else, as if `dOcc_multisite` were a distribution that NIMBLE provides.
+
+
+
+
+# Exercise
+
+1. See `help(samplers)` and look at the `control` options for the `RW_block` sampler. Try some different values for `scale`, `propCov`, `adaptInterval`, and `adaptFactorExponent` in the blocked samplers for the uncentered E. cervi model and see how the values affect burn-in and mixing of the MCMC.
+
+2. Set up MCMCs for the more flexible (bivariate mixture) model for the E. cervi example for both the versions with the `ind` indicator variables and the marginalized model. See what samplers are assigned. Run the two MCMCs and see which have bettter mixing (try to account for time spent sampling as well as mixing on a per-iteration basis).

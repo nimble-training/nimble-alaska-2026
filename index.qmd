@@ -101,6 +101,8 @@ If you're not familiar with Git, you can get these materials by simply going to 
 
 Please ask questions and make comments as we go through the material.
 
+I'm happy to discuss particular situations as prompted based on the material; I can modify the schedule on the fly easily.
+
 # Suggestions on how to get the most out of the workshop
 
 We encourage you to:
@@ -122,7 +124,9 @@ Warning: in some cases the processing of the R code in the R Markdown is screwy 
 
 # Getting the workshop materials
 
-To download the files, you can do any of the following. 
+For (most) content in single-page format, just see the [website](https://nimble-training.github.io/nimble-alaska-2026).
+
+To download the files (including the slides versions of the modules), you can do any of the following. The slides versions are titled "<xyz>_slides.html".
 
 ## From a browser
 
@@ -155,18 +159,20 @@ Then to update from the repository to get any changes we've made:
 - `cd /directory/where/you/put/the/repository/nimble-alaska-2026`
 - `git pull`
 
-# Installing NIMBLE
+# NIMBLE 2.0
 
-NIMBLE is on CRAN, so in general it will be straightforward to install, but you do need a compiler and related tools on your system.  
+We are hard at work on a complete overhaul of the internals of NIMBLE. This will achieve the following:
 
-In summary, here are the steps.
+- streamlined representation of model nodes (think `y[1:1000]` not `y[1]`,`y[2]`,`y[3]`...):
+  - faster model and algorithm building and computation
+  - greatly reduced memory use for large models
+- ability to save and reload models and algorithms for later use
+- sparse matrix functionality
+- built-in threaded (CPU) parallelization
+- easier/standardized ways to build packages that use nimble
+- various internal changes that will hopefully improve the general user experience and some computational efficiencies
 
-1. Install compiler tools on your system. [https://r-nimble.org/download](https://r-nimble.org/download) has more details on how to install *Rtools* on Windows and how to install the
-command line tools of *Xcode* on a Mac.
-2. Install the *nimble* package from CRAN.
-3. Also install the `nimbleHMC` package from CRAN.
-
-More details can also be found in Section 4 of the [NIMBLE manual](https://r-nimble.org/html_manual/cha-installing-nimble.html).
+Timeline: I'll discuss!
 
 # The Legal Stuff
 
