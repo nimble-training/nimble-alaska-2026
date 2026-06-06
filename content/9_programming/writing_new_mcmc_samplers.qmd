@@ -1,0 +1,395 @@
+---
+title: "Writing new MCMC samplers (or other nimbleFunctions)"
+subtitle: "NIMBLE Alaska ASA Workshop"
+author: "NIMBLE Development Team"
+date: "June 2026"
+output:
+  slidy_presentation: default
+  html_document:
+    code_folding: show
+---
+<style>
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(nimble)
+if(!require(coda))
+  warning("This Rmd file needs package coda")
+has_compareMCMCs <- require(compareMCMCs)
+if(!has_compareMCMCs)
+  warning("This Rmd file uses package compareMCMCs from github.  Sections using it will be skipped.")
+generate_orig_results <- FALSE
+```
+
+Agenda
+=====
+
+1. Design of NIMBLE's MCMC system
+2. Two-stage evaluation of nimbleFunctions with setup code.
+3. Setting up a new sampler: A simple Metropolis-Hastings example
+4. Worked example: sampler that jointly updates intercepts and random effects in the E. cervi example.
+
+Load Deer E. cervi example
+=====
+```{r load-DeerEcervi}
+source(file.path("..", "examples", "DeerEcervi", "load_DeerEcervi.R"), 
+       chdir = TRUE)
+set.seed(123)
+DEmodel <- nimbleModel(DEcode,
+                        constants = DEconstants,
+                        data = list(Ecervi_01 = DeerEcervi$Ecervi_01),
+                        inits = DEinits())
+```
+
+
+Design of `nimble`'s MCMC system
+=====
+
+Here is a figure of MCMC configuration and MCMCs:[nimble_MCMC_design.pdf](nimble_MCMC_design.pdf)
+
+1. MCMC configuration object: Contains a list of sampler assignments, not actual samplers.
+2. MCMC object: Contains a list of sampler objects.
+
+To write new samplers, we need to understand:
+
+- Two-stage evaluation of nimbleFunctions with setup code.
+- Setup (configuration) rules for using a new MCMC sampler
+- Run-time rules for management of model calculations and saved states.
+- More about nimbleFunction programming.
+
+Example of MCMC configuration object
+=====
+Look at MCMC configuration object for just a few nodes
+```{r}
+mcmcConf <- configureMCMC(DEmodel, nodes = 'farm_effect[1:3]')
+class(mcmcConf)
+ls(mcmcConf)
+fe1_sampler <- mcmcConf$getSamplers("farm_effect[1]")[[1]]
+class(fe1_sampler)
+ls(fe1_sampler)
+fe1_sampler$target
+fe1_sampler$control
+```
+
+What happens from an MCMC configuration object?
+=====
+
+Eventually, an MCMC sampler object is created by a call like this (for adaptive random-walk MH):
+```{r, eval=FALSE}
+sampler_RW(model, mvSaved, target, control)
+```
+
+- This is stage one of two-stage evaluation.  It instantiates an object of a `sampler_RW` class.
+- `model` is the model
+- `mvSaved` is a `modelValues` object for keeping a set of saved model states.
+- `target` is a vector of target node names
+- `control` is a list of whatever sampler-specific configuration settings are needed.
+
+Two-stage evaluation in nimbleFunctions
+=====
+Say we want a nimbleFunction to calculate some nodes and their dependencies.
+
+```{r}
+calcDepsNF <- nimbleFunction(
+  setup = function(model, nodes) { # setup function gives first stage of evalution
+    calcNodes <- model$getDependencies(nodes)
+  },
+  run = function() {               # run function (or other methods) give sectond stage of evaluation
+    ans <- model$calculate(calcNodes)
+    return(ans)
+    returnType(double())
+  }
+)
+```
+
+Two-stage evaluation in nimbleFunctions
+=====
+```{r}
+calcDeps_farm1 <- calcDepsNF(DEmodel, 'farm_effect[1]') ## first stage: setup code
+calcDeps_farm1$run() ## second stage: run code
+```
+
+We could compiled `calcDeps_farm1`.  Then `run` would become a method of a C++ class.
+
+Notice that:
+
+- `calcDeps_farm1` is an R reference class object of a custom-generated class.
+- `model` and `calcNodes` are fields in the class
+
+```{r}
+class(calcDeps_farm1) ## We could have used nimbleFunction's name argument to set the class name
+calcDeps_farm1$calcNodes
+```
+
+Go to R to demonstrate uncompiled browsing/debugging.
+=====
+```{r, eval=FALSE}
+calcDepsNF <- nimbleFunction(
+  setup = function(model, nodes) {
+    browser()
+    calcNodes <- model$getDependencies(nodes)
+  },
+  run = function() {
+    browser()
+    ans <- model$calculate(calcNodes)
+    return(ans)
+    returnType(double())
+  }
+) ## warning about not being able to compiled with browser() is expected.
+```
+
+Stepping through debugging from `browser()` will not work well in Rmarkdown, so this code is not evaluated.  Run it in your own R session.
+```{r, eval=FALSE}
+calcDeps_farm1 <- calcDepsNF(DEmodel, 'farm_effect[1]') ## We'll see the setup code followed by internal code.
+calcDeps_farm1$run()
+```
+
+More about nimbleFunctions
+=====
+
+- Without setup code, a `nimbleFunction` becomes an R function (uncompiled) and a C++ function (compiled).
+- With setup code, a `nimbleFunction` becomes an R reference class definition (uncompiled) and a C++ class definition (compiled).
+    - `nimbleFunction` returns a generator (aka constructor, aka initializer) of new class objects.
+
+### nimbleFunction class definitions (i.e with setup code)
+
+- `setup` is always executed in R.
+    - Typically one-time, high-level processing such as querying model structure.
+- `run` and other methods can be run uncompiled (in R) or compiled (via C++).
+    - Typically repeated "actual algorithm" calculations such as MCMC sampler updates.
+    - Can operate models.
+- Any objects (e.g. `calcNodes` and `model`) in `setup` can be used in `run`.
+    - Internally, these are automatically set up as class member data.
+    - You do not need to explicitly declare class member data.
+    - Nodes used in model operations are "baked in" (aka partially evaluated) during compilation. 
+        - Node vectors must be created in setup code and used in run code.
+        - They can't be dynamically modified in run code.
+
+A basic Random-Walk Metropolis-Hastings sampler
+=====
+```{r}
+ourMH <- nimbleFunction(
+  name = 'ourMH',                              # Convenient for class name of R reference class and generated C++ class
+  contains = sampler_BASE,                     # There is a simple class inheritance system.
+  setup = function(model, mvSaved, target, control) {                 # REQUIRED setup arguments
+    scale <- if(!is.null(control$scale)) control$scale else 1         # Typical extraction of control choices
+    calcNodes <- model$getDependencies(target)                        # Typical query of model structure
+  },                                                                  # setup can't return anything
+  run = function() {
+    currentValue <- model[[target]]                                   # extract current value
+    currentLogProb <- model$getLogProb(calcNodes)                     # get log "denominator" from cached values
+    proposalValue <- rnorm(1, mean = currentValue, sd = scale)        # generate proposal value
+    model[[target]] <<- proposalValue                                 # put proposal value in model
+    proposalLogProb <- model$calculate(calcNodes)                     # calculate log "numerator" 
+    logAcceptanceRatio <- currentLogProb - proposalLogProb            # log acceptance ratio
+    # Alternative:
+    # logAcceptanceRatio <- model$calculateDiff(calcNodes)
+    accept <- decide(logMHR)                                          # utility function to generate accept/reject decision
+    if(accept)                                                        # accept synchronize model -> mvSaved
+      copy(from = model, to = mvSaved, row = 1, nodes = calcNodes, logProb = TRUE)
+    else                                                              # reject: synchronize mvSaved -> model
+      copy(from = mvSaved, to = model, row = 1, nodes = calcNodes, logProb = TRUE)
+  },
+  methods = list(                              # required method for sampler_BASE base class
+    reset = function() {}
+  )
+)
+```
+
+Rules for each sampler
+=====
+
+### setup function
+  
+- The four arguments, named exactly as shown, are required.  This allows `buildMCMC` to create any sampler correctly.
+
+### run function
+
+- The `mvSaved` ("modelValues saved") has a saved copy of all model variables and log probabilities
+- Upon entry, `run()` can assume:
+    - the model is fully calculated (so `getLogProb` and `calculateDiff` make sense).
+    - `mvSaved` and the model are synchronized (have the same values).
+- Upon exit, `run()` must ensure those conditions are met.
+    - That way the next sampler can operator correctly.
+- Between entry and exit, `run()` can manipulate the model in any way necessary.
+
+### reset function
+
+- To match the `sampler_BASE` definition, all samplers must have a `reset()` function.
+
+Introduction to `modelValues`
+=====
+- A `modelValues` class does the job of holding multiple sets of values of 
+    - model variables and
+    - log probabilities ("logProbs") of stochastic nodes.
+- We think of each set of values as a "row".
+- `modelValues` classes are like `nimbleFunctions` in that:
+    - They can be compiled.
+    - They should work the same way compiled and uncompiled.
+- MCMC output is stored in a `modelValues` object (called `mvSamples`).
+- Each `modelValues` class comes from a configuration of what variables are needed (and their types and sizes).
+    - Typically the configuration is generated from a model or from variables monitored in MCMC.
+    - (Actually, one can hand-configure a `modelValues` in any way one wants.)
+- MCMC uses one `modelValues` object configured for **all** model variables and logProbs.
+    - Only a single "row" is needed.
+- This is the `mvSaved` and must be synchronized with the model at entry and exit of each sampler.
+
+Stepping through uncompiled execution
+=====
+
+Version with `browser()`s
+
+```{r}
+ourMH_debug <- nimbleFunction(
+  name = 'ourMH_debug',
+  contains = sampler_BASE,
+  setup = function(model, mvSaved, target, control) {
+    browser()
+    scale <- if(!is.null(control$scale)) control$scale else 1 
+    calcNodes <- model$getDependencies(target)                
+  },                                                          
+  run = function() {
+    browser()
+    currentValue <- model[[target]]                           
+    currentLogProb <- model$getLogProb(calcNodes)             
+    proposalValue <- rnorm(1, mean = currentValue, sd = scale)
+    model[[target]] <<- proposalValue                             
+    proposalLogProb <- model$calculate(calcNodes)             
+    logAcceptanceRatio <- currentLogProb - proposalLogProb    
+    accept <- decide(logMHR)                                     
+    if(accept)                                                   
+      copy(from = model, to = mvSaved, row = 1, nodes = calcNodes, logProb = TRUE)
+    else                                                         
+      copy(from = mvSaved, to = model, row = 1, nodes = calcNodes, logProb = TRUE)
+  },
+  methods = list(                              
+    reset = function() {}
+  )
+)
+```
+
+Stepping through uncompiled execution
+=====
+```{r}
+mcmcConf <- configureMCMC(DEmodel, nodes = NULL) ## Make an empty configuration
+mcmcConf$addSampler(type = "ourMH_debug", target = 'farm_effect[1]')
+```
+
+```{r, eval=FALSE}
+# run this on your own to stept through in debug (browser) mode.
+mcmc <- buildMCMC(mcmcConf)
+mcmc$run(5)
+```
+
+Simplified Barker sampler
+====
+
+The Barker sampler is a built-in sampler in NIMBLE.
+
+Since all samplers are just nimbleFunctions with a few special requirements, we can easily inspect the code, modify/extend a sampler, and use a modified or new sampler in a NIMBLE MCMC.
+
+Let's see what this looks like for a (simplified) Barker sampler.
+
+```{r}
+sampler_barker <- nimbleFunction(
+    contains = sampler_BASE,  # Required class inheritance to work within NIMBLE's MCMC engine
+    setup = function(model, mvSaved, target, control) {
+        ## Set algorithm control knobs.
+        scale <- 1; sigma <- 0.1; adaptIntervalCov <- 10
+        adaptFactorExponent <- 0.6  # Per Livingstone & Zanella 2022.
+        targetAcceptanceRate <- 0.574  # Per Vogrinc et al. 2023.
+
+        ## Determine relevant nodes in the model.
+        targetNodes <- model$expandNodeNames(target)
+        targetNodesAsScalars <- model$expandNodeNames(target, returnScalarComponents = TRUE)
+        calcNodes <- model$getDependencies(targetNodes)
+
+        ## Process bounds and transformations as sampler works on whole real line.
+        my_parameterTransform <- parameterTransform(model, targetNodesAsScalars)
+        d <- my_parameterTransform$getTransformedLength()
+        nimDerivs_wrt <- 1:d
+        ## Boilerplate code to set up node information needed for AD.
+        derivsInfo_return <- makeModelDerivsInfo(model, targetNodes, calcNodes)
+        nimDerivs_updateNodes   <- derivsInfo_return$updateNodes
+        nimDerivs_constantNodes <- derivsInfo_return$constantNodes
+
+        ## Set up proposal covariance structures.
+        propCov <- diag(d)
+        U <- chol(propCov)
+        
+        empirSamp <- matrix(0, nrow = adaptIntervalCov, ncol = d)
+        zeros <- nimNumeric(d, value = 0)
+        
+        gradCurrent <- numeric(d); gradProposed <- numeric(d)
+    },
+    run = function() {
+        current <- my_parameterTransform$transform(values(model, targetNodes))
+        oldLogDetJacobian <- my_parameterTransform$logDetJacobian(current)
+
+        ## Implement Barker proposal following Livingstone and Zanella (2022).
+        gradCurrent <<- gradient(current)
+        z <- scale * rnorm(d, sqrt(1-sigma^2), sigma)
+
+        noflipProb <- expit((U%*%gradCurrent)[,1]*z)
+        noflip <- 2 * (runif(d) < noflipProb) - 1
+        diff <- noflip * z
+        proposal <- current + (L %*% diff)[,1]
+
+        values(model, targetNodes) <<- my_parameterTransform$inverseTransform(proposal)
+
+        ## Determine accept/reject.
+        gradProposed <<- gradient(proposal)
+        newLogDetJacobian <- my_parameterTransform$logDetJacobian(proposal)
+        lpD <- model$calculateDiff(calcNodes) + newLogDetJacobian -
+            oldLogDetJacobian + calculateLogHastingsRatio(diff)
+        jump <- decide(lpD)
+
+        ## Cache current state of model in a "modelValues" data structure.
+        if(jump) nimCopy(from = model, to = mvSaved, row = 1, nodes = calcNodes, logProb = TRUE)
+        else     nimCopy(from = mvSaved, to = model, row = 1, nodes = calcNodes, logProb = TRUE)
+        adaptPropCov(min(1,exp(lpD))
+    },
+    methods = list(
+        gradient = function(values = double(1)) {
+            # Use NIMBLE's AD system to get first derivative of model log-density w.r.t. parameters.
+            derivsOutput <- nimDerivs(calcLogProb(values), order = 1, wrt = nimDerivs_wrt,
+                                      model = model, updateNodes = nimDerivs_updateNodes,
+                                      constantNodes = nimDerivs_constantNodes)
+            returnType(double(1))
+            return(derivsOutput$jacobian[1, 1:d])
+        },
+        inverseTransformStoreCalculate = function(values = double(1)) {
+            values(model, targetNodes) <<- my_parameterTransform$inverseTransform(values)
+            return(model$calculate(calcNodes))
+            returnType(double())
+        },
+        calcLogProb = function(values = double(1)) {
+            return(inverseTransformStoreCalculate(values) + my_parameterTransform$logDetJacobian(values))
+            returnType(double())
+        },       
+        calculateLogHastingsRatio = function(diff = double(1)) {
+            beta1 <- (U %*% gradProposed)[,1] * diff
+            beta2 <- - (U %*% gradCurrent)[,1] * diff
+            return(sum(pmax(beta2, zeros) - pmax(beta1, zeros)) +
+                sum(log1p(exp(-abs(beta2))) - log1p(exp(-abs(beta1)))))
+            returnType(double())
+        },
+        adaptPropCov = function(acceptProb = double()) {
+            ## Adapt the proposal covariance using `adaptFactorExponent`,  `targetAcceptanceRate`,
+            ## `empirSamp`, etc.
+            ## Code omitted for brevity. See `nimble::sampler_barker`.            }
+        },
+        reset = function() {
+            ## Not shown: boilerplate code to reset state of sampler
+        }
+    ),
+    buildDerivs = list(
+        inverseTransformStoreCalculate = list(), calcLogProb = list(), gradient_aux = list()
+    )
+)
+```

@@ -27,12 +27,16 @@ website:
         text: "Module 6: Extending models"
       - href: content/7_ecological_models/ecological_models_overview.qmd
         text: "Module 7: Ecological models"
+      - href: content/7_ecological_models/ecological_models_overview.qmd
+        text: "Module 7a: Ecological models: HMMs"
       - href: content/8_intro_nimblefunctions/intro_nimblefunctions.qmd
         text: "Module 8: Introduction to nimbleFunctions"
+      - href: content/9_programming/nimblefunction_programming.qmd
+        text: "Module 9a: Programming and user samplers"
       - href: content/9_programming/writing_new_mcmc_samplers.qmd
-        text: "Module 9: Programming and user samplers"
-      - href: content/10_ad/intro_ad.qmd
-        text: "Module 10: AD and approximations"
+        text: "Module 9b: Programming and user samplers"
+      - href: content/10_laplace/laplace.qmd
+        text: "Module 10: Laplace and related approximations"
       - href: content/11_future_directions_for_nimble/future_directions_for_nimble.qmd
         text: "Module 11: Towards NIMBLE 2.0"
         
