@@ -48,7 +48,7 @@ Agenda
 2. How MCMC works: an introduction to different samplers
     - Mixing vs. computational cost
 3. Modifying an MCMC configuration in `nimble`
-4. Using `compareMCMCs`
+4. (Optional) Using `compareMCMCs`
 
 Load the deer E. cervi example for later:
 =====
@@ -295,7 +295,7 @@ MCMC efficiency = $\frac{\mbox{effective sample size (ESS)}}{\mbox{computation t
   performance.
 - Whether to include "burn-in" time depends on the goal.  Today we won't.
 - One needs a reasonable sample just to get a reasonable estimate of ESS.
-- We generally do not thin when comparing methods because thinning always removes some information from a sample.  People might disagree on this choice.
+- We generally do not thin when comparing methods because **thinning always removes some information from a sample**. 
 - Sometimes fancy samplers are too slow (computationally costly) to be worthwhile.
 
 A single number (at the kernel level): Minimum MCMC efficiency
@@ -313,7 +313,7 @@ Why we don't care as much about mean MCMC efficiency
 =====
 
 - It is tempting to think mean (across parameters) of MCMC efficiency is a good measure of overall performance.
-- If some parameters are mixing very well and others very poorly, you should not feel the results are acceptable.
+- If some parameters are mixing very well and others very poorly, you should not feel the results are acceptable (unless you have a solid understanding of some non-identifiability in the model).
 
 Alterative single number (at the kernel level): Multivariate MCMC efficiency
 =====
@@ -651,10 +651,10 @@ samples <- runMCMC(compiled$mcmc, niter = 10000, nburnin = 1000)
 effectiveSize(samples)
 ```
 
-Using `compareMCMCs`
+(Optional) Using `compareMCMCs`
 =====
 
-`compareMCMCs` is a recently released R package available for managing performance comparisons among MCMC methods, particularly in `nimble`.
+`compareMCMCs` is an R package from the NIMBLE development team available for managing performance comparisons among MCMC methods, particularly in `nimble`.
 
 - `compareMCMCs` manages multiple MCMC runs and times steps of preparation (compilation) and sampling.
 - It can also run other MCMC "engines" via a plug-in system.  Currently there are plug-ins for JAGS and Stan.  Plug-ins for JAGS and OpenBUGS/WinBUGS (not yet implemented) can use the same model as `nimble` if it is compatible.
@@ -829,15 +829,19 @@ A good example is the model log probability (or log prob for a subset of model n
 
 We'll go back to our basic MCMC.
 
-```{r mcmcConf}
-# mcmcConf <- configureMCMC(DEmodel, logProb = TRUE)
+```{r, mcmcConf2}
+DEmodel <- nimbleModel(DEcode,
+                        constants = DEconstants,
+                        data = list(Ecervi_01 = DeerEcervi$Ecervi_01),
+                        inits = DEinits())
 mcmcConf <- configureMCMC(DEmodel)
 mcmcConf$addDerivedQuantity('logProb', nodes = 'Ecervi_01')
 mcmcConf$printDerivedQuantities()
 ```
+
 Let's get an MCMC sample that includes the derived quantity.
 
-```{r runMCMC, eval=doMCMC}
+```{r runMCMC2, eval=doMCMC}
 DEmcmc1 <- buildMCMC(mcmcConf)
 # Example of compiling model and MCMC in one call, which returns a list.
 compiled <- compileNimble(DEmodel, DEmcmc1)
