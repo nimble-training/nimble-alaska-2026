@@ -46,7 +46,7 @@ source(file.path("..", "examples", "DeerEcervi", "load_DeerEcervi.R"),
     
     - `dnorm(mean = mu, tau = tau)` (tau = precision)   DEFAULT IF NOT NAMED   
     
-- Distributions with alternative parameterizations are listed in Table 5.2 of [User Manual Section 5.2.4](https://r-nimble.org/html_manual/cha-writing-models.html#subsec:dists-and-functions)
+- Distributions with alternative parameterizations are listed in [Table 5.2 of User Manual Section 5.2.4](https://r-nimble.org/manual/cha-writing-models.html#tab:parameterizations)
 
 - Usage in the deer E. cervi example. 
 
@@ -134,7 +134,7 @@ for(j in 1:num_farms)
 
 # Converting from JAGS/BUGS to NIMBLE
 
-See our [guide online](https://r-nimble.org/quick-guide-for-converting-from-jags-or-bugs-to-nimble).
+See our [guide online](https://r-nimble.org/blog/quick-guide-for-converting-from-jags-or-bugs-to-nimble.html).
 
 How NIMBLE extends BUGS
 
@@ -206,6 +206,8 @@ m2 <- nimbleModel(code)
 
 m2 has `beta2` while m1 does not.
 
+WARNING: there are no other valid uses of `if` statements in a nimble model (i.e., no run-time use)
+
 # Models are graphs
 
 - Scientists in many application domains and many statisticians speak of "hierarchical models".
@@ -237,8 +239,8 @@ code <- nimbleCode({
   slope ~ dnorm(0, sd = 1000)
   sigma ~ dunif(0, 100)
   for(i in 1:4) {
-    predicted.y[i] <- intercept + slope * x[i]
-    y[i] ~ dnorm(predicted.y[i], sd = sigma)
+    predicted_y[i] <- intercept + slope * x[i]
+    y[i] ~ dnorm(predicted_y[i], sd = sigma)
   }
 })
 model <- nimbleModel(code, 
@@ -262,7 +264,7 @@ layout <- matrix(ncol = 2, byrow = TRUE,
                           66, 100,
                           50, 0, # first three are parameters
                           15, 50, 35, 50, 55, 50, 75, 50, # x's
-                          20, 75, 40, 75, 60, 75, 80, 75, # predicted.y's
+                          20, 75, 40, 75, 60, 75, 80, 75, # predicted_y's
                           25, 25, 45, 25, 65, 25, 85, 25) # y's
                  )
 
@@ -293,7 +295,7 @@ plot(model$graph, vertex.shape = "crectangle",
      edge.color = edge.color)
 ```
 
-- Think of each line of BUGS language code as declaring one or mode *nodes*.
+- Think of each line of model code as declaring one or mode *nodes*.
 
 # Get and set values
 
@@ -358,7 +360,7 @@ For typical MCMC samplers, `model$getDependencies('slope')` returns the nodes th
 Results from `model$getDependencies` are in *topologically sorted* order:
 
 - If you calculate them in order, you'll get correct results.
-- E.g., `predicted.y[2]` comes before `y[2]`.
+- E.g., `predicted_y[2]` comes before `y[2]`.
 
 # Why provide indexes as constants?
 
@@ -416,7 +418,7 @@ In NIMBLE:
 
     - `y` is a variable.
 
-- A node is a part of a variable declared in one line of BUGS code.
+- A node is a part of a variable declared in one line of model code.
 
     - `y[1]` ... `y[4]` are scalar nodes.
 
@@ -427,10 +429,10 @@ code2 <- nimbleCode({
   intercept ~ dnorm(0, sd = 1000)
   slope ~ dnorm(0, sd = 1000)
   sigma ~ dunif(0, 100)
-  predicted.y[1:4] <- intercept + slope * x[1:4] # vectorized node
+  predicted_y[1:4] <- intercept + slope * x[1:4] # vectorized node
   for(i in 1:4) {
-    # predicted.y[i] <- intercept + slope * x[i] # scalar nodes (earlier model version)
-    y[i] ~ dnorm(predicted.y[i], sd = sigma)
+    # predicted_y[i] <- intercept + slope * x[i] # scalar nodes (earlier model version)
+    y[i] ~ dnorm(predicted_y[i], sd = sigma)
   }
 })
 
@@ -500,7 +502,7 @@ model2$y
 
 Consider the following version of our linear regression model.
 
-There is no `predicted.y[i]`.  The expression from that is directly in the `dnorm` for `y[i]`. Also, we now use the variance instead of the standard deviation in the likelihood.
+There is no `predicted_y[i]`.  The expression from that is directly in the `dnorm` for `y[i]`. Also, we now use the variance instead of the standard deviation in the likelihood.
 
 ```{r}
 code3 <- nimbleCode({
@@ -524,7 +526,7 @@ model3 <- nimbleModel(code3,
 model3$getNodeNames()
 ```
 
-NIMBLE has created nodes in the role of `predicted.y[i]` and `sigma`.
+NIMBLE has created nodes in the role of `predicted_y[i]` and `sigma`.
 
 These are called *lifted nodes*.  They are created by "lifting" an expression out of a parameter for a distribution and creating a deterministic node for that expression.
 

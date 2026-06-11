@@ -8,60 +8,6 @@ format:
     toc-location: right
 ---
 
-# Workshop preparation
-
-To prepare for the workshop:
-
- - Install NIMBLE (see below)
- - Install additional packages (see below)
- - Download these materials (and check back before the workshop on Monday for updates)
-
-## Help with NIMBLE
-
-Our user manual is [here](https://r-nimble.org/html_manual/cha-welcome-nimble.html).
-
-We have a 'cheatsheet' and a guide to converting from JAGS or WinBUGS to NIMBLE [here](https://r-nimble.org/documentation).
-
-For the small number of you who are not already familiar with writing models in WinBUGS, JAGS, or NIMBLE, you may want to look through the first module (Introduction to NIMBLE) or Section 5.2 of our user manual in advance.
-
-We're happy to answer questions about writing models as we proceed through the workshop, but if you have no experience with it, reviewing in advance will greatly lessen the odds you feel lost right at the beginning.
-
-## Installing NIMBLE
-
-NIMBLE is an R package on CRAN, so in general it will be straightforward to install as with any R package, but you do need a compiler and related tools on your system.  
-
-In summary, here are the steps.
-
-1. Install compiler tools on your system. [https://r-nimble.org/download](https://r-nimble.org/download) has more details on how to install *Rtools* on Windows and how to install the command line tools of *Xcode* on a Mac. Note that if you have packages requiring a compiler (e.g., *Rcpp*) on your computer, you should already have the compiler tools installed.
-
-2. Install the *nimble* package from CRAN in the usual fashion for an R package. More details (including troubleshooting tips) can also be found in Section 4 of the [NIMBLE manual](https://r-nimble.org/html_manual/cha-installing-nimble.html).
-
-3) To test that things are working please run the following code in R:
-
-```
-library(nimble)
-code <- nimbleCode({
-  y ~ dnorm(0,1)
-})
-model <- nimbleModel(code)
-cModel <- compileNimble(model)
-```
-
-
-If that runs without error, you're all set. If not, please see the troubleshooting tips and email nimble.stats@gmail.com directly if you can't get things going.  
-
-In general we encourage you to update to the most recent version of NIMBLE (>=1.4.0).
-
-
-## Installing additional packages
-
-Some of the packages we will use (beyond those automatically installed with `nimble`) can be installed as follows:
-
-```
-install.packages(c("compareMCMCs", "mcmcplots", "CARBayesdata", "sp", "spdep", "classInt", "coda", "nimbleEcology", "nimbleSCR"))
-```
-
-
 # Schedule
 
 Time: 9 am - 4:30 pm Alaska time (GMT-9)
@@ -70,7 +16,7 @@ Time: 9 am - 4:30 pm Alaska time (GMT-9)
 Day 1 (Tuesday June 16):
 
 1. (9 am - 9:45 am) Introduction to NIMBLE: Basic concepts and workflows
-2. (10 am - 11 am) Working with NIMBLE models and converting from WinBUGS/JAGS
+2. (10 am - 11 am) Working with NIMBLE models 
 3. (11:15 am - 12:30 pm) Comparing and customizing MCMC methods in NIMBLE
 4. (12:30 pm - 1:30 pm) Lunch (provided)
 5. (1:30 pm - 2:30 pm) Strategies for improving MCMC
@@ -87,21 +33,93 @@ Day 2 (Wednesday June 17):
 13. (3:30 pm - 4:15 pm) Automatic differentiation, Laplace approximation, and INLA-like nested approximation
 14. (4:15 pm - 4:30 pm) Wrapup and NIMBLE 2.0
 
+# Workshop preparation
+
+To prepare for the workshop:
+
+ - Install NIMBLE (see below)
+ - Install additional packages (see below)
+ - Download these materials (and check back before the workshop on Monday for updates)
+ - For the small number of you who are not already familiar with writing models in WinBUGS, JAGS, or NIMBLE, you may want to look through the [first module (Introduction to NIMBLE)](./content/1_introduction_to_nimble/introduction_to_nimble.html) or [Section 5.2 of our user manual](https://r-nimble.org/manual/cha-writing-models.html#writing-models) in advance.
+
+
+
+## Installing NIMBLE
+
+NIMBLE is an R package on CRAN, so in general it will be straightforward to install as with any R package, but you do need a compiler and related tools on your system.  
+
+In summary, here are the steps.
+
+1. Install compiler tools on your system. [https://r-nimble.org/download](https://r-nimble.org/download) has more details on how to install *Rtools* on Windows and how to install the command line tools of *Xcode* on a Mac. Note that if you have packages requiring a compiler (e.g., *Rcpp*) on your computer, you should already have the compiler tools installed.
+
+2. Install the *nimble* package from CRAN in the usual fashion for an R package. More details (including troubleshooting tips) can also be found in Section 4 of the [NIMBLE manual](https://r-nimble.org/html_manual/cha-installing-nimble.html).
+
+3) To test that things are working please run the following code in R:
+
+```{r}
+#| eval: false
+library(nimble)
+code <- nimbleCode({
+  y ~ dnorm(0,1)
+})
+model <- nimbleModel(code)
+cModel <- compileNimble(model)
+```
+
+
+If that runs without error, you're all set. If not, please see the troubleshooting tips and email Chris  directly if you can't get things going.  
+
+In general we encourage you to update to the most recent version of NIMBLE (>=1.4.0).
+
+
+## Installing additional packages
+
+Some of the packages we will use (beyond those automatically installed with `nimble`) can be installed as follows:
+
+```{r}
+#| eval: false
+install.packages(c("compareMCMCs", "mcmcplots", "CARBayesdata", "sp", "spdep", "classInt", "coda", "lme4", "mvtnorm",
+"nimbleHMC", "nimbleEcology", "nimbleEcology", "nimbleSCR"))
+```
+
+
+
+# Help with NIMBLE
+
+- [Our user manual](https://r-nimble.org/html_manual/cha-welcome-nimble.html)
+- [NIMBLE cheatsheet](https://r-nimble.org/NimbleCheatSheet.pdf)
+- [guide to converting from JAGS or WinBUGS to NIMBLE](https://r-nimble.org/blog/quick-guide-for-converting-from-jags-or-bugs-to-nimble.html)
 
 # A few administrative things
 
 ## Where to find stuff
 
-The GitHub site ([https://github.com/nimble-training/nimble-alaska-2026](https://github.com/nimble-training/nimble-alaska-2026)) is the main repository for materials for the modules; you can also get the individual files from GitHub. 
+This GitHub site ([https://github.com/nimble-training/nimble-alaska-2026](https://github.com/nimble-training/nimble-alaska-2026)) is the main repository for materials for the modules; you can also get the individual files from GitHub.
 
-If you're not familiar with Git, you can get these materials by simply going to [https://github.com/nimble-training/nimble-alaska-2026](https://github.com/nimble-training/nimble-alaska-2026) and click on the 'Download ZIP' button in the right side of the window or simply click [here](https://github.com/nimble-training/nimble-alaska-2026/archive/refs/heads/main.zip). See also slide 6 in this document for how to get them using Git or from within RStudio.
+### Direct download
 
+If you're not familiar with Git, you can get these materials by simply going to [https://github.com/nimble-training/nimble-alaska-2026](https://github.com/nimble-training/nimble-alaska-2026) and click on the 'Download ZIP' button in the right side of the window or simply click [here](https://github.com/nimble-training/nimble-alaska-2026/archive/refs/heads/main.zip). 
+
+### Using Git within RStudio
+
+Within RStudio go to `File->New Project->Version Control->Git` and enter:
+
+- "Repository URL": https://github.com/nimble-training/nimble-alaska-2026
+- "Project Directory Name": nimble-alaska-2026 (or something else of your choosing)
+- "Directory": ~/Desktop (or somewhere of your choosing)
+
+Then to update from the repository to get any changes we've made, you can select (from within RStudio):
+Tools->Version Control->Pull Branches
+
+or from the Environment/History/Git window, click on the Git tab and then on the blue down arrow.
+
+Be warned that you probably do not want to make your own notes or changes to the files we are providing. Because if you do, and you then do a "Git Pull" to update the materials, you'll have to deal with the conflict between your local version and our version. You probably will want to make a personal copy of such files in another directory or by making copies of files with new names.
 
 ## Asking questions and making comments
 
 Please ask questions and make comments as we go through the material.
 
-I'm happy to discuss particular situations as prompted based on the material; I can modify the schedule on the fly easily.
+I'm happy to discuss particular situations in detail as prompted based on the material; I can modify the schedule on the fly easily.
 
 # Suggestions on how to get the most out of the workshop
 
@@ -116,54 +134,17 @@ We encourage you to:
 
 # RStudio and R Markdown
 
-We'll present most of the material from within RStudio, using R Markdown documents with embedded R code. R Markdown is an extension to the Markdown markup language that makes it easy to write HTML in a simple plain text format.  This allows us to both run the R/NIMBLE code directly as well as compile on-the-fly to an HTML file that can be used for presentation. 
+We'll present most of the material from within RStudio, using Quarto/R Markdown documents with embedded R code.  This allows us to both run the R/NIMBLE code directly as well as compile on-the-fly to an HTML file that can be used for presentation. 
 
-Note: The files named *foo.html* have individual slides, while the files named *foo_alt.html* have the same content but all on one page.
+Note: The files named *foo_slides.html* have individual slides, while the files named *foo.html* have the same content but all on one page.
 
-Warning: in some cases the processing of the R code in the R Markdown is screwy and the slides have error messages that do not occur if you just run the code directly in R or RStudio. 
-
-# Getting the workshop materials
-
-For (most) content in single-page format, just see the [website](https://nimble-training.github.io/nimble-alaska-2026).
-
-To download the files (including the slides versions of the modules), you can do any of the following. The slides versions are titled "<xyz>_slides.html".
-
-## From a browser
-
-Simply go to [https://github.com/nimble-training/nimble-alaska-2026](https://github.com/nimble-training/nimble-alaska-2026) and click on the 'Download ZIP' button in the right side of the window or simply click [here](https://github.com/nimble-training/nimble-alaska-2026/archive/refs/heads/main.zip).
-
-## Within RStudio
-
-Within RStudio go to File->New Project->Version Control->Git and enter:
-
-- "Repository URL": https://github.com/nimble-training/nimble-alaska-2026
-- "Project Directory Name": nimble-alaska-2026 (or something else of your choosing)
-- "Directory": ~/Desktop (or somewhere of your choosing)
-
-Then to update from the repository to get any changes we've made, you can select (from within RStudio):
-Tools->Version Control->Pull Branches
-
-or from the Environment/History/Git window, click on the Git tab and then on the blue down arrow.
-
-Be warned that you probably do not want to make your own notes or changes to the files we are providing. Because if you do, and you then do a "Git Pull" to update the materials, you'll have to deal with the conflict between your local version and our version. You probably will want to make a personal copy of such files in another directory or by making copies of files with new names.
-
-## From a terminal window
-
-Run the following commands:
-
-- `cd /directory/where/you/want/repository/located`
-- `git clone https://github.com/nimble-training/nimble-alaska-2026`
-
-Then to update from the repository to get any changes we've made:
-
-- `cd /directory/where/you/put/the/repository/nimble-alaska-2026`
-- `git pull`
+Warning: in some cases the processing of the R code in the Quarto/R Markdown may cause a few error messages that do not occur if you just run the code directly in R or RStudio. 
 
 # NIMBLE 2.0
 
-We are hard at work on a complete overhaul of the internals of NIMBLE. This will achieve the following:
+We are (very)hard at work on a complete overhaul of the internals of NIMBLE. This will achieve the following:
 
-- streamlined representation of model nodes (think `y[1:1000]` not `y[1]`,`y[2]`,`y[3]`...):
+- streamlined representation of model nodes (think `y[1:1000]` not `y[1]`,`y[2]`,`y[3]`...) for:
   - faster model and algorithm building and computation
   - greatly reduced memory use for large models
 - ability to save and reload models and algorithms for later use

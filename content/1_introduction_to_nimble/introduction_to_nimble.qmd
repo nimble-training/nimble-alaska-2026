@@ -46,7 +46,7 @@ generate_original_results <- FALSE
     - INLA-like nested approximation (via the `nimbleQuad` package)
     - Sequential Monte Carlo (particle filtering) (via the `nimbleSMC` package)
 - A model-generic programming system to write new analysis methods.
-- Numerical Inference for statistical Models using Bayesian and Likelihood Estimation.
+- "NIMBLE" = Numerical Inference for statistical Models using Bayesian and Likelihood Estimation.
 
 # First example: A generalized linear mixed model (GLMM)
 
@@ -60,14 +60,11 @@ generate_original_results <- FALSE
 * `Farm` is a random effect.
 * Response variable is presence (1) or absence (0) of the parasite E. cervi.
 
-# GLMM example: Load the package
-```{r}
-library(nimble)
-```
 
 # GLMM example: Load data
 
 ```{r}
+library(nimble)
 DeerEcervi <- read.table(file.path('..', 'examples', 'DeerEcervi', 'DeerEcervi.txt'), header = TRUE)
 summary(DeerEcervi)
 
@@ -200,15 +197,13 @@ GLMM Example: 5. Extract the samples and WAIC
 ```{r}
 # Samples
 samples1 <- DEresults$samples
-```
 
-```{r}
 # WAIC (Note: there are different flavors of WAIC that can be chosen earlier.)
 WAIC <- DEresults$WAIC
 ```
 
 
-GLMM Example: Look at results:
+GLMM Example: Look at results (1. mcmcplots)
 =====
 
 There are many packages for summarizing and plotting MCMC samples.  NIMBLE does not try to re-invent these wheels.
@@ -236,7 +231,8 @@ Results that comes with these slides are [here](orig_Ecervi_samples_mcmcplot.htm
 
 Results if you generated your own will be [here](Ecervi_samples_mcmcplot.html).
 
-2. `coda`
+GLMM Example: Look at results (2. coda)
+=====
 
 ```{r eval = FALSE}
 # We haven't provided coda figures, but you can make make them if you want.
@@ -291,9 +287,4 @@ samples3 <- as.matrix(cDEmcmc$mvSamples)
 summary(samples3)
 cDEmcmc$getWAIC()
 ```
-
-Other notes
-=====
-
-- `readBUGSmodel` will read BUGS/JAGS model code and variables from their standard file formats.
 
