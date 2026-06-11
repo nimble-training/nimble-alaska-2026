@@ -53,8 +53,8 @@ generate_original_results <- FALSE
 * There are plenty of specialized GLMM packages.
 * We start with a GLMM because it will be familiar to many of you.
 * This example is from [Zuur et al. (2009, Mixed Effects Models and Extensions in Ecology with R)](https://www.highstat.com/index.php/mixed-effects-models-and-extensions-in-ecology-with-r) (chapter 13).
-* Elaphostrongylus cervi (E. cervi) is a nematode parasite of deer.  On each of 24 farms in Spain, multiple deer were sampled for E. cervi.
-* Original data from "Vicente et al. (2005)", citing [this](https://doi.org/10.1051/vetres:2005044), although I'm not sure they cited the right paper!
+* *Elaphostrongylus cervi* (E. cervi) is a nematode parasite of deer.  On each of 24 farms in Spain, multiple deer were sampled for E. cervi.
+* Original data from Vicente et al. (2005), citing [this](https://doi.org/10.1051/vetres:2005044), although I'm not sure they cited the right paper!
 * 826 total deer.
 * `Sex` (M/F) and (centered) body `Length` are explanatory variables (fixed effects).
 * `Farm` is a random effect.

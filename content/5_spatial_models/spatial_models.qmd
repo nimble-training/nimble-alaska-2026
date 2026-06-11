@@ -291,7 +291,7 @@ waic_car <- output$WAIC
 
 # Results
 
-MCMC mixing looks pretty good (not always the case for spatial models).
+MCMC mixing looks pretty good (not always the case for spatial models), but should be run longer.
 
 ```{r, fig.cap='', fig.height=5, fig.width=12}
 par(mfrow = c(1,4))
@@ -542,7 +542,7 @@ cModel <- compileNimble(model)
 
 conf <- configureMCMC(model, monitors = c(model$getNodeNames(topOnly = TRUE), 'x'))
 conf$removeSampler('w')
-conf$addSampler('x[w:134]', 'barker')
+conf$addSampler('w[1:134]', 'barker')
 MCMC <- buildMCMC(conf)
 cMCMC <- compileNimble(MCMC, project = cModel)
 set.seed(1)
@@ -898,7 +898,6 @@ xstar_samples2 <- cget_samples(samples, constants$z, zNew, dist11, dist22, dist2
 
 We could also write this to use the `mvSamples` modelValues object that stores all the MCMC output instead of using the R matrix representation of the samples.
 
-We'll see various approaches to post hoc processing in Module 10.
 
 # Appendix: using JAGS instead (for the spline-based model)
 

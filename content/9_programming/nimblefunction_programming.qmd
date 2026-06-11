@@ -224,7 +224,7 @@ mcmc$run(5)
 
 A user wrote to nimble-users recently asking how to do MCMC sampling on subsets of a multivariate node, e.g., for missing data applications.
 
-Unfortunately, `nimble` is not set up to do this. The user took our basic RW sampler and modified it for his need.
+Unfortunately, `nimble` was not set up to do this (at the time the user asked). The user took our basic RW sampler and modified it for his need.
 
 Let's suppose we have this basic model with a node, say `y[1:3]`, where `y[2]` is missing.
 

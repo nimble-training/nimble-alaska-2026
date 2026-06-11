@@ -102,7 +102,7 @@ nimbleCode({
 
 # Load the Dipper data
 ```{r load_dipper} 
-dipper_example_dir <- file.path("..", "..", "content", "examples","dipper")
+dipper_example_dir <- file.path("..", "..", "content", "examples","Dipper")
 dipper <- read.csv(file.path(dipper_example_dir,"dipper.csv"))
 y <- as.matrix(dipper[ , 1:7])
 first <- apply(y, 1, function(x) min(which(x !=0))) # first capture occasion

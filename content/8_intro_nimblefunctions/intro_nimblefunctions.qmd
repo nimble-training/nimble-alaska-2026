@@ -33,7 +33,7 @@ library(nimble)
 
  - user-defined distributions (already seen),
  - user-defined functions (already seen)
- - user-defined MCMC samplers (Module 10), and
+ - user-defined MCMC samplers (Module 9), and
  - compiling parts of R (not shown), without reference to a model.
 
 But their main purpose is providing a way for developers to implement algorithms.
@@ -216,7 +216,7 @@ objective_with_grad <- nimbleFunction(
         
         # Set up the additional arguments for nimDerivs when the function
         #   called includes model$calculate
-        derivsInfo <- makeDerivsInfo(model, nodes, calcNodes)
+        derivsInfo <- makeModelDerivsInfo(model, nodes, calcNodes)
         updateNodes <- derivsInfo$updateNodes
         constantNodes <- derivsInfo$constantNodes
     },

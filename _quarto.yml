@@ -26,7 +26,7 @@ website:
       - href: content/6_user_defined/extending_models.qmd
         text: "Module 6: Extending models"
       - href: content/7_ecological_models/ecological_models.qmd
-        text: "Module 7: Ecological models: HMMs"
+        text: "Module 7: Ecological models"
       - href: content/8_intro_nimblefunctions/intro_nimblefunctions.qmd
         text: "Module 8: Introduction to nimbleFunctions"
       - href: content/9_programming/nimblefunction_programming.qmd

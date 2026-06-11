@@ -33,21 +33,21 @@ doComparisons <- FALSE
 
 # Overview
 
-Some strategies for improving MCMC
+Some strategies for improving MCMC (some already seen; some discussed here)
 
  - Customize sampler choices. E.g.,
-    - Try sampling standard deviations on a log scale [already seen].
-    - Try slice samplers instead of Metropolis-Hastings [already seen].
-    - Try blocking correlated parameters [already seen; more here]
-    - Try multiple samplers for slow-mixing parameters [not shown].
+    - Try sampling standard deviations on a log scale 
+    - Try slice samplers instead of Metropolis-Hastings 
+    - Try blocking correlated parameters 
+    - Try multiple samplers for slow-mixing parameters 
  - Reparameterize
-    - Center covariates [already seen]
-    - Centered versus non-centered random effects parameterization [discussed here]
-    - Rotated coordinates to reduce posterior correlation [already seen]
+    - Center covariates 
+    - Centered versus non-centered random effects parameterization 
+    - Rotated coordinates to reduce posterior correlation 
  - Rewrite the model. E.g.,
     - Rewrite the model to reduce dependencies 
     - Vectorize declarations to improve computational efficiency
-    - Marginalize to remove parameters [shown here]
+    - Marginalize to remove parameters 
  - (Advanced) Write new samplers that take advantage of particular model structures [Module 9]
 
 # Load the E. cervi example for later:
@@ -66,8 +66,6 @@ Sampler choices:
 - Hamiltonian Monte Carlo (HMC) can help mix blocks of parameters (often all parameters at once) but at heavy computational cost.
 - Barker sampling can help mix blocks of parameters at less cost but potentially more effectively than a default block sampler.
 - Blocking can help when parameters are correlated *given other parameters*.
-    - If parameters are *marginally correlated* but *conditionally independent*, blocking will not help.
-    - This occurs if parameters are marginally correlated only because they both depend on something else.
 - Model-specific understanding can yield good sampling strategies.
 
 # Centering covariates or random effects
@@ -213,15 +211,19 @@ conf$addSampler(blockNodes, type = 'RW_block')
 
 # MCMC results
 
-HMC took 290 minutes to generate 6000 samples, while our customized sampler took 55 minutes to generate 25000 samples. The effective sample sizes per minute varied by parameter but were generally 2-50 times larger with the customized sampler than HMC. We are not claiming that a customized approach will generally outperform HMC (and indeed effort is involved to determine the customization), but we have found various cases where other MCMC configurations do markedly better than HMC.
+- Timing:
+  - HMC took 290 minutes to generate 6000 samples
+  - Our customized sampler took 55 minutes to generate 25000 samples.
+  - The effective sample sizes per minute varied by parameter but were generally 2-50 times larger with the customized sampler than HMC.
+  - We are not claiming that a customized approach will generally outperform HMC (and indeed effort is involved to determine the customization), but we have found various cases where other MCMC configurations do markedly better than HMC.
 
-Here are MCMC efficiency comparisons for the (hyperparameters).
+- Here are MCMC efficiency comparisons for the (hyperparameters).
 
-![MCMC efficiency (estimated by the `mcmcse` method) for parameters](main2_efficiencySummary_mcmcse.jpg)
+![MCMC efficiency (estimated by the `mcmcse` method) for parameters](./main2_efficiencySummary_mcmcse.jpg){width=45%}
 
-And here for the random effects.
+- And here for the random effects.
 
-![MCMC efficiency (estimated by the `mcmcse` method) for random effects](main2_REs_efficiencySummary_mcmcse.jpg)
+![MCMC efficiency (estimated by the `mcmcse` method) for random effects](./main2_REs_efficiencySummary_mcmcse.jpg){width=45%}
 
 # Think like a graph: reducing dependencies
 
@@ -358,6 +360,8 @@ $$ y_i \sim N(\mu_0, \sigma^2 + \sigma_0^2) $$
 
 We can always integrate over (finite-valued) discrete random variables by summation, so we can integrate over presence/absence indicators for each species by site.
 
+This is required to use gradient-based samplers such as HMC and Barker (if run on the full model as one sampler) since one can differentiate the model log-probability with respect to discrete nodes.
+
 That's what `dOcc_multisite` does:
 
 ```{r}
@@ -421,8 +425,12 @@ One can then immediately use the distribution in a model as shown earlier. NIMBL
 
 
 
-# Exercise
+# Exercises
 
-1. See `help(samplers)` and look at the `control` options for the `RW_block` sampler. Try some different values for `scale`, `propCov`, `adaptInterval`, and `adaptFactorExponent` in the blocked samplers for the uncentered E. cervi model and see how the values affect burn-in and mixing of the MCMC.
+1. Work on applying different samplers to the E. cervi example (or some other example of your choice) and see how that affects MCMC mixing and efficiency.
 
-2. Set up MCMCs for the more flexible (bivariate mixture) model for the E. cervi example for both the versions with the `ind` indicator variables and the marginalized model. See what samplers are assigned. Run the two MCMCs and see which have bettter mixing (try to account for time spent sampling as well as mixing on a per-iteration basis).
+2. Compare performance on the centered versus uncentered E. cervi model.
+
+3. See `help(samplers)` and look at the `control` options for the `Barker` or `RW_block` sampler. Try some different values for those options.
+
+

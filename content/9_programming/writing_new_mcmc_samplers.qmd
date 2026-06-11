@@ -288,7 +288,7 @@ mcmcConf$addSampler(type = "ourMH_debug", target = 'farm_effect[1]')
 ```
 
 ```{r, eval=FALSE}
-# run this on your own to stept through in debug (browser) mode.
+# run this on your own to step through in debug (browser) mode.
 mcmc <- buildMCMC(mcmcConf)
 mcmc$run(5)
 ```
@@ -303,6 +303,7 @@ Since all samplers are just nimbleFunctions with a few special requirements, we 
 Let's see what this looks like for a (simplified) Barker sampler.
 
 ```{r}
+#| eval: false
 sampler_barker <- nimbleFunction(
     contains = sampler_BASE,  # Required class inheritance to work within NIMBLE's MCMC engine
     setup = function(model, mvSaved, target, control) {

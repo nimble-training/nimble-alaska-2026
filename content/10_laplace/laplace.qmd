@@ -1,5 +1,5 @@
 ---
-title: "Introduction to automatic differentiation, including Laplace approximation"
+title: "Introduction to automatic differentiation, including Laplace approximation and nested approximation"
 subtitle: "NIMBLE Alaska ASA Workshop"
 author: "NIMBLE Development Team"
 date: "June 2026"
@@ -42,6 +42,7 @@ Many algorithms require derivatives to work or work well.
     * Then requires matrix of second derivatives (Hessian)
     
 * Adaptive Gaussian quadrature (builds upon Laplace approx.)
+* Nested approximations (INLA, ELGM (Stringer et al.))
 
 # How do computers get derivatives?
 
