@@ -1,15 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nimble-training.github.io/nimble-alaska-2026/overview.html</loc>
-    <lastmod>2026-06-01T19:29:01.823Z</lastmod>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/index.html</loc>
+    <lastmod>2026-06-11T16:18:23.276Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/9_programming/writing_new_mcmc_samplers.html</loc>
+    <lastmod>2026-06-11T18:42:12.921Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/10_laplace/laplace.html</loc>
+    <lastmod>2026-06-11T18:53:44.004Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/2_nimble_models/nimble_models.html</loc>
+    <lastmod>2026-06-11T16:49:01.121Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/5_spatial_models/spatial_models.html</loc>
+    <lastmod>2026-06-11T18:30:31.038Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/3_comparing_and_customizing_mcmc/comparing_and_customizing_mcmc.html</loc>
+    <lastmod>2026-06-11T16:59:03.738Z</lastmod>
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/1_introduction_to_nimble/introduction_to_nimble.html</loc>
-    <lastmod>2026-06-01T19:36:38.268Z</lastmod>
+    <lastmod>2026-06-11T18:59:14.935Z</lastmod>
   </url>
   <url>
-    <loc>https://nimble-training.github.io/nimble-alaska-2026/index.html</loc>
-    <lastmod>2026-06-01T19:28:50.684Z</lastmod>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/7_ecological_models/ecological_models.html</loc>
+    <lastmod>2026-06-11T18:49:40.792Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/8_intro_nimblefunctions/intro_nimblefunctions.html</loc>
+    <lastmod>2026-06-11T18:32:56.372Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/6_user_defined/extending_models.html</loc>
+    <lastmod>2026-06-11T18:10:19.301Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/11_future_directions_for_nimble/future_directions_for_nimble.html</loc>
+    <lastmod>2023-01-06T20:52:28.949Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/9_programming/nimblefunction_programming.html</loc>
+    <lastmod>2026-06-11T18:39:44.116Z</lastmod>
+  </url>
+  <url>
+    <loc>https://nimble-training.github.io/nimble-alaska-2026/content/4_improving_mcmc/improving_mcmc.html</loc>
+    <lastmod>2026-06-11T18:06:05.459Z</lastmod>
   </url>
 </urlset>

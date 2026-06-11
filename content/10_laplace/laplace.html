@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="NIMBLE Development Team">
+<meta name="dcterms.date" content="2026-06-01">
+
+<title>Introduction to automatic differentiation, including Laplace approximation and nested approximation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-a9ac95982dfa497af26296eb1ce0c91d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../content/10_laplace/laplace.html">Module 10: Laplace and related approximations</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">NIMBLE Alaska ASA Workshop</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/nimble-training/nimble-alaska-2026" title="" class="quarto-navigation-tool px-1" aria-label="GitHub"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/1_introduction_to_nimble/introduction_to_nimble.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 1: Intro</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/2_nimble_models/nimble_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 2: Models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/3_comparing_and_customizing_mcmc/comparing_and_customizing_mcmc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 3: MCMC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/4_improving_mcmc/improving_mcmc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 4: Improving MCMC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/5_spatial_models/spatial_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 5: Spatial models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/6_user_defined/extending_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 6: Extending models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/7_ecological_models/ecological_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 7: Ecological models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/8_intro_nimblefunctions/intro_nimblefunctions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 8: Introduction to nimbleFunctions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/9_programming/nimblefunction_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 9a: Programming and user samplers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/9_programming/writing_new_mcmc_samplers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 9b: Programming and user samplers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/10_laplace/laplace.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Module 10: Laplace and related approximations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/11_future_directions_for_nimble/future_directions_for_nimble.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 11: Towards NIMBLE 2.0</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-derivatives" id="toc-why-derivatives" class="nav-link active" data-scroll-target="#why-derivatives">Why derivatives?</a></li>
+  <li><a href="#how-do-computers-get-derivatives" id="toc-how-do-computers-get-derivatives" class="nav-link" data-scroll-target="#how-do-computers-get-derivatives">How do computers get derivatives?</a></li>
+  <li><a href="#automatic-differentiation-ad" id="toc-automatic-differentiation-ad" class="nav-link" data-scroll-target="#automatic-differentiation-ad">Automatic Differentiation (AD)</a></li>
+  <li><a href="#some-general-points-about-ad" id="toc-some-general-points-about-ad" class="nav-link" data-scroll-target="#some-general-points-about-ad">Some general points about AD</a></li>
+  <li><a href="#nimble-adopts-the-cppad-c-library-for-ad" id="toc-nimble-adopts-the-cppad-c-library-for-ad" class="nav-link" data-scroll-target="#nimble-adopts-the-cppad-c-library-for-ad">NIMBLE adopts the CppAD C++ library for AD</a></li>
+  <li><a href="#some-terminology-for-ad-in-nimble-adapted-from-cppad" id="toc-some-terminology-for-ad-in-nimble-adapted-from-cppad" class="nav-link" data-scroll-target="#some-terminology-for-ad-in-nimble-adapted-from-cppad">Some terminology for AD in NIMBLE (adapted from CppAD)</a></li>
+  <li><a href="#first-example-derivatives-in-a-nimblefunction" id="toc-first-example-derivatives-in-a-nimblefunction" class="nav-link" data-scroll-target="#first-example-derivatives-in-a-nimblefunction">First example: Derivatives in a nimbleFunction</a></li>
+  <li><a href="#first-example-derivatives-in-a-nimblefunction-1" id="toc-first-example-derivatives-in-a-nimblefunction-1" class="nav-link" data-scroll-target="#first-example-derivatives-in-a-nimblefunction-1">First example: Derivatives in a nimbleFunction</a></li>
+  <li><a href="#first-example-derivatives-in-a-nimblefunction-2" id="toc-first-example-derivatives-in-a-nimblefunction-2" class="nav-link" data-scroll-target="#first-example-derivatives-in-a-nimblefunction-2">First example: Derivatives in a nimbleFunction</a></li>
+  <li><a href="#understanding-derivative-outputs" id="toc-understanding-derivative-outputs" class="nav-link" data-scroll-target="#understanding-derivative-outputs">Understanding derivative outputs:</a></li>
+  <li><a href="#second-example-derivatives-of-model-log-probabilities" id="toc-second-example-derivatives-of-model-log-probabilities" class="nav-link" data-scroll-target="#second-example-derivatives-of-model-log-probabilities">Second example: Derivatives of model log probabilities</a></li>
+  <li><a href="#second-example-derivatives-of-model-log-probabilities-1" id="toc-second-example-derivatives-of-model-log-probabilities-1" class="nav-link" data-scroll-target="#second-example-derivatives-of-model-log-probabilities-1">Second example: Derivatives of model log probabilities</a></li>
+  <li><a href="#second-example-derivatives-of-model-log-probabilities-2" id="toc-second-example-derivatives-of-model-log-probabilities-2" class="nav-link" data-scroll-target="#second-example-derivatives-of-model-log-probabilities-2">Second example: Derivatives of model log probabilities</a></li>
+  <li><a href="#second-example-derivatives-of-model-log-probabilities-3" id="toc-second-example-derivatives-of-model-log-probabilities-3" class="nav-link" data-scroll-target="#second-example-derivatives-of-model-log-probabilities-3">Second example: Derivatives of model log probabilities</a></li>
+  <li><a href="#more-about-understanding-outputs-and-testing" id="toc-more-about-understanding-outputs-and-testing" class="nav-link" data-scroll-target="#more-about-understanding-outputs-and-testing">More about understanding outputs and testing</a></li>
+  <li><a href="#third-example-derivatives-of-model-log-probabilities-with-other-calculations." id="toc-third-example-derivatives-of-model-log-probabilities-with-other-calculations." class="nav-link" data-scroll-target="#third-example-derivatives-of-model-log-probabilities-with-other-calculations.">Third example: Derivatives of model log probabilities with other calculations.</a></li>
+  <li><a href="#third-example-derivatives-of-model-log-probabilities-with-other-calculations.-1" id="toc-third-example-derivatives-of-model-log-probabilities-with-other-calculations.-1" class="nav-link" data-scroll-target="#third-example-derivatives-of-model-log-probabilities-with-other-calculations.-1">Third example: Derivatives of model log probabilities with other calculations.</a></li>
+  <li><a href="#third-example-derivatives-of-model-log-probabilities-with-other-calculations.-2" id="toc-third-example-derivatives-of-model-log-probabilities-with-other-calculations.-2" class="nav-link" data-scroll-target="#third-example-derivatives-of-model-log-probabilities-with-other-calculations.-2">Third example: Derivatives of model log probabilities with other calculations.</a></li>
+  <li><a href="#understanding-the-results" id="toc-understanding-the-results" class="nav-link" data-scroll-target="#understanding-the-results">Understanding the results</a></li>
+  <li><a href="#summary-of-ways-to-use-ad" id="toc-summary-of-ways-to-use-ad" class="nav-link" data-scroll-target="#summary-of-ways-to-use-ad">Summary of ways to use AD</a></li>
+  <li><a href="#laplace-approximation" id="toc-laplace-approximation" class="nav-link" data-scroll-target="#laplace-approximation">Laplace approximation</a></li>
+  <li><a href="#laplace-use-deer-e.-cervi-glmm" id="toc-laplace-use-deer-e.-cervi-glmm" class="nav-link" data-scroll-target="#laplace-use-deer-e.-cervi-glmm">Laplace: Use Deer E. cervi GLMM</a></li>
+  <li><a href="#laplace-for-glmm" id="toc-laplace-for-glmm" class="nav-link" data-scroll-target="#laplace-for-glmm">Laplace for GLMM</a></li>
+  <li><a href="#laplace-for-glmm-using-nimblequad" id="toc-laplace-for-glmm-using-nimblequad" class="nav-link" data-scroll-target="#laplace-for-glmm-using-nimblequad">Laplace for GLMM using nimbleQuad</a></li>
+  <li><a href="#laplace-for-glmm-1" id="toc-laplace-for-glmm-1" class="nav-link" data-scroll-target="#laplace-for-glmm-1">Laplace for GLMM</a></li>
+  <li><a href="#laplace-for-glmm-2" id="toc-laplace-for-glmm-2" class="nav-link" data-scroll-target="#laplace-for-glmm-2">Laplace for GLMM</a></li>
+  <li><a href="#inla-like-deterministic-nested-approximation" id="toc-inla-like-deterministic-nested-approximation" class="nav-link" data-scroll-target="#inla-like-deterministic-nested-approximation">INLA-like deterministic nested approximation</a></li>
+  <li><a href="#nested-approximation-for-glmm" id="toc-nested-approximation-for-glmm" class="nav-link" data-scroll-target="#nested-approximation-for-glmm">Nested approximation for GLMM</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Introduction to automatic differentiation, including Laplace approximation and nested approximation</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">NIMBLE Alaska ASA Workshop</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>NIMBLE Development Team </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 1, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
+<section id="why-derivatives" class="level1">
+<h1>Why derivatives?</h1>
+<p>Many algorithms require derivatives to work or work well.</p>
+<ul>
+<li><p>Finding function maximum or minimum (aka optimization)</p></li>
+<li><p>Hamiltonian Monte Carlo (HMC; a kind of MCMC sampler)</p></li>
+<li><p>Other kinds of MCMC samplers, e.g.&nbsp;Langevin.</p></li>
+<li><p>Laplace approximation</p>
+<ul>
+<li>Starts with an optimization.</li>
+<li>Then requires matrix of second derivatives (Hessian)</li>
+</ul></li>
+<li><p>Adaptive Gaussian quadrature (builds upon Laplace approx.)</p></li>
+<li><p>Nested approximations (INLA, ELGM (Stringer et al.))</p></li>
+</ul>
+</section>
+<section id="how-do-computers-get-derivatives" class="level1">
+<h1>How do computers get derivatives?</h1>
+<p>Example function:</p>
+<ul>
+<li><span class="math inline">\(y = e^{x^2}\)</span>.</li>
+<li><span class="math inline">\(\frac{dy}{dx} = 2x e^{x^{2}} = 2xy\)</span>.</li>
+</ul>
+<p>Derivative methods:</p>
+<ol type="1">
+<li>Hard-coded analytic function: Developer codes <code>2 * x * exp(x^2)</code></li>
+<li>Symbolic algebra: Code processes <code>exp(x^2)</code> into <code>2 * x * exp(x^2)</code></li>
+<li>Finite-element approximation: <span class="math inline">\(\frac{dy}{dx} \approx \frac{e^{(x+\delta)^{2}} - e^{{x^{2}}}}{\delta}\)</span>, for some small value of <span class="math inline">\(\delta\)</span> (hard to choose in general). Code calls function once with input <span class="math inline">\(x\)</span> and once with input <span class="math inline">\(x+\delta\)</span>.</li>
+<li><strong>Automatic (or “Algorithmic”) Differentiation:</strong>: Carry derivative information through all math operators, i.e.&nbsp;<code>^</code> and <code>exp</code> in <span class="math inline">\(e^{{x^{2}}} =\)</span> <code>exp(x^2)</code>.</li>
+</ol>
+</section>
+<section id="automatic-differentiation-ad" class="level1">
+<h1>Automatic Differentiation (AD)</h1>
+<p>Steps to compute <span class="math inline">\(y = e^{x^2}\)</span> (<strong>value</strong>) for x = 3.0:</p>
+<ol type="1">
+<li><span class="math inline">\(x^{2} = 3^2 \rightarrow 9\)</span>.</li>
+<li><span class="math inline">\(e^{x^{2}} = e^9 \rightarrow 8103.1\)</span>.</li>
+</ol>
+<p>Steps to compute <span class="math inline">\(\frac{dy}{dx}\)</span> (using chain rule): <em>Forward mode</em>, i.e.&nbsp;inner derivatives first.</p>
+<ol type="1">
+<li><span class="math inline">\(\frac{d(x^{2})}{dx} = 2x = 2 \times 3 \rightarrow 6\)</span>.</li>
+<li><span class="math inline">\(\frac{d(e^{x^2})}{dx} = \frac{d(e^{x^2})}{d(x^{2})} \times \frac{d(x^{2})}{dx} = e^{9} \times 6 = 8103.1 \times 6 \rightarrow 48618.6\)</span>.</li>
+</ol>
+<p>Steps to compute <span class="math inline">\(\frac{dy}{dx}\)</span> (using chain rule): <em>Reverse mode</em>, i.e.&nbsp;outer derivatives first.</p>
+<ol type="1">
+<li><span class="math inline">\(\frac{d(e^{x^2})}{d(x^{2})} = e^9 \rightarrow 8103.1\)</span>.</li>
+<li><span class="math inline">\(\frac{d(e^{x^2})}{dx} = \frac{d(e^{x^2})}{d(x^{2})} \times \frac{d(x^{2})}{dx} = 8103.1 \times 2x = 8103.1 \times 6 \rightarrow 48618.6\)</span></li>
+</ol>
+</section>
+<section id="some-general-points-about-ad" class="level1">
+<h1>Some general points about AD</h1>
+<ul>
+<li>AD works by stepping through the same sequence of operations multiple times, tracking different information each time.</li>
+<li>AD can sometimes be <em>more efficient</em> than using the derivative equations explicitly. E.g. <span class="math inline">\(e^{9} = 8103.1\)</span> was calculated and can be re-used.</li>
+<li>AD can be iterated to obtain arbitrary-order derivatives. Lower-order derivatives must be done before higher-order derivatives.</li>
+<li>Forward and reverse modes are each more efficient for different kinds of problems, depending on number of inputs and outputs (details not discussed here).</li>
+<li>Operations such as matrix multiplication, matrix inversion, matrix solving or others can be implemented with matrix AD operations (rather than relying on potentially long sequences of scalar operations, which can be slow for AD).</li>
+</ul>
+</section>
+<section id="nimble-adopts-the-cppad-c-library-for-ad" class="level1">
+<h1>NIMBLE adopts the CppAD C++ library for AD</h1>
+<ul>
+<li>Huge credit to <a href="https://coin-or.github.io/CppAD/doc/cppad.htm"><span style="color:blue">CppAD</span></a></li>
+<li>Written by Brad Bell at the University of Washington.</li>
+<li>CppAD is also used by <a href="https://kaskr.github.io/adcomp/Introduction.html"><span style="color:blue">Template Model Builder (TMB)</span></a>.</li>
+<li>CppAD is general and efficient. It can provide arbitrary-order derivatives.</li>
+<li>We have written some specialized handling for some cases (“atomic” operators, in CppAD terminology).</li>
+<li>CppAD can trace derivatives through arbitrary function calls.</li>
+<li>NIMBLE’s use of CppAD involves deep changes in everything, not just calling a few extra functions.</li>
+<li>NIMBLE with CppAD can give derivatives of arbitrary model calculations and/or nimbleFunction calculations.</li>
+<li>Care is required for any conditional steps in functions, such as if-then-else or for-loops. Normally, conditional branching and looping is “baked in” to AD calculations. This is discussed more later.</li>
+</ul>
+</section>
+<section id="some-terminology-for-ad-in-nimble-adapted-from-cppad" class="level1">
+<h1>Some terminology for AD in NIMBLE (adapted from CppAD)</h1>
+<ul>
+<li><p>Orders 0, 1, and 2 are called “Value”, “Jacobian” (or “Gradient”), and “Hessian”, respectively.</p></li>
+<li><p>We say that operations are <em>recorded</em> onto a <em>tape</em>, which is replayed to obtain values (0th order) and/or derivatives (1st and 2nd order).</p></li>
+<li><p>We can take <em>derivatives of derivatives</em>. This involves making a <em>tape of the replaying of a tape</em>.</p>
+<ul>
+<li>We call this <strong>double-taping</strong> or <strong>meta-taping</strong>.</li>
+</ul></li>
+<li><p>Double-taping can improve efficiency.</p></li>
+<li><p>Double-taping can give derivatives of order &gt; 2.</p></li>
+</ul>
+</section>
+<section id="first-example-derivatives-in-a-nimblefunction" class="level1">
+<h1>First example: Derivatives in a nimbleFunction</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>nf1 <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">foo =</span> <span class="cf">function</span>(<span class="at">x =</span> <span class="fu">double</span>()) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">exp</span>(x<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivs_foo =</span> <span class="cf">function</span>(<span class="at">x=</span><span class="fu">double</span>()) {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      d <span class="ot">&lt;-</span> <span class="fu">derivs</span>(<span class="fu">foo</span>(x), <span class="at">wrt =</span> <span class="st">"x"</span>, <span class="at">order =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(d)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">ADNimbleList</span>())</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">buildDerivs =</span> <span class="st">'foo'</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="first-example-derivatives-in-a-nimblefunction-1" class="level1">
+<h1>First example: Derivatives in a nimbleFunction</h1>
+<p>Make an object (instance) of nf1:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>nf1obj <span class="ot">&lt;-</span> <span class="fu">nf1</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Uncompiled execution:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>nf1obj<span class="sc">$</span><span class="fu">derivs_foo</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>nimbleList object of type NIMBLE_ADCLASS
+Field "value":
+[1] 8103.084
+Field "jacobian":
+        [,1]
+[1,] 48618.5
+Field "hessian":
+, , 1
+
+         [,1]
+[1,] 307917.2</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>nf1obj<span class="sc">$</span><span class="fu">foo</span>(<span class="dv">3</span>) <span class="co"># for comparison of value</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8103.084</code></pre>
+</div>
+</div>
+</section>
+<section id="first-example-derivatives-in-a-nimblefunction-2" class="level1">
+<h1>First example: Derivatives in a nimbleFunction</h1>
+<p>Compiled execution:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cnf1obj <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(nf1obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cnf1obj<span class="sc">$</span><span class="fu">derivs_foo</span>(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>nimbleList object of type NIMBLE_ADCLASS
+Field "value":
+[1] 8103.084
+Field "jacobian":
+        [,1]
+[1,] 48618.5
+Field "hessian":
+, , 1
+
+         [,1]
+[1,] 307917.2</code></pre>
+</div>
+</div>
+</section>
+<section id="understanding-derivative-outputs" class="level1">
+<h1>Understanding derivative outputs:</h1>
+<ul>
+<li>Define <span class="math inline">\(n\)</span> = length of inputs and <span class="math inline">\(m\)</span> = length of outputs.</li>
+<li><strong>value</strong> is a vector of length <span class="math inline">\(m\)</span>.</li>
+<li><strong>jacobian</strong> is an <span class="math inline">\(m \times n\)</span> matrix (<span class="math inline">\(m\)</span> rows and <span class="math inline">\(n\)</span> columns).</li>
+<li><strong>hessian</strong> is an <span class="math inline">\(n \times n \times m\)</span> array.</li>
+<li>Notice the output index is the <em>first</em> index in <em>jacobian</em> but the <em>last</em> index in <em>hessian</em>.</li>
+<li>First two indices of <em>hessian</em> are interchangeable due to symmetry of partial derivatives.</li>
+<li>You can omit lower-orders (e.g., use <code>order = 1</code> for the jacobian only, omitting the value), but lower orders <em>will be calculated</em> in order to obtain higher orders.</li>
+<li><code>ADNimbleList()</code> is a pre-defined <em>nimbleList</em> type with elements <code>value</code>, <code>jacobian</code>, and <code>hessian</code>.</li>
+</ul>
+</section>
+<section id="second-example-derivatives-of-model-log-probabilities" class="level1">
+<h1>Second example: Derivatives of model log probabilities</h1>
+<p>Make a simple model.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model_code <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="at">mean =</span> mu, <span class="at">sd =</span> sigma)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope <span class="sc">*</span> x</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  intercept <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(model_code,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">inits =</span> <span class="fu">list</span>(<span class="at">intercept =</span> <span class="fl">1.2</span>, <span class="at">slope =</span> <span class="fl">0.5</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                              <span class="at">sigma =</span> <span class="fl">0.7</span>),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> <span class="dv">6</span>),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">constants =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="dv">10</span>),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                 <span class="at">buildDerivs =</span> <span class="cn">TRUE</span>, <span class="co"># ALLOW DERIVATIVES FOR THIS MODEL</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                 )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Defining model</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Building model</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting data and initial values</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Checking model sizes and dimensions</code></pre>
+</div>
+</div>
+</section>
+<section id="second-example-derivatives-of-model-log-probabilities-1" class="level1">
+<h1>Second example: Derivatives of model log probabilities</h1>
+<p>Write a nimbleFunction to get derivatives of model$calculate.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>nf2 <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, nodes) {},</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivs_log_prob =</span> <span class="cf">function</span>() {</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>      d <span class="ot">&lt;-</span> <span class="fu">derivs</span>(model<span class="sc">$</span><span class="fu">calculate</span>(nodes),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">wrt=</span><span class="fu">c</span>(<span class="st">"intercept"</span>, <span class="st">"slope"</span>, <span class="st">"sigma"</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">order =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(d)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">ADNimbleList</span>())</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="second-example-derivatives-of-model-log-probabilities-2" class="level1">
+<h1>Second example: Derivatives of model log probabilities</h1>
+<p>Use it uncompiled.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>calc_nodes <span class="ot">&lt;-</span> m<span class="sc">$</span><span class="fu">getDependencies</span>(<span class="fu">c</span>(<span class="st">"intercept"</span>, <span class="st">"slope"</span>, <span class="st">"sigma"</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>calc_nodes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "intercept" "sigma"     "mu"        "y"        </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>nf2obj <span class="ot">&lt;-</span> <span class="fu">nf2</span>(m, calc_nodes)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>nf2obj<span class="sc">$</span><span class="fu">derivs_log_prob</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>nimbleList object of type NIMBLE_ADCLASS
+Field "value":
+[1] -10.73236
+Field "jacobian":
+           [,1]      [,2]      [,3]
+[1,] -0.4081645 -4.081633 -1.311953
+Field "hessian":
+, , 1
+
+           [,1]       [,2]      [,3]
+[1,]  -2.040817  -20.40816  1.166181
+[2,] -20.408163 -204.08163 11.661808
+[3,]   1.166181   11.66181  1.541025</code></pre>
+</div>
+</div>
+</section>
+<section id="second-example-derivatives-of-model-log-probabilities-3" class="level1">
+<h1>Second example: Derivatives of model log probabilities</h1>
+<p>Use it compiled.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>comp <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(m, nf2obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>comp<span class="sc">$</span>nf2obj<span class="sc">$</span><span class="fu">derivs_log_prob</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>nimbleList object of type NIMBLE_ADCLASS
+Field "value":
+[1] -10.73236
+Field "jacobian":
+           [,1]      [,2]      [,3]
+[1,] -0.4081645 -4.081633 -1.311953
+Field "hessian":
+, , 1
+
+           [,1]       [,2]      [,3]
+[1,]  -2.040817  -20.40816  1.166181
+[2,] -20.408163 -204.08163 11.661808
+[3,]   1.166181   11.66181  1.541025</code></pre>
+</div>
+</div>
+</section>
+<section id="more-about-understanding-outputs-and-testing" class="level1">
+<h1>More about understanding outputs and testing</h1>
+<ul>
+<li><p>Uncompiled derivatives use finite-element methods from packages <code>numDeriv</code> and/or <code>pracma</code>.</p>
+<ul>
+<li>These might not match compiled derivatives exactly due to finite-element approximation.</li>
+<li>Uncompiled execution can be slow for large calculations.</li>
+</ul></li>
+<li><p>The first compiled call to <code>derivs</code> (aka <code>nimDerivs</code>) records the AD tape, so it is much slower than later calls.</p></li>
+<li><p>Always test compiled derivatives on new values after the first call.</p>
+<ul>
+<li>This checks that values have not been (incorrectly) “baked in” to the AD tape.</li>
+<li>This was not illustrated in first two examples.</li>
+</ul></li>
+<li><p>Model inputs are ordered to match the <code>wrt</code> argument, flattened and concatenated.</p>
+<ul>
+<li>This is essential to use <code>jacobian</code> and <code>hessian</code> results correctly.</li>
+</ul></li>
+</ul>
+</section>
+<section id="third-example-derivatives-of-model-log-probabilities-with-other-calculations." class="level1">
+<h1>Third example: Derivatives of model log probabilities with other calculations.</h1>
+<p>Use the same model as above. For good measure, make a new copy.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> m<span class="sc">$</span><span class="fu">newModel</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting data and initial values</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Checking model sizes and dimensions</code></pre>
+</div>
+</div>
+<p>Say we will provide a vector of <code>(intercept, slope, log_sigma)</code> and we need to calculate <code>sigma = exp(log_sigma)</code> before using it in the model.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>nf3 <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, param_nodes, calc_nodes) {</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># param_nodes will be c("intercept", "slope", "sigma")</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    updateNodes <span class="ot">&lt;-</span> <span class="fu">character</span>() <span class="co"># more about these later</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    constantNodes <span class="ot">&lt;-</span> <span class="st">"y"</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>(<span class="at">param_values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># param_values will be (intercept, slope, log_sigma)</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    param_values[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">exp</span>(param_values[<span class="dv">3</span>])</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">values</span>(model, param_nodes) <span class="ot">&lt;&lt;-</span> param_values <span class="co"># The ONLY valid way to put values in a model for AD</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    log_prob <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calc_nodes)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(log_prob)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivs_run =</span> <span class="cf">function</span>(<span class="at">param_values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>      wrt <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(param_values) <span class="co"># indices, not names</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>      ans <span class="ot">&lt;-</span> <span class="fu">derivs</span>(<span class="fu">run</span>(param_values), <span class="at">wrt =</span> wrt,</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>                    <span class="at">order =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>,</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>                    <span class="at">updateNodes =</span> updateNodes,</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>                    <span class="at">constantNodes =</span> constantNodes,</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>                    <span class="at">model =</span> model)</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(ans)</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">ADNimbleList</span>())</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">buildDerivs =</span> <span class="st">'run'</span></span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="third-example-derivatives-of-model-log-probabilities-with-other-calculations.-1" class="level1">
+<h1>Third example: Derivatives of model log probabilities with other calculations.</h1>
+<p>Make an object:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>param_nodes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"intercept"</span>, <span class="st">"slope"</span>, <span class="st">"sigma"</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>calc_nodes <span class="ot">&lt;-</span> m2<span class="sc">$</span><span class="fu">getDependencies</span>(param_nodes, <span class="at">self =</span> <span class="cn">FALSE</span>) <span class="co"># omit priors, just to make it more interesting</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>calc_nodes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "mu" "y" </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>nf3obj <span class="ot">&lt;-</span> <span class="fu">nf3</span>(m2, param_nodes, calc_nodes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Use it uncompiled:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.2</span>, .<span class="dv">5</span>, <span class="fu">log</span>(<span class="fl">0.7</span>))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>nf3obj<span class="sc">$</span><span class="fu">derivs_run</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>nimbleList object of type NIMBLE_ADCLASS
+Field "value":
+[1] -0.6030799
+Field "jacobian":
+           [,1]      [,2]       [,3]
+[1,] -0.4081633 -4.081633 -0.9183673
+Field "hessian":
+, , 1
+
+            [,1]        [,2]       [,3]
+[1,]  -2.0408163  -20.408163  0.8163265
+[2,] -20.4081633 -204.081633  8.1632654
+[3,]   0.8163265    8.163265 -0.1632653</code></pre>
+</div>
+</div>
+</section>
+<section id="third-example-derivatives-of-model-log-probabilities-with-other-calculations.-2" class="level1">
+<h1>Third example: Derivatives of model log probabilities with other calculations.</h1>
+<p>Use it compiled:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>comp2 <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(m2, nf3obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>x_tape <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.4</span>, .<span class="dv">2</span>, <span class="fu">log</span>(<span class="fl">0.4</span>))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>comp2<span class="sc">$</span>nf3obj<span class="sc">$</span><span class="fu">derivs_run</span>(x_tape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>nimbleList object of type NIMBLE_ADCLASS
+Field "value":
+[1] -21.12765
+Field "jacobian":
+      [,1]  [,2]  [,3]
+[1,] 16.25 162.5 41.25
+Field "hessian":
+, , 1
+
+       [,1]   [,2]   [,3]
+[1,]  -6.25  -62.5  -32.5
+[2,] -62.50 -625.0 -325.0
+[3,] -32.50 -325.0  -84.5</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.2</span>, .<span class="dv">5</span>, <span class="fu">log</span>(<span class="fl">0.7</span>))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>comp2<span class="sc">$</span>nf3obj<span class="sc">$</span><span class="fu">derivs_run</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>nimbleList object of type NIMBLE_ADCLASS
+Field "value":
+[1] -0.6030799
+Field "jacobian":
+           [,1]      [,2]       [,3]
+[1,] -0.4081633 -4.081633 -0.9183673
+Field "hessian":
+, , 1
+
+            [,1]        [,2]       [,3]
+[1,]  -2.0408163  -20.408163  0.8163265
+[2,] -20.4081633 -204.081633  8.1632653
+[3,]   0.8163265    8.163265 -0.1632653</code></pre>
+</div>
+</div>
+</section>
+<section id="understanding-the-results" class="level1">
+<h1>Understanding the results</h1>
+<ul>
+<li><p><code>values(model, nodes) &lt;&lt;- x</code> is the <em>only</em> way to put values into model nodes that will be recorded on the AD tape.</p></li>
+<li><p><code>model$x &lt;&lt;- value</code> and <code>model[[node]] &lt;&lt;- value</code> will not be recorded and are errors. They may be supported in the future.</p></li>
+<li><p>In example 3, only derivatives with respect to (wrt) the third input differ from example 2, because example 3 includes <code>sigma = exp(log_sigma)</code>.</p></li>
+<li><p><code>updateNodes</code> and <code>constantNodes</code> are essential for correct use of the model and correct results. We will cover these more later.</p></li>
+<li><p>Other points not covered yet include:</p>
+<ul>
+<li><code>reset</code> argument to <code>derivs</code> (aka <code>nimDerivs</code>), which resets the AD tape.</li>
+<li><code>wrt</code> argument can be indices or names.</li>
+<li>What variables and/or steps get “baked in” to AD tapes.</li>
+<li>Omitting variables from derivative tracking.</li>
+<li>Double-taping.</li>
+<li>System for generic parameter transformations.</li>
+</ul></li>
+</ul>
+</section>
+<section id="summary-of-ways-to-use-ad" class="level1">
+<h1>Summary of ways to use AD</h1>
+<ul>
+<li>For calculations outside of a model: <code>nimDerivs(foo(x), ...)</code> , i.e.&nbsp;“nimDerivs of a function”.</li>
+<li>For model log probabilities with no other steps: <code>nimDerivs(model$calculate(...), ...)</code>, i.e.&nbsp;“nimDerivs of model calculate”.</li>
+<li>For model log probabilities amid other steps: <code>nimDerivs(foo(x),...)</code> where <code>foo(x)</code> contains <code>model$calculate(...)</code>, i.e.&nbsp;“nimDerivs of a function containing model calculate”.</li>
+</ul>
+</section>
+<section id="laplace-approximation" class="level1">
+<h1>Laplace approximation</h1>
+<p>Laplace approximation:</p>
+<ul>
+<li><p>data: <span class="math inline">\(y\)</span></p></li>
+<li><p>random effect: <span class="math inline">\(x\)</span></p></li>
+<li><p>parameters: <span class="math inline">\(\theta\)</span></p></li>
+<li><p>Want marginal probability of data: <span class="math inline">\(\int P(y | x, \theta) P(x | \theta) dx\)</span>.</p></li>
+<li><p>Approximate by:</p>
+<ul>
+<li>Find <span class="math inline">\(x^{*}\)</span> that maximizes <span class="math inline">\(P(y | x, \theta) P(x | \theta)\)</span> with respect to <span class="math inline">\(x\)</span>.</li>
+<li>Compute the Hessian of <span class="math inline">\(\log(P(y | x, \theta) P(x | \theta))\)</span> at <span class="math inline">\(x = x^{*}\)</span>.</li>
+<li>Do a calculation with <span class="math inline">\(P(y | x^{*}, \theta) P(x^{*} | \theta)\)</span> and the Hessian.</li>
+</ul></li>
+</ul>
+</section>
+<section id="laplace-use-deer-e.-cervi-glmm" class="level1">
+<h1>Laplace: Use Deer E. cervi GLMM</h1>
+<p>We’ve used this previously. Here is the code in case we need to look at it:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>DEcode <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Priors for intercepts and length coefficients for sex = 1 (male), 2 (female)</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    sex_int[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    length_coef[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Priors for farm random effects and their standard deviation.</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  farm_sd <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">20</span>)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_farms) {</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>    farm_effect[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> farm_sd)</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># logit link and Bernoulli data probabilities</span></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_animals) {</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">logit</span>(disease_probability[i]) <span class="ot">&lt;-</span></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>      sex_int[ sex[i] ] <span class="sc">+</span></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>      length_coef[ sex[i] ]<span class="sc">*</span>length[i] <span class="sc">+</span></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>      farm_effect[ farm_ids[i] ]</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>    Ecervi_01[i] <span class="sc">~</span> <span class="fu">dbern</span>(disease_probability[i])</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>DEconstants <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">num_farms =</span> <span class="dv">24</span>,</span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>                    <span class="at">num_animals =</span> <span class="dv">826</span>,</span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>                    <span class="at">length =</span> DeerEcervi<span class="sc">$</span>ctrLength,</span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>                    <span class="at">sex =</span> DeerEcervi<span class="sc">$</span>Sex,</span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>                    <span class="at">farm_ids =</span> DeerEcervi<span class="sc">$</span>farm_ids)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="laplace-for-glmm" class="level1">
+<h1>Laplace for GLMM</h1>
+<p>Make Deer E. cervi model with derivative tools built.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode,</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> DEdata,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constants =</span> DEconstants,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">inits =</span> DEinits_vals,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">buildDerivs =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Defining model</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Building model</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting data and initial values</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Checking model sizes and dimensions</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>cDEmodel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.</code></pre>
+</div>
+</div>
+</section>
+<section id="laplace-for-glmm-using-nimblequad" class="level1">
+<h1>Laplace for GLMM using nimbleQuad</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimbleQuad)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'nimbleQuad'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:nimble':
+
+    buildAGHQ, buildLaplace, runAGHQ, runLaplace, summaryAGHQ,
+    summaryLaplace</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>DE_Laplace <span class="ot">&lt;-</span> <span class="fu">buildLaplace</span>(DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Building 24 individual Laplace approximations (one dot for each):</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>........................</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>cDE_Laplace <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DE_Laplace, <span class="at">project =</span> DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">system.time</span>(laplace_fit <span class="ot">&lt;-</span> <span class="fu">runLaplace</span>(cDE_Laplace)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   user  system elapsed 
+  0.473   0.004   0.478 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>laplace_fit<span class="sc">$</span>summary<span class="sc">$</span>params</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 estimate    stdError
+sex_int[1]     0.93967692 0.357907203
+sex_int[2]     1.56417863 0.384687107
+length_coef[1] 0.03897770 0.006955401
+length_coef[2] 0.07483792 0.009869677
+farm_sd        1.54688097 0.296362675</code></pre>
+</div>
+</div>
+</section>
+<section id="laplace-for-glmm-1" class="level1">
+<h1>Laplace for GLMM</h1>
+<p>Since this is a GLMM, we can compare to a specialized implementation of Laplace approximation. We’ll use <code>lme4</code>.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'Matrix'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:nimble':
+
+    expm</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>lme4_fit <span class="ot">&lt;-</span> <span class="fu">glmer</span>(Ecervi_01 <span class="sc">~</span> ctrLength<span class="sc">*</span>fSex <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> fFarm), <span class="at">family =</span> binomial, <span class="at">data =</span> DeerEcervi)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lme4_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: Ecervi_01 ~ ctrLength * fSex + (1 | fFarm)
+   Data: DeerEcervi
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    832.6     856.1    -411.3     822.6       821 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-6.2678 -0.6090  0.2809  0.5022  3.4546 
+
+Random effects:
+ Groups Name        Variance Std.Dev.
+ fFarm  (Intercept) 2.391    1.546   
+Number of obs: 826, groups:  fFarm, 24
+
+Fixed effects:
+                Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)     0.938969   0.356007   2.638  0.00835 ** 
+ctrLength       0.038964   0.006917   5.633 1.77e-08 ***
+fSex2           0.624487   0.222939   2.801  0.00509 ** 
+ctrLength:fSex2 0.035859   0.011409   3.143  0.00167 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) ctrLng fSex2 
+ctrLength   -0.107              
+fSex2       -0.189  0.238       
+ctrLngth:S2  0.091 -0.514  0.232</code></pre>
+</div>
+</div>
+</section>
+<section id="laplace-for-glmm-2" class="level1">
+<h1>Laplace for GLMM</h1>
+<p>How do the parameters match between <code>nimble</code> and <code>lme4</code> results?</p>
+<p><code>lme4</code> is using treatment contrasts (Sex1 is the “reference” group and Sex2 parameters are differences from Sex1).</p>
+<ul>
+<li>First parameter from <code>nimble</code> is the Sex1 intercept, which is the <code>(Intercept)</code> from <code>lme4</code>.</li>
+<li>Second parameter from <code>nimble</code> is the Sex2 intercept, which is <code>(Intercept)</code> + <code>fSex2</code> from <code>lme4</code>.</li>
+<li>Third parameter from <code>nimble</code> is the Sex1 coefficient for <code>ctrLength</code>.</li>
+<li>Fourth parameter from <code>nimble</code> is the Sex2 coefficient for <code>ctrLength</code>, which is <code>ctrLength</code> + <code>ctrLength:fSex2</code> from <code>lme4</code>.</li>
+<li>Fifth parameter from <code>nimble</code> is the farm-effect standard deviation.</li>
+</ul>
+</section>
+<section id="inla-like-deterministic-nested-approximation" class="level1">
+<h1>INLA-like deterministic nested approximation</h1>
+<p>One can use Laplace to approximately marginalize over latent nodes in the context of a deterministic Bayesian approximation.</p>
+<ol type="1">
+<li>(Approximately) marginalize over latent nodes using Laplace</li>
+<li>Find posterior mode for (hyper)parameters and create a grid for quadrature</li>
+<li>Find approximate marginal posterior at each grid point and approximate univariate hyperparameter marginals via quadrature approaches</li>
+<li>Sample from mixture of MVN distributions for the latent nodes, mixing over the hyperparameter values at the grid points (INLA also derives analytic univariate marginals)</li>
+</ol>
+</section>
+<section id="nested-approximation-for-glmm" class="level1">
+<h1>Nested approximation for GLMM</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimbleQuad)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>approx <span class="ot">&lt;-</span> <span class="fu">buildNestedApprox</span>(DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Building nested posterior approximation for the following node sets:
+  - parameter nodes: farm_sd
+  - latent nodes: farm_effect (24 elements), length_coef (2 elements), sex_int (2 elements)
+  with AGHQ grid for the parameters and Laplace approximation for the latent nodes.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Building Laplace approximation.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>capprox <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(approx, <span class="at">project =</span> DEmodel, <span class="at">resetFunctions =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Compiling
+  [Note] This may take a minute.
+  [Note] Use 'showCompilerOutput = TRUE' to see C++ compilation details.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>approx_fit <span class="ot">&lt;-</span> <span class="fu">runNestedApprox</span>(capprox)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Finding posterior mode for parameter(s).
+Calculating inner AGHQ/Laplace approximation at 5 parameter (outer)
+  grid points (one dot per point): .....</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>approx_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model (hyper)parameters: 
+            mean        sd     2.5%     25%      50%      75%    97.5%
+farm_sd 1.738806 0.3637444 1.176059 1.48232 1.690164 1.940662 2.579482
+
+Marginal log-likelihood (asymmetric Gaussian approximation): -454.4631(*)
+Marginal log-likelihood (grid-based): -454.4564(*)
+  (*) Invalid for improper priors and may not be useful for non-informative priors.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>smp <span class="ot">&lt;-</span> approx_fit<span class="sc">$</span><span class="fu">sampleLatents</span>(<span class="dv">500</span>)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="fu">apply</span>(smp[ ,<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="dv">2</span>, mean), <span class="fu">apply</span>(smp[,<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="dv">2</span>, sd))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      [,1]        [,2]
+sex_int[1]      0.91196565 0.402869457
+sex_int[2]      1.52986619 0.430977766
+length_coef[1]  0.03813093 0.006798664
+length_coef[2]  0.07315123 0.009349358
+farm_effect[1] -2.35310215 0.633569115
+farm_effect[2]  0.59421758 0.592121305
+farm_effect[3]  0.71194360 0.517968448
+farm_effect[4]  2.20453438 1.065564849</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>laplace_fit<span class="sc">$</span>summary<span class="sc">$</span>randomEffects[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 estimate  stdError
+farm_effect[1] -2.3974219 0.6292754
+farm_effect[2]  0.5519711 0.5924374
+farm_effect[3]  0.7095740 0.5074111
+farm_effect[4]  2.1184945 0.9989446</code></pre>
+</div>
+</div>
+<p>Results are generally pretty similar between Laplace and the nested approximation here (a bit of discrepancy for the random effects sd), although note that Laplace is frequentist and the nested approximation is Bayesian.</p>
+<p>With the nested approximation one would generally included fixed effects in the latent nodes but one could also (manually) include them as parameters, which is how Laplace treats them.</p>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/nimble-training\.github\.io\/nimble-alaska-2026");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb82" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Introduction to automatic differentiation, including Laplace approximation and nested approximation"</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "NIMBLE Alaska ASA Workshop"</span></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "NIMBLE Development Team"</span></span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "June 2026"</span></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a><span class="co">    css: ../styles.css</span></span>
+<span id="cb82-10"><a href="#cb82-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb82-11"><a href="#cb82-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-copy: true</span></span>
+<span id="cb82-12"><a href="#cb82-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-block-background: true</span></span>
+<span id="cb82-13"><a href="#cb82-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb82-14"><a href="#cb82-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb82-15"><a href="#cb82-15" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb82-16"><a href="#cb82-16" aria-hidden="true" tabindex="-1"></a><span class="co">  freeze: auto</span></span>
+<span id="cb82-17"><a href="#cb82-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb82-18"><a href="#cb82-18" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb82-19"><a href="#cb82-19" aria-hidden="true" tabindex="-1"></a>slides <span class="op">&gt;</span> slide {</span>
+<span id="cb82-20"><a href="#cb82-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb82-21"><a href="#cb82-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-y</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb82-22"><a href="#cb82-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb82-23"><a href="#cb82-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb82-24"><a href="#cb82-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-25"><a href="#cb82-25" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb82-26"><a href="#cb82-26" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimble)</span>
+<span id="cb82-27"><a href="#cb82-27" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"examples"</span>, <span class="st">"DeerEcervi"</span>, <span class="st">"load_DeerEcervi.R"</span>), </span>
+<span id="cb82-28"><a href="#cb82-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">chdir =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb82-29"><a href="#cb82-29" aria-hidden="true" tabindex="-1"></a>eval <span class="ot">=</span> <span class="cn">TRUE</span></span>
+<span id="cb82-30"><a href="#cb82-30" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-31"><a href="#cb82-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-32"><a href="#cb82-32" aria-hidden="true" tabindex="-1"></a><span class="fu"># Why derivatives?</span></span>
+<span id="cb82-33"><a href="#cb82-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-34"><a href="#cb82-34" aria-hidden="true" tabindex="-1"></a>Many algorithms require derivatives to work or work well.</span>
+<span id="cb82-35"><a href="#cb82-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-36"><a href="#cb82-36" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Finding function maximum or minimum (aka optimization)</span>
+<span id="cb82-37"><a href="#cb82-37" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Hamiltonian Monte Carlo (HMC; a kind of MCMC sampler)</span>
+<span id="cb82-38"><a href="#cb82-38" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Other kinds of MCMC samplers, e.g. Langevin.</span>
+<span id="cb82-39"><a href="#cb82-39" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Laplace approximation</span>
+<span id="cb82-40"><a href="#cb82-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-41"><a href="#cb82-41" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>Starts with an optimization.</span>
+<span id="cb82-42"><a href="#cb82-42" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>Then requires matrix of second derivatives (Hessian)</span>
+<span id="cb82-43"><a href="#cb82-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb82-44"><a href="#cb82-44" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Adaptive Gaussian quadrature (builds upon Laplace approx.)</span>
+<span id="cb82-45"><a href="#cb82-45" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Nested approximations (INLA, ELGM (Stringer et al.))</span>
+<span id="cb82-46"><a href="#cb82-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-47"><a href="#cb82-47" aria-hidden="true" tabindex="-1"></a><span class="fu"># How do computers get derivatives?</span></span>
+<span id="cb82-48"><a href="#cb82-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-49"><a href="#cb82-49" aria-hidden="true" tabindex="-1"></a>Example function: </span>
+<span id="cb82-50"><a href="#cb82-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-51"><a href="#cb82-51" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$y = e^{x^2}$. </span>
+<span id="cb82-52"><a href="#cb82-52" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>$\frac{dy}{dx} = 2x e^{x^{2}} = 2xy$. </span>
+<span id="cb82-53"><a href="#cb82-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-54"><a href="#cb82-54" aria-hidden="true" tabindex="-1"></a>Derivative methods:</span>
+<span id="cb82-55"><a href="#cb82-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-56"><a href="#cb82-56" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Hard-coded analytic function: Developer codes <span class="in">`2 * x * exp(x^2)`</span></span>
+<span id="cb82-57"><a href="#cb82-57" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Symbolic algebra: Code processes <span class="in">`exp(x^2)`</span> into <span class="in">`2 * x * exp(x^2)`</span></span>
+<span id="cb82-58"><a href="#cb82-58" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Finite-element approximation: $\frac{dy}{dx} \approx \frac{e^{(x+\delta)^{2}} - e^{{x^{2}}}}{\delta}$, for some small value of $\delta$ (hard to choose in general).  Code calls function once with input $x$ and once with input $x+\delta$.</span>
+<span id="cb82-59"><a href="#cb82-59" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Automatic (or "Algorithmic") Differentiation:**: Carry derivative information through all math operators, i.e. <span class="in">`^`</span> and <span class="in">`exp`</span> in $e^{{x^{2}}} =$ <span class="in">`exp(x^2)`</span>.</span>
+<span id="cb82-60"><a href="#cb82-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-61"><a href="#cb82-61" aria-hidden="true" tabindex="-1"></a><span class="fu"># Automatic Differentiation (AD)</span></span>
+<span id="cb82-62"><a href="#cb82-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-63"><a href="#cb82-63" aria-hidden="true" tabindex="-1"></a>Steps to compute $y = e^{x^2}$ (**value**) for x = 3.0:</span>
+<span id="cb82-64"><a href="#cb82-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-65"><a href="#cb82-65" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$x^{2} = 3^2 \rightarrow 9$.</span>
+<span id="cb82-66"><a href="#cb82-66" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$e^{x^{2}} = e^9 \rightarrow 8103.1$.</span>
+<span id="cb82-67"><a href="#cb82-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-68"><a href="#cb82-68" aria-hidden="true" tabindex="-1"></a>Steps to compute $\frac{dy}{dx}$ (using chain rule): *Forward mode*, i.e. inner derivatives first.</span>
+<span id="cb82-69"><a href="#cb82-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-70"><a href="#cb82-70" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\frac{d(x^{2})}{dx} = 2x = 2 \times 3 \rightarrow 6$.</span>
+<span id="cb82-71"><a href="#cb82-71" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\frac{d(e^{x^2})}{dx} = \frac{d(e^{x^2})}{d(x^{2})} \times \frac{d(x^{2})}{dx} = e^{9} \times 6 = 8103.1 \times 6 \rightarrow 48618.6$.</span>
+<span id="cb82-72"><a href="#cb82-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-73"><a href="#cb82-73" aria-hidden="true" tabindex="-1"></a>Steps to compute $\frac{dy}{dx}$ (using chain rule): *Reverse mode*, i.e. outer derivatives first.</span>
+<span id="cb82-74"><a href="#cb82-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-75"><a href="#cb82-75" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\frac{d(e^{x^2})}{d(x^{2})} = e^9 \rightarrow 8103.1$.</span>
+<span id="cb82-76"><a href="#cb82-76" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\frac{d(e^{x^2})}{dx} = \frac{d(e^{x^2})}{d(x^{2})} \times \frac{d(x^{2})}{dx} = 8103.1 \times 2x = 8103.1 \times 6 \rightarrow 48618.6$</span>
+<span id="cb82-77"><a href="#cb82-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-78"><a href="#cb82-78" aria-hidden="true" tabindex="-1"></a><span class="fu"># Some general points about AD </span></span>
+<span id="cb82-79"><a href="#cb82-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-80"><a href="#cb82-80" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>AD works by stepping through the same sequence of operations multiple times, tracking different information each time.</span>
+<span id="cb82-81"><a href="#cb82-81" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>AD can sometimes be *more efficient* than using the derivative equations explicitly.  E.g. $e^{9} = 8103.1$ was calculated and can be re-used.</span>
+<span id="cb82-82"><a href="#cb82-82" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>AD can be iterated to obtain arbitrary-order derivatives.  Lower-order derivatives must be done before higher-order derivatives.</span>
+<span id="cb82-83"><a href="#cb82-83" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Forward and reverse modes are each more efficient for different kinds of problems, depending on number of inputs and outputs (details not discussed here).</span>
+<span id="cb82-84"><a href="#cb82-84" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Operations such as matrix multiplication, matrix inversion, matrix solving or others can be implemented with matrix AD operations (rather than relying on potentially long sequences of scalar operations, which can be slow for AD).</span>
+<span id="cb82-85"><a href="#cb82-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-86"><a href="#cb82-86" aria-hidden="true" tabindex="-1"></a><span class="fu"># NIMBLE adopts the CppAD C++ library for AD </span></span>
+<span id="cb82-87"><a href="#cb82-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-88"><a href="#cb82-88" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Huge credit to <span class="co">[</span><span class="ot">&lt;span style="color:blue"&gt;CppAD&lt;/span&gt;</span><span class="co">](https://coin-or.github.io/CppAD/doc/cppad.htm)</span></span>
+<span id="cb82-89"><a href="#cb82-89" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Written by Brad Bell at the University of Washington.</span>
+<span id="cb82-90"><a href="#cb82-90" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>CppAD is also used by <span class="co">[</span><span class="ot">&lt;span style="color:blue"&gt;Template Model Builder (TMB)&lt;/span&gt;</span><span class="co">](https://kaskr.github.io/adcomp/Introduction.html)</span>.</span>
+<span id="cb82-91"><a href="#cb82-91" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>CppAD is general and efficient.  It can provide arbitrary-order derivatives.</span>
+<span id="cb82-92"><a href="#cb82-92" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>We have written some specialized handling for some cases ("atomic" operators, in CppAD terminology).</span>
+<span id="cb82-93"><a href="#cb82-93" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>CppAD can trace derivatives through arbitrary function calls.</span>
+<span id="cb82-94"><a href="#cb82-94" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>NIMBLE's use of CppAD involves deep changes in everything, not just calling a few extra functions.</span>
+<span id="cb82-95"><a href="#cb82-95" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>NIMBLE with CppAD can give derivatives of arbitrary model calculations and/or nimbleFunction calculations.</span>
+<span id="cb82-96"><a href="#cb82-96" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Care is required for any conditional steps in functions, such as if-then-else or for-loops.  Normally, conditional branching and looping is "baked in" to AD calculations.  This is discussed more later.</span>
+<span id="cb82-97"><a href="#cb82-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-98"><a href="#cb82-98" aria-hidden="true" tabindex="-1"></a><span class="fu"># Some terminology for AD in NIMBLE (adapted from CppAD)</span></span>
+<span id="cb82-99"><a href="#cb82-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-100"><a href="#cb82-100" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Orders 0, 1, and 2 are called "Value", "Jacobian" (or "Gradient"), and "Hessian", respectively.</span>
+<span id="cb82-101"><a href="#cb82-101" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>We say that operations are *recorded* onto a *tape*, which is replayed to obtain values (0th order) and/or derivatives (1st and 2nd order).</span>
+<span id="cb82-102"><a href="#cb82-102" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>We can take *derivatives of derivatives*.  This involves making a *tape of the replaying of a tape*.</span>
+<span id="cb82-103"><a href="#cb82-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-104"><a href="#cb82-104" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>We call this **double-taping** or **meta-taping**.</span>
+<span id="cb82-105"><a href="#cb82-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-106"><a href="#cb82-106" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Double-taping can improve efficiency.</span>
+<span id="cb82-107"><a href="#cb82-107" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Double-taping can give derivatives of order &gt; 2. </span>
+<span id="cb82-108"><a href="#cb82-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-109"><a href="#cb82-109" aria-hidden="true" tabindex="-1"></a><span class="fu"># First example: Derivatives in a nimbleFunction</span></span>
+<span id="cb82-110"><a href="#cb82-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-111"><a href="#cb82-111" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-112"><a href="#cb82-112" aria-hidden="true" tabindex="-1"></a>nf1 <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb82-113"><a href="#cb82-113" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb82-114"><a href="#cb82-114" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb82-115"><a href="#cb82-115" aria-hidden="true" tabindex="-1"></a>    <span class="at">foo =</span> <span class="cf">function</span>(<span class="at">x =</span> <span class="fu">double</span>()) {</span>
+<span id="cb82-116"><a href="#cb82-116" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="fu">exp</span>(x<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb82-117"><a href="#cb82-117" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb82-118"><a href="#cb82-118" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb82-119"><a href="#cb82-119" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivs_foo =</span> <span class="cf">function</span>(<span class="at">x=</span><span class="fu">double</span>()) {</span>
+<span id="cb82-120"><a href="#cb82-120" aria-hidden="true" tabindex="-1"></a>      d <span class="ot">&lt;-</span> <span class="fu">derivs</span>(<span class="fu">foo</span>(x), <span class="at">wrt =</span> <span class="st">"x"</span>, <span class="at">order =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>)</span>
+<span id="cb82-121"><a href="#cb82-121" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(d)</span>
+<span id="cb82-122"><a href="#cb82-122" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">ADNimbleList</span>())</span>
+<span id="cb82-123"><a href="#cb82-123" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb82-124"><a href="#cb82-124" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb82-125"><a href="#cb82-125" aria-hidden="true" tabindex="-1"></a>  <span class="at">buildDerivs =</span> <span class="st">'foo'</span></span>
+<span id="cb82-126"><a href="#cb82-126" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-127"><a href="#cb82-127" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-128"><a href="#cb82-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-129"><a href="#cb82-129" aria-hidden="true" tabindex="-1"></a><span class="fu"># First example: Derivatives in a nimbleFunction</span></span>
+<span id="cb82-130"><a href="#cb82-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-131"><a href="#cb82-131" aria-hidden="true" tabindex="-1"></a>Make an object (instance) of nf1:</span>
+<span id="cb82-132"><a href="#cb82-132" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-133"><a href="#cb82-133" aria-hidden="true" tabindex="-1"></a>nf1obj <span class="ot">&lt;-</span> <span class="fu">nf1</span>()</span>
+<span id="cb82-134"><a href="#cb82-134" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-135"><a href="#cb82-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-136"><a href="#cb82-136" aria-hidden="true" tabindex="-1"></a>Uncompiled execution:</span>
+<span id="cb82-137"><a href="#cb82-137" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-138"><a href="#cb82-138" aria-hidden="true" tabindex="-1"></a>nf1obj<span class="sc">$</span><span class="fu">derivs_foo</span>(<span class="dv">3</span>)</span>
+<span id="cb82-139"><a href="#cb82-139" aria-hidden="true" tabindex="-1"></a>nf1obj<span class="sc">$</span><span class="fu">foo</span>(<span class="dv">3</span>) <span class="co"># for comparison of value</span></span>
+<span id="cb82-140"><a href="#cb82-140" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-141"><a href="#cb82-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-142"><a href="#cb82-142" aria-hidden="true" tabindex="-1"></a><span class="fu"># First example: Derivatives in a nimbleFunction</span></span>
+<span id="cb82-143"><a href="#cb82-143" aria-hidden="true" tabindex="-1"></a>Compiled execution:</span>
+<span id="cb82-144"><a href="#cb82-144" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-145"><a href="#cb82-145" aria-hidden="true" tabindex="-1"></a>cnf1obj <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(nf1obj)</span>
+<span id="cb82-146"><a href="#cb82-146" aria-hidden="true" tabindex="-1"></a>cnf1obj<span class="sc">$</span><span class="fu">derivs_foo</span>(<span class="dv">3</span>)</span>
+<span id="cb82-147"><a href="#cb82-147" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-148"><a href="#cb82-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-149"><a href="#cb82-149" aria-hidden="true" tabindex="-1"></a><span class="fu"># Understanding derivative outputs:</span></span>
+<span id="cb82-150"><a href="#cb82-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-151"><a href="#cb82-151" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Define $n$ = length of inputs and $m$ = length of outputs.</span>
+<span id="cb82-152"><a href="#cb82-152" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**value** is a vector of length $m$.</span>
+<span id="cb82-153"><a href="#cb82-153" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**jacobian** is an $m \times n$ matrix ($m$ rows and $n$ columns).</span>
+<span id="cb82-154"><a href="#cb82-154" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>**hessian** is an $n \times n \times m$ array.</span>
+<span id="cb82-155"><a href="#cb82-155" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Notice the output index is the *first* index in *jacobian* but the *last* index in *hessian*.</span>
+<span id="cb82-156"><a href="#cb82-156" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>First two indices of *hessian* are interchangeable due to symmetry of partial derivatives.</span>
+<span id="cb82-157"><a href="#cb82-157" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>You can omit lower-orders (e.g., use <span class="in">`order = 1`</span> for the jacobian only, omitting the value), but lower orders *will be calculated* in order to obtain higher orders.</span>
+<span id="cb82-158"><a href="#cb82-158" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`ADNimbleList()`</span> is a pre-defined *nimbleList* type with elements <span class="in">`value`</span>, <span class="in">`jacobian`</span>, and <span class="in">`hessian`</span>.</span>
+<span id="cb82-159"><a href="#cb82-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-160"><a href="#cb82-160" aria-hidden="true" tabindex="-1"></a><span class="fu"># Second example: Derivatives of model log probabilities</span></span>
+<span id="cb82-161"><a href="#cb82-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-162"><a href="#cb82-162" aria-hidden="true" tabindex="-1"></a>Make a simple model.</span>
+<span id="cb82-163"><a href="#cb82-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-164"><a href="#cb82-164" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-165"><a href="#cb82-165" aria-hidden="true" tabindex="-1"></a>model_code <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
+<span id="cb82-166"><a href="#cb82-166" aria-hidden="true" tabindex="-1"></a>  y <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="at">mean =</span> mu, <span class="at">sd =</span> sigma)</span>
+<span id="cb82-167"><a href="#cb82-167" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope <span class="sc">*</span> x</span>
+<span id="cb82-168"><a href="#cb82-168" aria-hidden="true" tabindex="-1"></a>  intercept <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb82-169"><a href="#cb82-169" aria-hidden="true" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb82-170"><a href="#cb82-170" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb82-171"><a href="#cb82-171" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(model_code,</span>
+<span id="cb82-172"><a href="#cb82-172" aria-hidden="true" tabindex="-1"></a>                 <span class="at">inits =</span> <span class="fu">list</span>(<span class="at">intercept =</span> <span class="fl">1.2</span>, <span class="at">slope =</span> <span class="fl">0.5</span>,</span>
+<span id="cb82-173"><a href="#cb82-173" aria-hidden="true" tabindex="-1"></a>                              <span class="at">sigma =</span> <span class="fl">0.7</span>),</span>
+<span id="cb82-174"><a href="#cb82-174" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> <span class="dv">6</span>),</span>
+<span id="cb82-175"><a href="#cb82-175" aria-hidden="true" tabindex="-1"></a>                 <span class="at">constants =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="dv">10</span>),</span>
+<span id="cb82-176"><a href="#cb82-176" aria-hidden="true" tabindex="-1"></a>                 <span class="at">buildDerivs =</span> <span class="cn">TRUE</span>, <span class="co"># ALLOW DERIVATIVES FOR THIS MODEL</span></span>
+<span id="cb82-177"><a href="#cb82-177" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb82-178"><a href="#cb82-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-179"><a href="#cb82-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-180"><a href="#cb82-180" aria-hidden="true" tabindex="-1"></a><span class="fu"># Second example: Derivatives of model log probabilities</span></span>
+<span id="cb82-181"><a href="#cb82-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-182"><a href="#cb82-182" aria-hidden="true" tabindex="-1"></a>Write a nimbleFunction to get derivatives of model$calculate.</span>
+<span id="cb82-183"><a href="#cb82-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-184"><a href="#cb82-184" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-185"><a href="#cb82-185" aria-hidden="true" tabindex="-1"></a>nf2 <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb82-186"><a href="#cb82-186" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, nodes) {},</span>
+<span id="cb82-187"><a href="#cb82-187" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb82-188"><a href="#cb82-188" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivs_log_prob =</span> <span class="cf">function</span>() {</span>
+<span id="cb82-189"><a href="#cb82-189" aria-hidden="true" tabindex="-1"></a>      d <span class="ot">&lt;-</span> <span class="fu">derivs</span>(model<span class="sc">$</span><span class="fu">calculate</span>(nodes),</span>
+<span id="cb82-190"><a href="#cb82-190" aria-hidden="true" tabindex="-1"></a>                  <span class="at">wrt=</span><span class="fu">c</span>(<span class="st">"intercept"</span>, <span class="st">"slope"</span>, <span class="st">"sigma"</span>),</span>
+<span id="cb82-191"><a href="#cb82-191" aria-hidden="true" tabindex="-1"></a>                  <span class="at">order =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>)</span>
+<span id="cb82-192"><a href="#cb82-192" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(d)</span>
+<span id="cb82-193"><a href="#cb82-193" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">ADNimbleList</span>())</span>
+<span id="cb82-194"><a href="#cb82-194" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb82-195"><a href="#cb82-195" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb82-196"><a href="#cb82-196" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-197"><a href="#cb82-197" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-198"><a href="#cb82-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-199"><a href="#cb82-199" aria-hidden="true" tabindex="-1"></a><span class="fu"># Second example: Derivatives of model log probabilities</span></span>
+<span id="cb82-200"><a href="#cb82-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-201"><a href="#cb82-201" aria-hidden="true" tabindex="-1"></a>Use it uncompiled.</span>
+<span id="cb82-202"><a href="#cb82-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-203"><a href="#cb82-203" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-204"><a href="#cb82-204" aria-hidden="true" tabindex="-1"></a>calc_nodes <span class="ot">&lt;-</span> m<span class="sc">$</span><span class="fu">getDependencies</span>(<span class="fu">c</span>(<span class="st">"intercept"</span>, <span class="st">"slope"</span>, <span class="st">"sigma"</span>))</span>
+<span id="cb82-205"><a href="#cb82-205" aria-hidden="true" tabindex="-1"></a>calc_nodes</span>
+<span id="cb82-206"><a href="#cb82-206" aria-hidden="true" tabindex="-1"></a>nf2obj <span class="ot">&lt;-</span> <span class="fu">nf2</span>(m, calc_nodes)</span>
+<span id="cb82-207"><a href="#cb82-207" aria-hidden="true" tabindex="-1"></a>nf2obj<span class="sc">$</span><span class="fu">derivs_log_prob</span>()</span>
+<span id="cb82-208"><a href="#cb82-208" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-209"><a href="#cb82-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-210"><a href="#cb82-210" aria-hidden="true" tabindex="-1"></a><span class="fu"># Second example: Derivatives of model log probabilities</span></span>
+<span id="cb82-211"><a href="#cb82-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-212"><a href="#cb82-212" aria-hidden="true" tabindex="-1"></a>Use it compiled.</span>
+<span id="cb82-213"><a href="#cb82-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-214"><a href="#cb82-214" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-215"><a href="#cb82-215" aria-hidden="true" tabindex="-1"></a>comp <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(m, nf2obj)</span>
+<span id="cb82-216"><a href="#cb82-216" aria-hidden="true" tabindex="-1"></a>comp<span class="sc">$</span>nf2obj<span class="sc">$</span><span class="fu">derivs_log_prob</span>()</span>
+<span id="cb82-217"><a href="#cb82-217" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-218"><a href="#cb82-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-219"><a href="#cb82-219" aria-hidden="true" tabindex="-1"></a><span class="fu"># More about understanding outputs and testing</span></span>
+<span id="cb82-220"><a href="#cb82-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-221"><a href="#cb82-221" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Uncompiled derivatives use finite-element methods from packages <span class="in">`numDeriv`</span> and/or <span class="in">`pracma`</span>.</span>
+<span id="cb82-222"><a href="#cb82-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-223"><a href="#cb82-223" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>These might not match compiled derivatives exactly due to finite-element approximation.</span>
+<span id="cb82-224"><a href="#cb82-224" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>Uncompiled execution can be slow for large calculations.</span>
+<span id="cb82-225"><a href="#cb82-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-226"><a href="#cb82-226" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>The first compiled call to <span class="in">`derivs`</span> (aka <span class="in">`nimDerivs`</span>) records the AD tape, so it is much slower than later calls.</span>
+<span id="cb82-227"><a href="#cb82-227" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Always test compiled derivatives on new values after the first call.  </span>
+<span id="cb82-228"><a href="#cb82-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-229"><a href="#cb82-229" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>This checks that values have not been (incorrectly) "baked in" to the AD tape. </span>
+<span id="cb82-230"><a href="#cb82-230" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>This was not illustrated in first two examples.</span>
+<span id="cb82-231"><a href="#cb82-231" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb82-232"><a href="#cb82-232" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Model inputs are ordered to match the <span class="in">`wrt`</span> argument, flattened and concatenated.</span>
+<span id="cb82-233"><a href="#cb82-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-234"><a href="#cb82-234" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>This is essential to use <span class="in">`jacobian`</span> and <span class="in">`hessian`</span> results correctly.</span>
+<span id="cb82-235"><a href="#cb82-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-236"><a href="#cb82-236" aria-hidden="true" tabindex="-1"></a><span class="fu"># Third example: Derivatives of model log probabilities with other calculations.</span></span>
+<span id="cb82-237"><a href="#cb82-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-238"><a href="#cb82-238" aria-hidden="true" tabindex="-1"></a>Use the same model as above.  For good measure, make a new copy.</span>
+<span id="cb82-239"><a href="#cb82-239" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-240"><a href="#cb82-240" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> m<span class="sc">$</span><span class="fu">newModel</span>()</span>
+<span id="cb82-241"><a href="#cb82-241" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-242"><a href="#cb82-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-243"><a href="#cb82-243" aria-hidden="true" tabindex="-1"></a>Say we will provide a vector of <span class="in">`(intercept, slope, log_sigma)`</span> and we need to calculate <span class="in">`sigma = exp(log_sigma)`</span> before using it in the model.</span>
+<span id="cb82-244"><a href="#cb82-244" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-245"><a href="#cb82-245" aria-hidden="true" tabindex="-1"></a>nf3 <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb82-246"><a href="#cb82-246" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, param_nodes, calc_nodes) {</span>
+<span id="cb82-247"><a href="#cb82-247" aria-hidden="true" tabindex="-1"></a>    <span class="co"># param_nodes will be c("intercept", "slope", "sigma")</span></span>
+<span id="cb82-248"><a href="#cb82-248" aria-hidden="true" tabindex="-1"></a>    updateNodes <span class="ot">&lt;-</span> <span class="fu">character</span>() <span class="co"># more about these later</span></span>
+<span id="cb82-249"><a href="#cb82-249" aria-hidden="true" tabindex="-1"></a>    constantNodes <span class="ot">&lt;-</span> <span class="st">"y"</span></span>
+<span id="cb82-250"><a href="#cb82-250" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb82-251"><a href="#cb82-251" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>(<span class="at">param_values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb82-252"><a href="#cb82-252" aria-hidden="true" tabindex="-1"></a>    <span class="co"># param_values will be (intercept, slope, log_sigma)</span></span>
+<span id="cb82-253"><a href="#cb82-253" aria-hidden="true" tabindex="-1"></a>    param_values[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="fu">exp</span>(param_values[<span class="dv">3</span>])</span>
+<span id="cb82-254"><a href="#cb82-254" aria-hidden="true" tabindex="-1"></a>    <span class="fu">values</span>(model, param_nodes) <span class="ot">&lt;&lt;-</span> param_values <span class="co"># The ONLY valid way to put values in a model for AD</span></span>
+<span id="cb82-255"><a href="#cb82-255" aria-hidden="true" tabindex="-1"></a>    log_prob <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calc_nodes)</span>
+<span id="cb82-256"><a href="#cb82-256" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(log_prob)</span>
+<span id="cb82-257"><a href="#cb82-257" aria-hidden="true" tabindex="-1"></a>    <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb82-258"><a href="#cb82-258" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb82-259"><a href="#cb82-259" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb82-260"><a href="#cb82-260" aria-hidden="true" tabindex="-1"></a>    <span class="at">derivs_run =</span> <span class="cf">function</span>(<span class="at">param_values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb82-261"><a href="#cb82-261" aria-hidden="true" tabindex="-1"></a>      wrt <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(param_values) <span class="co"># indices, not names</span></span>
+<span id="cb82-262"><a href="#cb82-262" aria-hidden="true" tabindex="-1"></a>      ans <span class="ot">&lt;-</span> <span class="fu">derivs</span>(<span class="fu">run</span>(param_values), <span class="at">wrt =</span> wrt,</span>
+<span id="cb82-263"><a href="#cb82-263" aria-hidden="true" tabindex="-1"></a>                    <span class="at">order =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>,</span>
+<span id="cb82-264"><a href="#cb82-264" aria-hidden="true" tabindex="-1"></a>                    <span class="at">updateNodes =</span> updateNodes,</span>
+<span id="cb82-265"><a href="#cb82-265" aria-hidden="true" tabindex="-1"></a>                    <span class="at">constantNodes =</span> constantNodes,</span>
+<span id="cb82-266"><a href="#cb82-266" aria-hidden="true" tabindex="-1"></a>                    <span class="at">model =</span> model)</span>
+<span id="cb82-267"><a href="#cb82-267" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(ans)</span>
+<span id="cb82-268"><a href="#cb82-268" aria-hidden="true" tabindex="-1"></a>      <span class="fu">returnType</span>(<span class="fu">ADNimbleList</span>())</span>
+<span id="cb82-269"><a href="#cb82-269" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb82-270"><a href="#cb82-270" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb82-271"><a href="#cb82-271" aria-hidden="true" tabindex="-1"></a>  <span class="at">buildDerivs =</span> <span class="st">'run'</span></span>
+<span id="cb82-272"><a href="#cb82-272" aria-hidden="true" tabindex="-1"></a>) </span>
+<span id="cb82-273"><a href="#cb82-273" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-274"><a href="#cb82-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-275"><a href="#cb82-275" aria-hidden="true" tabindex="-1"></a><span class="fu"># Third example: Derivatives of model log probabilities with other calculations.</span></span>
+<span id="cb82-276"><a href="#cb82-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-277"><a href="#cb82-277" aria-hidden="true" tabindex="-1"></a>Make an object:</span>
+<span id="cb82-278"><a href="#cb82-278" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-279"><a href="#cb82-279" aria-hidden="true" tabindex="-1"></a>param_nodes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"intercept"</span>, <span class="st">"slope"</span>, <span class="st">"sigma"</span>)</span>
+<span id="cb82-280"><a href="#cb82-280" aria-hidden="true" tabindex="-1"></a>calc_nodes <span class="ot">&lt;-</span> m2<span class="sc">$</span><span class="fu">getDependencies</span>(param_nodes, <span class="at">self =</span> <span class="cn">FALSE</span>) <span class="co"># omit priors, just to make it more interesting</span></span>
+<span id="cb82-281"><a href="#cb82-281" aria-hidden="true" tabindex="-1"></a>calc_nodes</span>
+<span id="cb82-282"><a href="#cb82-282" aria-hidden="true" tabindex="-1"></a>nf3obj <span class="ot">&lt;-</span> <span class="fu">nf3</span>(m2, param_nodes, calc_nodes)</span>
+<span id="cb82-283"><a href="#cb82-283" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-284"><a href="#cb82-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-285"><a href="#cb82-285" aria-hidden="true" tabindex="-1"></a>Use it uncompiled: </span>
+<span id="cb82-286"><a href="#cb82-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-287"><a href="#cb82-287" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-288"><a href="#cb82-288" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.2</span>, .<span class="dv">5</span>, <span class="fu">log</span>(<span class="fl">0.7</span>))</span>
+<span id="cb82-289"><a href="#cb82-289" aria-hidden="true" tabindex="-1"></a>nf3obj<span class="sc">$</span><span class="fu">derivs_run</span>(x)</span>
+<span id="cb82-290"><a href="#cb82-290" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-291"><a href="#cb82-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-292"><a href="#cb82-292" aria-hidden="true" tabindex="-1"></a><span class="fu"># Third example: Derivatives of model log probabilities with other calculations.</span></span>
+<span id="cb82-293"><a href="#cb82-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-294"><a href="#cb82-294" aria-hidden="true" tabindex="-1"></a>Use it compiled:</span>
+<span id="cb82-295"><a href="#cb82-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-296"><a href="#cb82-296" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-297"><a href="#cb82-297" aria-hidden="true" tabindex="-1"></a>comp2 <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(m2, nf3obj)</span>
+<span id="cb82-298"><a href="#cb82-298" aria-hidden="true" tabindex="-1"></a>x_tape <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.4</span>, .<span class="dv">2</span>, <span class="fu">log</span>(<span class="fl">0.4</span>))</span>
+<span id="cb82-299"><a href="#cb82-299" aria-hidden="true" tabindex="-1"></a>comp2<span class="sc">$</span>nf3obj<span class="sc">$</span><span class="fu">derivs_run</span>(x_tape)</span>
+<span id="cb82-300"><a href="#cb82-300" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.2</span>, .<span class="dv">5</span>, <span class="fu">log</span>(<span class="fl">0.7</span>))</span>
+<span id="cb82-301"><a href="#cb82-301" aria-hidden="true" tabindex="-1"></a>comp2<span class="sc">$</span>nf3obj<span class="sc">$</span><span class="fu">derivs_run</span>(x)</span>
+<span id="cb82-302"><a href="#cb82-302" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-303"><a href="#cb82-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-304"><a href="#cb82-304" aria-hidden="true" tabindex="-1"></a><span class="fu"># Understanding the results</span></span>
+<span id="cb82-305"><a href="#cb82-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-306"><a href="#cb82-306" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`values(model, nodes) &lt;&lt;- x`</span> is the *only* way to put values into model nodes that will be recorded on the AD tape.</span>
+<span id="cb82-307"><a href="#cb82-307" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`model$x &lt;&lt;- value`</span> and <span class="in">`model[[node]] &lt;&lt;- value`</span> will not be recorded and are errors.  They may be supported in the future. </span>
+<span id="cb82-308"><a href="#cb82-308" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>In example 3, only derivatives with respect to (wrt) the third input differ from example 2, because example 3 includes <span class="in">`sigma = exp(log_sigma)`</span>.</span>
+<span id="cb82-309"><a href="#cb82-309" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`updateNodes`</span> and <span class="in">`constantNodes`</span> are essential for correct use of the model and correct results.  We will cover these more later.</span>
+<span id="cb82-310"><a href="#cb82-310" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Other points not covered yet include:</span>
+<span id="cb82-311"><a href="#cb82-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-312"><a href="#cb82-312" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span><span class="in">`reset`</span> argument to <span class="in">`derivs`</span> (aka <span class="in">`nimDerivs`</span>), which resets the AD tape.</span>
+<span id="cb82-313"><a href="#cb82-313" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span><span class="in">`wrt`</span> argument can be indices or names.</span>
+<span id="cb82-314"><a href="#cb82-314" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>What variables and/or steps get "baked in" to AD tapes.</span>
+<span id="cb82-315"><a href="#cb82-315" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>Omitting variables from derivative tracking.</span>
+<span id="cb82-316"><a href="#cb82-316" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>Double-taping.</span>
+<span id="cb82-317"><a href="#cb82-317" aria-hidden="true" tabindex="-1"></a><span class="ss">    * </span>System for generic parameter transformations.</span>
+<span id="cb82-318"><a href="#cb82-318" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb82-319"><a href="#cb82-319" aria-hidden="true" tabindex="-1"></a><span class="fu"># Summary of ways to use AD </span></span>
+<span id="cb82-320"><a href="#cb82-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-321"><a href="#cb82-321" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>For calculations outside of a model: <span class="in">`nimDerivs(foo(x), ...)`</span> , i.e. "nimDerivs of a function".</span>
+<span id="cb82-322"><a href="#cb82-322" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>For model log probabilities with no other steps: <span class="in">`nimDerivs(model$calculate(...), ...)`</span>, i.e. "nimDerivs of model calculate".</span>
+<span id="cb82-323"><a href="#cb82-323" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>For model log probabilities amid other steps: <span class="in">`nimDerivs(foo(x),...)`</span> where <span class="in">`foo(x)`</span> contains <span class="in">`model$calculate(...)`</span>, i.e. "nimDerivs of a function containing model calculate".</span>
+<span id="cb82-324"><a href="#cb82-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-325"><a href="#cb82-325" aria-hidden="true" tabindex="-1"></a><span class="fu"># Laplace approximation</span></span>
+<span id="cb82-326"><a href="#cb82-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-327"><a href="#cb82-327" aria-hidden="true" tabindex="-1"></a>Laplace approximation:</span>
+<span id="cb82-328"><a href="#cb82-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-329"><a href="#cb82-329" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>data: $y$</span>
+<span id="cb82-330"><a href="#cb82-330" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>random effect: $x$</span>
+<span id="cb82-331"><a href="#cb82-331" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>parameters: $\theta$</span>
+<span id="cb82-332"><a href="#cb82-332" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Want marginal probability of data: $\int P(y | x, \theta) P(x | \theta) dx$.</span>
+<span id="cb82-333"><a href="#cb82-333" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Approximate by:</span>
+<span id="cb82-334"><a href="#cb82-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-335"><a href="#cb82-335" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Find $x^{*}$ that maximizes $P(y | x, \theta) P(x | \theta)$ with respect to $x$.</span>
+<span id="cb82-336"><a href="#cb82-336" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Compute the Hessian of $\log(P(y | x, \theta) P(x | \theta))$ at $x = x^{*}$.</span>
+<span id="cb82-337"><a href="#cb82-337" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Do a calculation with $P(y | x^{*}, \theta) P(x^{*} | \theta)$ and the Hessian.</span>
+<span id="cb82-338"><a href="#cb82-338" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb82-339"><a href="#cb82-339" aria-hidden="true" tabindex="-1"></a><span class="fu"># Laplace: Use Deer E. cervi GLMM</span></span>
+<span id="cb82-340"><a href="#cb82-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-341"><a href="#cb82-341" aria-hidden="true" tabindex="-1"></a>We've used this previously. Here is the code in case we need to look at it:</span>
+<span id="cb82-342"><a href="#cb82-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-343"><a href="#cb82-343" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb82-344"><a href="#cb82-344" aria-hidden="true" tabindex="-1"></a>DEcode <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
+<span id="cb82-345"><a href="#cb82-345" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb82-346"><a href="#cb82-346" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Priors for intercepts and length coefficients for sex = 1 (male), 2 (female)</span></span>
+<span id="cb82-347"><a href="#cb82-347" aria-hidden="true" tabindex="-1"></a>    sex_int[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb82-348"><a href="#cb82-348" aria-hidden="true" tabindex="-1"></a>    length_coef[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb82-349"><a href="#cb82-349" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb82-350"><a href="#cb82-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-351"><a href="#cb82-351" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Priors for farm random effects and their standard deviation.</span></span>
+<span id="cb82-352"><a href="#cb82-352" aria-hidden="true" tabindex="-1"></a>  farm_sd <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">20</span>)</span>
+<span id="cb82-353"><a href="#cb82-353" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_farms) {</span>
+<span id="cb82-354"><a href="#cb82-354" aria-hidden="true" tabindex="-1"></a>    farm_effect[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> farm_sd)</span>
+<span id="cb82-355"><a href="#cb82-355" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb82-356"><a href="#cb82-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-357"><a href="#cb82-357" aria-hidden="true" tabindex="-1"></a>  <span class="co"># logit link and Bernoulli data probabilities</span></span>
+<span id="cb82-358"><a href="#cb82-358" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_animals) {</span>
+<span id="cb82-359"><a href="#cb82-359" aria-hidden="true" tabindex="-1"></a>    <span class="fu">logit</span>(disease_probability[i]) <span class="ot">&lt;-</span></span>
+<span id="cb82-360"><a href="#cb82-360" aria-hidden="true" tabindex="-1"></a>      sex_int[ sex[i] ] <span class="sc">+</span></span>
+<span id="cb82-361"><a href="#cb82-361" aria-hidden="true" tabindex="-1"></a>      length_coef[ sex[i] ]<span class="sc">*</span>length[i] <span class="sc">+</span></span>
+<span id="cb82-362"><a href="#cb82-362" aria-hidden="true" tabindex="-1"></a>      farm_effect[ farm_ids[i] ]</span>
+<span id="cb82-363"><a href="#cb82-363" aria-hidden="true" tabindex="-1"></a>    Ecervi_01[i] <span class="sc">~</span> <span class="fu">dbern</span>(disease_probability[i])</span>
+<span id="cb82-364"><a href="#cb82-364" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb82-365"><a href="#cb82-365" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb82-366"><a href="#cb82-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-367"><a href="#cb82-367" aria-hidden="true" tabindex="-1"></a>DEconstants <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">num_farms =</span> <span class="dv">24</span>,</span>
+<span id="cb82-368"><a href="#cb82-368" aria-hidden="true" tabindex="-1"></a>                    <span class="at">num_animals =</span> <span class="dv">826</span>,</span>
+<span id="cb82-369"><a href="#cb82-369" aria-hidden="true" tabindex="-1"></a>                    <span class="at">length =</span> DeerEcervi<span class="sc">$</span>ctrLength,</span>
+<span id="cb82-370"><a href="#cb82-370" aria-hidden="true" tabindex="-1"></a>                    <span class="at">sex =</span> DeerEcervi<span class="sc">$</span>Sex,</span>
+<span id="cb82-371"><a href="#cb82-371" aria-hidden="true" tabindex="-1"></a>                    <span class="at">farm_ids =</span> DeerEcervi<span class="sc">$</span>farm_ids)</span>
+<span id="cb82-372"><a href="#cb82-372" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-373"><a href="#cb82-373" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb82-374"><a href="#cb82-374" aria-hidden="true" tabindex="-1"></a><span class="fu"># Laplace for GLMM</span></span>
+<span id="cb82-375"><a href="#cb82-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-376"><a href="#cb82-376" aria-hidden="true" tabindex="-1"></a>Make Deer E. cervi model with derivative tools built.</span>
+<span id="cb82-377"><a href="#cb82-377" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-378"><a href="#cb82-378" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-379"><a href="#cb82-379" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode,</span>
+<span id="cb82-380"><a href="#cb82-380" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> DEdata,</span>
+<span id="cb82-381"><a href="#cb82-381" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constants =</span> DEconstants,</span>
+<span id="cb82-382"><a href="#cb82-382" aria-hidden="true" tabindex="-1"></a>                       <span class="at">inits =</span> DEinits_vals,</span>
+<span id="cb82-383"><a href="#cb82-383" aria-hidden="true" tabindex="-1"></a>                       <span class="at">buildDerivs =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb82-384"><a href="#cb82-384" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-385"><a href="#cb82-385" aria-hidden="true" tabindex="-1"></a>cDEmodel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmodel)</span>
+<span id="cb82-386"><a href="#cb82-386" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-387"><a href="#cb82-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-388"><a href="#cb82-388" aria-hidden="true" tabindex="-1"></a><span class="fu"># Laplace for GLMM using nimbleQuad </span></span>
+<span id="cb82-389"><a href="#cb82-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-390"><a href="#cb82-390" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-391"><a href="#cb82-391" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimbleQuad)</span>
+<span id="cb82-392"><a href="#cb82-392" aria-hidden="true" tabindex="-1"></a>DE_Laplace <span class="ot">&lt;-</span> <span class="fu">buildLaplace</span>(DEmodel)</span>
+<span id="cb82-393"><a href="#cb82-393" aria-hidden="true" tabindex="-1"></a>cDE_Laplace <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DE_Laplace, <span class="at">project =</span> DEmodel)</span>
+<span id="cb82-394"><a href="#cb82-394" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">system.time</span>(laplace_fit <span class="ot">&lt;-</span> <span class="fu">runLaplace</span>(cDE_Laplace)))</span>
+<span id="cb82-395"><a href="#cb82-395" aria-hidden="true" tabindex="-1"></a>laplace_fit<span class="sc">$</span>summary<span class="sc">$</span>params</span>
+<span id="cb82-396"><a href="#cb82-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-397"><a href="#cb82-397" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-398"><a href="#cb82-398" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-399"><a href="#cb82-399" aria-hidden="true" tabindex="-1"></a><span class="fu"># Laplace for GLMM</span></span>
+<span id="cb82-400"><a href="#cb82-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-401"><a href="#cb82-401" aria-hidden="true" tabindex="-1"></a>Since this is a GLMM, we can compare to a specialized implementation of Laplace approximation.  We'll use <span class="in">`lme4`</span>.</span>
+<span id="cb82-402"><a href="#cb82-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-403"><a href="#cb82-403" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=eval}</span></span>
+<span id="cb82-404"><a href="#cb82-404" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb82-405"><a href="#cb82-405" aria-hidden="true" tabindex="-1"></a>lme4_fit <span class="ot">&lt;-</span> <span class="fu">glmer</span>(Ecervi_01 <span class="sc">~</span> ctrLength<span class="sc">*</span>fSex <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> fFarm), <span class="at">family =</span> binomial, <span class="at">data =</span> DeerEcervi)</span>
+<span id="cb82-406"><a href="#cb82-406" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lme4_fit)</span>
+<span id="cb82-407"><a href="#cb82-407" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-408"><a href="#cb82-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-409"><a href="#cb82-409" aria-hidden="true" tabindex="-1"></a><span class="fu"># Laplace for GLMM</span></span>
+<span id="cb82-410"><a href="#cb82-410" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-411"><a href="#cb82-411" aria-hidden="true" tabindex="-1"></a>How do the parameters match between <span class="in">`nimble`</span> and <span class="in">`lme4`</span> results?</span>
+<span id="cb82-412"><a href="#cb82-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-413"><a href="#cb82-413" aria-hidden="true" tabindex="-1"></a><span class="in">`lme4`</span> is using treatment contrasts (Sex1 is the "reference" group and Sex2 parameters are differences from Sex1).</span>
+<span id="cb82-414"><a href="#cb82-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-415"><a href="#cb82-415" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>First parameter from <span class="in">`nimble`</span> is the Sex1 intercept, which is the <span class="in">`(Intercept)`</span> from <span class="in">`lme4`</span>.</span>
+<span id="cb82-416"><a href="#cb82-416" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Second parameter from <span class="in">`nimble`</span> is the Sex2 intercept, which is <span class="in">`(Intercept)`</span> + <span class="in">`fSex2`</span> from <span class="in">`lme4`</span>.</span>
+<span id="cb82-417"><a href="#cb82-417" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Third parameter from <span class="in">`nimble`</span> is the Sex1 coefficient for <span class="in">`ctrLength`</span>.</span>
+<span id="cb82-418"><a href="#cb82-418" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Fourth parameter from <span class="in">`nimble`</span> is the Sex2 coefficient for <span class="in">`ctrLength`</span>, which is <span class="in">`ctrLength`</span> + <span class="in">`ctrLength:fSex2`</span> from <span class="in">`lme4`</span>.</span>
+<span id="cb82-419"><a href="#cb82-419" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Fifth parameter from <span class="in">`nimble`</span> is the farm-effect standard deviation.</span>
+<span id="cb82-420"><a href="#cb82-420" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-421"><a href="#cb82-421" aria-hidden="true" tabindex="-1"></a><span class="fu"># INLA-like deterministic nested approximation</span></span>
+<span id="cb82-422"><a href="#cb82-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-423"><a href="#cb82-423" aria-hidden="true" tabindex="-1"></a>One can use Laplace to approximately marginalize over latent nodes in the context of a deterministic Bayesian approximation.</span>
+<span id="cb82-424"><a href="#cb82-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-425"><a href="#cb82-425" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>(Approximately) marginalize over latent nodes using Laplace</span>
+<span id="cb82-426"><a href="#cb82-426" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Find posterior mode for (hyper)parameters and create a grid for quadrature</span>
+<span id="cb82-427"><a href="#cb82-427" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Find approximate marginal posterior at each grid point and approximate univariate hyperparameter marginals via quadrature approaches</span>
+<span id="cb82-428"><a href="#cb82-428" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Sample from mixture of MVN distributions for the latent nodes, mixing over the hyperparameter values at the grid points (INLA also derives analytic univariate marginals)</span>
+<span id="cb82-429"><a href="#cb82-429" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-430"><a href="#cb82-430" aria-hidden="true" tabindex="-1"></a><span class="fu"># Nested approximation for GLMM</span></span>
+<span id="cb82-431"><a href="#cb82-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-434"><a href="#cb82-434" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb82-435"><a href="#cb82-435" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimbleQuad)</span>
+<span id="cb82-436"><a href="#cb82-436" aria-hidden="true" tabindex="-1"></a>approx <span class="ot">&lt;-</span> <span class="fu">buildNestedApprox</span>(DEmodel)</span>
+<span id="cb82-437"><a href="#cb82-437" aria-hidden="true" tabindex="-1"></a>capprox <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(approx, <span class="at">project =</span> DEmodel, <span class="at">resetFunctions =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb82-438"><a href="#cb82-438" aria-hidden="true" tabindex="-1"></a>approx_fit <span class="ot">&lt;-</span> <span class="fu">runNestedApprox</span>(capprox)</span>
+<span id="cb82-439"><a href="#cb82-439" aria-hidden="true" tabindex="-1"></a>approx_fit</span>
+<span id="cb82-440"><a href="#cb82-440" aria-hidden="true" tabindex="-1"></a>smp <span class="ot">&lt;-</span> approx_fit<span class="sc">$</span><span class="fu">sampleLatents</span>(<span class="dv">500</span>)</span>
+<span id="cb82-441"><a href="#cb82-441" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="fu">apply</span>(smp[ ,<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="dv">2</span>, mean), <span class="fu">apply</span>(smp[,<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="dv">2</span>, sd))</span>
+<span id="cb82-442"><a href="#cb82-442" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-443"><a href="#cb82-443" aria-hidden="true" tabindex="-1"></a>laplace_fit<span class="sc">$</span>summary<span class="sc">$</span>randomEffects[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, ]</span>
+<span id="cb82-444"><a href="#cb82-444" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb82-445"><a href="#cb82-445" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-446"><a href="#cb82-446" aria-hidden="true" tabindex="-1"></a>Results are generally pretty similar between Laplace and the nested approximation here (a bit of discrepancy for the random effects sd), although note that Laplace is frequentist and the nested approximation is Bayesian.</span>
+<span id="cb82-447"><a href="#cb82-447" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-448"><a href="#cb82-448" aria-hidden="true" tabindex="-1"></a>With the nested approximation one would generally included fixed effects in the latent nodes but one could also (manually) include them as parameters, which is how Laplace treats them.</span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -118,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../content/1_introduction_to_nimble/introduction_to_nimble.html">Module 1</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../content/1_introduction_to_nimble/introduction_to_nimble.html">Module 1: Intro</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -155,7 +155,73 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../content/1_introduction_to_nimble/introduction_to_nimble.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Module 1</span></a>
+ <span class="menu-text">Module 1: Intro</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/2_nimble_models/nimble_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 2: Models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/3_comparing_and_customizing_mcmc/comparing_and_customizing_mcmc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 3: MCMC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/4_improving_mcmc/improving_mcmc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 4: Improving MCMC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/5_spatial_models/spatial_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 5: Spatial models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/6_user_defined/extending_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 6: Extending models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/7_ecological_models/ecological_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 7: Ecological models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/8_intro_nimblefunctions/intro_nimblefunctions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 8: Introduction to nimbleFunctions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/9_programming/nimblefunction_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 9a: Programming and user samplers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/9_programming/writing_new_mcmc_samplers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 9b: Programming and user samplers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/10_laplace/laplace.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 10: Laplace and related approximations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/11_future_directions_for_nimble/future_directions_for_nimble.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 11: Towards NIMBLE 2.0</span></a>
   </div>
 </li>
     </ul>
@@ -170,7 +236,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#what-is-nimble" id="toc-what-is-nimble" class="nav-link active" data-scroll-target="#what-is-nimble">What Is NIMBLE?</a></li>
   <li><a href="#first-example-a-generalized-linear-mixed-model-glmm" id="toc-first-example-a-generalized-linear-mixed-model-glmm" class="nav-link" data-scroll-target="#first-example-a-generalized-linear-mixed-model-glmm">First example: A generalized linear mixed model (GLMM)</a></li>
-  <li><a href="#glmm-example-load-the-package" id="toc-glmm-example-load-the-package" class="nav-link" data-scroll-target="#glmm-example-load-the-package">GLMM example: Load the package</a></li>
   <li><a href="#glmm-example-load-data" id="toc-glmm-example-load-data" class="nav-link" data-scroll-target="#glmm-example-load-data">GLMM example: Load data</a></li>
   <li><a href="#glmm-example-look-at-data" id="toc-glmm-example-look-at-data" class="nav-link" data-scroll-target="#glmm-example-look-at-data">GLMM example: Look at data</a></li>
   <li><a href="#glmm-example-write-the-model-code-in-r" id="toc-glmm-example-write-the-model-code-in-r" class="nav-link" data-scroll-target="#glmm-example-write-the-model-code-in-r">GLMM example: Write the model code <strong>in R</strong></a></li>
@@ -181,11 +246,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#glmm-example-3.-compile-the-model-and-mcmc." id="toc-glmm-example-3.-compile-the-model-and-mcmc." class="nav-link" data-scroll-target="#glmm-example-3.-compile-the-model-and-mcmc.">GLMM Example: 3. Compile the model and MCMC.</a></li>
   <li><a href="#glmm-example-4.-run-the-mcmc" id="toc-glmm-example-4.-run-the-mcmc" class="nav-link" data-scroll-target="#glmm-example-4.-run-the-mcmc">GLMM Example: 4. Run the MCMC</a></li>
   <li><a href="#glmm-example-5.-extract-the-samples-and-waic" id="toc-glmm-example-5.-extract-the-samples-and-waic" class="nav-link" data-scroll-target="#glmm-example-5.-extract-the-samples-and-waic">GLMM Example: 5. Extract the samples and WAIC</a></li>
-  <li><a href="#glmm-example-look-at-results" id="toc-glmm-example-look-at-results" class="nav-link" data-scroll-target="#glmm-example-look-at-results">GLMM Example: Look at results:</a></li>
+  <li><a href="#glmm-example-look-at-results-1.-mcmcplots" id="toc-glmm-example-look-at-results-1.-mcmcplots" class="nav-link" data-scroll-target="#glmm-example-look-at-results-1.-mcmcplots">GLMM Example: Look at results (1. mcmcplots)</a></li>
+  <li><a href="#glmm-example-look-at-results-2.-coda" id="toc-glmm-example-look-at-results-2.-coda" class="nav-link" data-scroll-target="#glmm-example-look-at-results-2.-coda">GLMM Example: Look at results (2. coda)</a></li>
   <li><a href="#mcmc-workflow-in-nimble" id="toc-mcmc-workflow-in-nimble" class="nav-link" data-scroll-target="#mcmc-workflow-in-nimble">MCMC workflow in NIMBLE</a></li>
   <li><a href="#glmm-example-doing-it-all-at-once-with-nimblemcmc" id="toc-glmm-example-doing-it-all-at-once-with-nimblemcmc" class="nav-link" data-scroll-target="#glmm-example-doing-it-all-at-once-with-nimblemcmc">GLMM Example: Doing it all at once with <code>nimbleMCMC</code></a></li>
   <li><a href="#glmm-example-managing-the-run-at-the-lowest-level-with-mcmcrun" id="toc-glmm-example-managing-the-run-at-the-lowest-level-with-mcmcrun" class="nav-link" data-scroll-target="#glmm-example-managing-the-run-at-the-lowest-level-with-mcmcrun">GLMM Example: Managing the run at the lowest level with <code>mcmc$run</code>”</a></li>
-  <li><a href="#other-notes" id="toc-other-notes" class="nav-link" data-scroll-target="#other-notes">Other notes</a></li>
   </ul>
 </nav>
     </div>
@@ -239,11 +304,13 @@ slides > slide {
 <li>A configurable system for MCMC.</li>
 <li>A library of other methods.
 <ul>
+<li>Hamiltonian Monte Carlo (via the <code>nimbleHMC</code> package)</li>
+<li>Laplace approximation (via the <code>nimbleQuad</code> package)</li>
+<li>INLA-like nested approximation (via the <code>nimbleQuad</code> package)</li>
 <li>Sequential Monte Carlo (particle filtering) (via the <code>nimbleSMC</code> package)</li>
-<li>Monte Carlo Expectation Maximization (maximum likelihood)</li>
 </ul></li>
 <li>A model-generic programming system to write new analysis methods.</li>
-<li>Numerical Inference for statistical Models using Bayesian and Likelihood Estimation.</li>
+<li>“NIMBLE” = Numerical Inference for statistical Models using Bayesian and Likelihood Estimation.</li>
 </ul>
 </section>
 <section id="first-example-a-generalized-linear-mixed-model-glmm" class="level1">
@@ -252,56 +319,48 @@ slides > slide {
 <li>There are plenty of specialized GLMM packages.</li>
 <li>We start with a GLMM because it will be familiar to many of you.</li>
 <li>This example is from <a href="https://www.highstat.com/index.php/mixed-effects-models-and-extensions-in-ecology-with-r">Zuur et al.&nbsp;(2009, Mixed Effects Models and Extensions in Ecology with R)</a> (chapter 13).</li>
-<li>Elaphostrongylus cervi (E. cervi) is a nematode parasite of deer. On each of 24 farms in Spain, multiple deer were sampled for E. cervi.</li>
-<li>Original data from “Vicente et al.&nbsp;(2005)”, citing <a href="https://doi.org/10.1051/vetres:2005044">this</a>, although I’m not sure they cited the right paper!</li>
+<li><em>Elaphostrongylus cervi</em> (E. cervi) is a nematode parasite of deer. On each of 24 farms in Spain, multiple deer were sampled for E. cervi.</li>
+<li>Original data from Vicente et al.&nbsp;(2005), citing <a href="https://doi.org/10.1051/vetres:2005044">this</a>, although I’m not sure they cited the right paper!</li>
 <li>826 total deer.</li>
 <li><code>Sex</code> (M/F) and (centered) body <code>Length</code> are explanatory variables (fixed effects).</li>
 <li><code>Farm</code> is a random effect.</li>
 <li>Response variable is presence (1) or absence (0) of the parasite E. cervi.</li>
 </ul>
 </section>
-<section id="glmm-example-load-the-package" class="level1">
-<h1>GLMM example: Load the package</h1>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimble)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</section>
 <section id="glmm-example-load-data" class="level1">
 <h1>GLMM example: Load data</h1>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>DeerEcervi <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"examples"</span>, <span class="st">"DeerEcervi"</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DeerEcervi.txt"</span>), <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(DeerEcervi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimble)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>DeerEcervi <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"examples"</span>, <span class="st">"DeerEcervi"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"DeerEcervi.txt"</span>), <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(DeerEcervi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>     Farm                Sex            Length          Ecervi       
- Length:826         Min.   :1.000   Min.   : 75.0   Min.   :   0.00  
- Class :character   1st Qu.:1.000   1st Qu.:151.0   1st Qu.:   0.00  
- Mode  :character   Median :1.000   Median :163.0   Median :   6.60  
-                    Mean   :1.458   Mean   :161.8   Mean   :  45.42  
-                    3rd Qu.:2.000   3rd Qu.:174.9   3rd Qu.:  35.79  
-                    Max.   :2.000   Max.   :216.0   Max.   :2186.60  </code></pre>
+<pre><code>        Farm          Sex            Length          Ecervi       
+ Length   :826   Min.   :1.000   Min.   : 75.0   Min.   :   0.00  
+ N.unique : 24   1st Qu.:1.000   1st Qu.:151.0   1st Qu.:   0.00  
+ N.blank  :  0   Median :1.000   Median :163.0   Median :   6.60  
+ Min.nchar:  2   Mean   :1.458   Mean   :161.8   Mean   :  45.42  
+ Max.nchar:  4   3rd Qu.:2.000   3rd Qu.:174.9   3rd Qu.:  35.79  
+                 Max.   :2.000   Max.   :216.0   Max.   :2186.60  </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Create presence/absence data from counts.</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01 <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Ecervi</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01[DeerEcervi<span class="sc">$</span>Ecervi <span class="sc">&gt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Set up naming convention for centered and uncentered</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">## lengths for exercises later</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>unctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Center Length for better interpretation</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>ctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length <span class="sc">-</span> <span class="fu">mean</span>(DeerEcervi<span class="sc">$</span>Length)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor version of Sex for plotting</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fSex <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Sex)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor and id version of Farm</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fFarm <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Farm)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>farm_ids <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(DeerEcervi<span class="sc">$</span>fFarm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Create presence/absence data from counts.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01 <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Ecervi</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01[DeerEcervi<span class="sc">$</span>Ecervi <span class="sc">&gt;</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Set up naming convention for centered and uncentered</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## lengths for exercises later</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>unctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Center Length for better interpretation</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>ctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length <span class="sc">-</span> <span class="fu">mean</span>(DeerEcervi<span class="sc">$</span>Length)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor version of Sex for plotting</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fSex <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Sex)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor and id version of Farm</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fFarm <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Farm)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>farm_ids <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(DeerEcervi<span class="sc">$</span>fFarm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -310,14 +369,14 @@ slides > slide {
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> DeerEcervi, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> ctrLength, <span class="at">y =</span> Ecervi_01,</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> fSex)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>Farm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> DeerEcervi, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> ctrLength, <span class="at">y =</span> Ecervi_01,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> fSex)) <span class="sc">+</span> <span class="fu">geom_point</span>() <span class="sc">+</span> <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>Farm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="introduction_to_nimble_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="introduction_to_nimble_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -329,28 +388,28 @@ slides > slide {
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>DEcode <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Priors for intercepts and length coefficients for</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># sex = 1 (male), 2 (female)</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        sex_int[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        length_coef[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Priors for farm random effects and their standard</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># deviation.</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    farm_sd <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">20</span>)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_farms) {</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        farm_effect[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> farm_sd)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># logit link and Bernoulli data probabilities</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_animals) {</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">logit</span>(disease_probability[i]) <span class="ot">&lt;-</span> sex_int[sex[i]] <span class="sc">+</span> length_coef[sex[i]] <span class="sc">*</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>            length[i] <span class="sc">+</span> farm_effect[farm_ids[i]]</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        Ecervi_01[i] <span class="sc">~</span> <span class="fu">dbern</span>(disease_probability[i])</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>DEcode <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Priors for intercepts and length coefficients for</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># sex = 1 (male), 2 (female)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        sex_int[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        length_coef[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Priors for farm random effects and their standard</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># deviation.</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    farm_sd <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">20</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_farms) {</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        farm_effect[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> farm_sd)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># logit link and Bernoulli data probabilities</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_animals) {</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">logit</span>(disease_probability[i]) <span class="ot">&lt;-</span> sex_int[sex[i]] <span class="sc">+</span> length_coef[sex[i]] <span class="sc">*</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>            length[i] <span class="sc">+</span> farm_effect[farm_ids[i]]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        Ecervi_01[i] <span class="sc">~</span> <span class="fu">dbern</span>(disease_probability[i])</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -375,10 +434,10 @@ slides > slide {
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>DEconstants <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">num_farms =</span> <span class="dv">24</span>, <span class="at">num_animals =</span> <span class="dv">826</span>, <span class="at">length =</span> DeerEcervi<span class="sc">$</span>ctrLength,</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> DeerEcervi<span class="sc">$</span>Sex, <span class="at">farm_ids =</span> DeerEcervi<span class="sc">$</span>farm_ids)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode, <span class="at">constants =</span> DEconstants)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>DEconstants <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">num_farms =</span> <span class="dv">24</span>, <span class="at">num_animals =</span> <span class="dv">826</span>, <span class="at">length =</span> DeerEcervi<span class="sc">$</span>ctrLength,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">sex =</span> DeerEcervi<span class="sc">$</span>Sex, <span class="at">farm_ids =</span> DeerEcervi<span class="sc">$</span>farm_ids)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode, <span class="at">constants =</span> DEconstants)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Defining model</code></pre>
@@ -406,15 +465,15 @@ slides > slide {
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setData</span>(<span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This sets the values and *flags the nodes as data*.</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>DEinits <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">sex_int =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">length_coef =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">farm_sd =</span> <span class="dv">1</span>,</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">farm_effect =</span> <span class="fu">rnorm</span>(<span class="dv">24</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setInits</span>(<span class="fu">DEinits</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setData</span>(<span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This sets the values and *flags the nodes as data*.</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>DEinits <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">sex_int =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">length_coef =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">farm_sd =</span> <span class="dv">1</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">farm_effect =</span> <span class="fu">rnorm</span>(<span class="dv">24</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setInits</span>(<span class="fu">DEinits</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -423,7 +482,7 @@ slides > slide {
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>DEmcmc <span class="ot">&lt;-</span> <span class="fu">buildMCMC</span>(DEmodel, <span class="at">enableWAIC =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>DEmcmc <span class="ot">&lt;-</span> <span class="fu">buildMCMC</span>(DEmodel, <span class="at">enableWAIC =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>===== Monitors =====
@@ -443,7 +502,7 @@ RW sampler (29)
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cDEmodel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cDEmodel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling
@@ -452,9 +511,9 @@ RW sampler (29)
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First call to compileNimble in a session is slower than</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># later calls.</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>cDEmcmc <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmcmc, <span class="at">project =</span> DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First call to compileNimble in a session is slower than</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># later calls.</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>cDEmcmc <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmcmc, <span class="at">project =</span> DEmodel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Compiling
@@ -468,8 +527,8 @@ RW sampler (29)
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>DEresults <span class="ot">&lt;-</span> <span class="fu">runMCMC</span>(cDEmcmc, <span class="at">niter =</span> <span class="dv">11000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>,</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">WAIC =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>DEresults <span class="ot">&lt;-</span> <span class="fu">runMCMC</span>(cDEmcmc, <span class="at">niter =</span> <span class="dv">11000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">WAIC =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>running chain 1...</code></pre>
@@ -486,21 +545,17 @@ RW sampler (29)
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Samples</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>samples1 <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>samples</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># WAIC (Note: there are different flavors of WAIC that can</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># be chosen earlier.)</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>WAIC <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>WAIC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Samples</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>samples1 <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>samples</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># WAIC (Note: there are different flavors of WAIC that can</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># be chosen earlier.)</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>WAIC <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>WAIC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
-<section id="glmm-example-look-at-results" class="level1">
-<h1>GLMM Example: Look at results:</h1>
+<section id="glmm-example-look-at-results-1.-mcmcplots" class="level1">
+<h1>GLMM Example: Look at results (1. mcmcplots)</h1>
 <p>There are many packages for summarizing and plotting MCMC samples. NIMBLE does not try to re-invent these wheels.</p>
 <ol type="1">
 <li><code>mcmcplots</code></li>
@@ -508,17 +563,17 @@ RW sampler (29)
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run this code if you want to generate your own results.</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># They won't over-write results that come with these</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># slides.</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots)</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmcplot</span>(samples1, <span class="at">dir =</span> <span class="st">"."</span>, <span class="at">filename =</span> <span class="st">"Ecervi_samples_mcmcplot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run this code if you want to generate your own results.</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># They won't over-write results that come with these</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co"># slides.</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmcplot</span>(samples1, <span class="at">dir =</span> <span class="st">"."</span>, <span class="at">filename =</span> <span class="st">"Ecervi_samples_mcmcplot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>WAIC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>WAIC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>nimbleList object of type waicNimbleList
@@ -532,18 +587,18 @@ Field "pWAIC":
 </div>
 <p>Results that comes with these slides are <a href="orig_Ecervi_samples_mcmcplot.html">here</a>.</p>
 <p>Results if you generated your own will be <a href="Ecervi_samples_mcmcplot.html">here</a>.</p>
-<ol start="2" type="1">
-<li><code>coda</code></li>
-</ol>
+</section>
+<section id="glmm-example-look-at-results-2.-coda" class="level1">
+<h1>GLMM Example: Look at results (2. coda)</h1>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We haven't provided coda figures, but you can make make</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co"># them if you want.</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(<span class="st">"Ecervi_samples_coda.pdf"</span>)</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.mcmc</span>(samples1))</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># We haven't provided coda figures, but you can make make</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># them if you want.</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(<span class="st">"Ecervi_samples_coda.pdf"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.mcmc</span>(samples1))</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Results if you generate the coda pdf will be <a href="Ecervi_samples_coda.pdf">here</a>.</p>
@@ -563,11 +618,11 @@ Field "pWAIC":
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>DEdataAndConstants <span class="ot">&lt;-</span> <span class="fu">c</span>(DEconstants, <span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>samples2 <span class="ot">&lt;-</span> <span class="fu">nimbleMCMC</span>(DEcode, <span class="at">constants =</span> DEdataAndConstants,</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">inits =</span> DEinits, <span class="at">niter =</span> <span class="dv">10000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>, <span class="at">nchains =</span> <span class="dv">2</span>,</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">samplesAsCodaMCMC =</span> <span class="cn">TRUE</span>, <span class="at">WAIC =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>DEdataAndConstants <span class="ot">&lt;-</span> <span class="fu">c</span>(DEconstants, <span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>samples2 <span class="ot">&lt;-</span> <span class="fu">nimbleMCMC</span>(DEcode, <span class="at">constants =</span> DEdataAndConstants,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">inits =</span> DEinits, <span class="at">niter =</span> <span class="dv">10000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>, <span class="at">nchains =</span> <span class="dv">2</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">samplesAsCodaMCMC =</span> <span class="cn">TRUE</span>, <span class="at">WAIC =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Defining model</code></pre>
@@ -613,7 +668,7 @@ Field "pWAIC":
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples2<span class="sc">$</span>samples)  <span class="do">## from coda</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples2<span class="sc">$</span>samples)  <span class="do">## from coda</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -643,7 +698,7 @@ sex_int[2]     0.68415 1.29076 1.59991 1.89229 2.46292</code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>samples2<span class="sc">$</span>WAIC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>samples2<span class="sc">$</span>WAIC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>nimbleList object of type waicNimbleList
@@ -665,7 +720,7 @@ Field "pWAIC":
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">run</span>(<span class="at">niter =</span> <span class="dv">11000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">run</span>(<span class="at">niter =</span> <span class="dv">11000</span>, <span class="at">nburnin =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>|-------------|-------------|-------------|-------------|
@@ -673,8 +728,8 @@ Field "pWAIC":
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>samples3 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(cDEmcmc<span class="sc">$</span>mvSamples)</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>samples3 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(cDEmcmc<span class="sc">$</span>mvSamples)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    farm_sd       length_coef[1]    length_coef[2]      sex_int[1]     
@@ -694,7 +749,7 @@ Field "pWAIC":
 </div>
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">getWAIC</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">getWAIC</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  [Warning] There are 4 individual pWAIC values that are greater than 0.4. This may indicate that the WAIC estimate is unstable (Vehtari et al., 2017), at least in cases without grouping of data nodes or multivariate data nodes.</code></pre>
@@ -709,12 +764,6 @@ Field "pWAIC":
 [1] 22.8664</code></pre>
 </div>
 </div>
-</section>
-<section id="other-notes" class="level1">
-<h1>Other notes</h1>
-<ul>
-<li><code>readBUGSmodel</code> will read BUGS/JAGS model code and variables from their standard file formats.</li>
-</ul>
 
 
 <!-- -->
@@ -1172,302 +1221,295 @@ Field "pWAIC":
     }
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb53" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Introduction to NIMBLE"</span></span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "NIMBLE Alaska ASA 2026 Workshop"</span></span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "NIMBLE Development Team"</span></span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "June 2026"</span></span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a><span class="co">    css: ../styles.css</span></span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-copy: true</span></span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-block-background: true</span></span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
-<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
-<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
-<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a><span class="co">  freeze: auto</span></span>
-<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">style</span><span class="dt">&gt;</span></span>
-<span id="cb53-19"><a href="#cb53-19" aria-hidden="true" tabindex="-1"></a>slides <span class="op">&gt;</span> slide {</span>
-<span id="cb53-20"><a href="#cb53-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb53-21"><a href="#cb53-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-y</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
-<span id="cb53-22"><a href="#cb53-22" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb53-23"><a href="#cb53-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">style</span><span class="dt">&gt;</span></span>
-<span id="cb53-24"><a href="#cb53-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-25"><a href="#cb53-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-26"><a href="#cb53-26" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
-<span id="cb53-27"><a href="#cb53-27" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb53-28"><a href="#cb53-28" aria-hidden="true" tabindex="-1"></a>                      <span class="at">cache =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb53-29"><a href="#cb53-29" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tidy.opts =</span> <span class="fu">list</span>(<span class="at">width.cutoff =</span> <span class="dv">60</span>),</span>
-<span id="cb53-30"><a href="#cb53-30" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tidy =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb53-31"><a href="#cb53-31" aria-hidden="true" tabindex="-1"></a>has_ggplot2 <span class="ot">&lt;-</span> <span class="fu">require</span>(ggplot2)</span>
-<span id="cb53-32"><a href="#cb53-32" aria-hidden="true" tabindex="-1"></a>has_mcmcplots <span class="ot">&lt;-</span> <span class="fu">require</span>(mcmcplots)</span>
-<span id="cb53-33"><a href="#cb53-33" aria-hidden="true" tabindex="-1"></a>has_coda <span class="ot">&lt;-</span> <span class="fu">require</span>(coda)</span>
-<span id="cb53-34"><a href="#cb53-34" aria-hidden="true" tabindex="-1"></a>generate_original_results <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
-<span id="cb53-35"><a href="#cb53-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-36"><a href="#cb53-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-37"><a href="#cb53-37" aria-hidden="true" tabindex="-1"></a><span class="fu"># What Is NIMBLE?</span></span>
-<span id="cb53-38"><a href="#cb53-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-39"><a href="#cb53-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A framework for hierarchical statistical models and methods.</span>
-<span id="cb53-40"><a href="#cb53-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A nearly drop-in alternative to WinBUGS, OpenBUGS and JAGS.</span>
-<span id="cb53-41"><a href="#cb53-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>An extension of the BUGS language for writing new functions and distributions.</span>
-<span id="cb53-42"><a href="#cb53-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A configurable system for MCMC.</span>
-<span id="cb53-43"><a href="#cb53-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A library of other methods.</span>
-<span id="cb53-44"><a href="#cb53-44" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Sequential Monte Carlo (particle filtering) (via the <span class="in">`nimbleSMC`</span> package)</span>
-<span id="cb53-45"><a href="#cb53-45" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Monte Carlo Expectation Maximization (maximum likelihood)</span>
-<span id="cb53-46"><a href="#cb53-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A model-generic programming system to write new analysis methods.</span>
-<span id="cb53-47"><a href="#cb53-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Numerical Inference for statistical Models using Bayesian and Likelihood Estimation.</span>
-<span id="cb53-48"><a href="#cb53-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-49"><a href="#cb53-49" aria-hidden="true" tabindex="-1"></a><span class="fu"># First example: A generalized linear mixed model (GLMM)</span></span>
-<span id="cb53-50"><a href="#cb53-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-51"><a href="#cb53-51" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>There are plenty of specialized GLMM packages.</span>
-<span id="cb53-52"><a href="#cb53-52" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>We start with a GLMM because it will be familiar to many of you.</span>
-<span id="cb53-53"><a href="#cb53-53" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>This example is from <span class="co">[</span><span class="ot">Zuur et al. (2009, Mixed Effects Models and Extensions in Ecology with R)</span><span class="co">](https://www.highstat.com/index.php/mixed-effects-models-and-extensions-in-ecology-with-r)</span> (chapter 13).</span>
-<span id="cb53-54"><a href="#cb53-54" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Elaphostrongylus cervi (E. cervi) is a nematode parasite of deer.  On each of 24 farms in Spain, multiple deer were sampled for E. cervi.</span>
-<span id="cb53-55"><a href="#cb53-55" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Original data from "Vicente et al. (2005)", citing <span class="co">[</span><span class="ot">this</span><span class="co">](https://doi.org/10.1051/vetres:2005044)</span>, although I'm not sure they cited the right paper!</span>
-<span id="cb53-56"><a href="#cb53-56" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>826 total deer.</span>
-<span id="cb53-57"><a href="#cb53-57" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`Sex`</span> (M/F) and (centered) body <span class="in">`Length`</span> are explanatory variables (fixed effects).</span>
-<span id="cb53-58"><a href="#cb53-58" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`Farm`</span> is a random effect.</span>
-<span id="cb53-59"><a href="#cb53-59" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Response variable is presence (1) or absence (0) of the parasite E. cervi.</span>
-<span id="cb53-60"><a href="#cb53-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-61"><a href="#cb53-61" aria-hidden="true" tabindex="-1"></a><span class="fu"># GLMM example: Load the package</span></span>
-<span id="cb53-64"><a href="#cb53-64" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-65"><a href="#cb53-65" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimble)</span>
-<span id="cb53-66"><a href="#cb53-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-67"><a href="#cb53-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-68"><a href="#cb53-68" aria-hidden="true" tabindex="-1"></a><span class="fu"># GLMM example: Load data</span></span>
-<span id="cb53-69"><a href="#cb53-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-72"><a href="#cb53-72" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-73"><a href="#cb53-73" aria-hidden="true" tabindex="-1"></a>DeerEcervi <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">file.path</span>(<span class="st">'..'</span>, <span class="st">'examples'</span>, <span class="st">'DeerEcervi'</span>, <span class="st">'DeerEcervi.txt'</span>), <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb53-74"><a href="#cb53-74" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(DeerEcervi)</span>
-<span id="cb53-75"><a href="#cb53-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-76"><a href="#cb53-76" aria-hidden="true" tabindex="-1"></a><span class="do">## Create presence/absence data from counts.</span></span>
-<span id="cb53-77"><a href="#cb53-77" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01 <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Ecervi</span>
-<span id="cb53-78"><a href="#cb53-78" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01[DeerEcervi<span class="sc">$</span>Ecervi<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb53-79"><a href="#cb53-79" aria-hidden="true" tabindex="-1"></a><span class="do">## Set up naming convention for centered and uncentered lengths for exercises later</span></span>
-<span id="cb53-80"><a href="#cb53-80" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>unctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length</span>
-<span id="cb53-81"><a href="#cb53-81" aria-hidden="true" tabindex="-1"></a><span class="do">## Center Length for better interpretation</span></span>
-<span id="cb53-82"><a href="#cb53-82" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>ctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length <span class="sc">-</span> <span class="fu">mean</span>(DeerEcervi<span class="sc">$</span>Length)</span>
-<span id="cb53-83"><a href="#cb53-83" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor version of Sex for plotting</span></span>
-<span id="cb53-84"><a href="#cb53-84" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fSex <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Sex)</span>
-<span id="cb53-85"><a href="#cb53-85" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor and id version of Farm</span></span>
-<span id="cb53-86"><a href="#cb53-86" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fFarm <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Farm)</span>
-<span id="cb53-87"><a href="#cb53-87" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>farm_ids <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(DeerEcervi<span class="sc">$</span>fFarm)</span>
-<span id="cb53-88"><a href="#cb53-88" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-89"><a href="#cb53-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-90"><a href="#cb53-90" aria-hidden="true" tabindex="-1"></a><span class="fu"># GLMM example: Look at data</span></span>
-<span id="cb53-91"><a href="#cb53-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-92"><a href="#cb53-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=has_ggplot2}</span></span>
-<span id="cb53-93"><a href="#cb53-93" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> DeerEcervi, </span>
-<span id="cb53-94"><a href="#cb53-94" aria-hidden="true" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> ctrLength, <span class="at">y =</span> Ecervi_01, <span class="at">color =</span> fSex)) <span class="sc">+</span> </span>
-<span id="cb53-95"><a href="#cb53-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb53-96"><a href="#cb53-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
-<span id="cb53-97"><a href="#cb53-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Farm)</span>
-<span id="cb53-98"><a href="#cb53-98" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-99"><a href="#cb53-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-100"><a href="#cb53-100" aria-hidden="true" tabindex="-1"></a><span class="in">`fSex`</span> is 1 for males, 2 for females.</span>
-<span id="cb53-101"><a href="#cb53-101" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-102"><a href="#cb53-102" aria-hidden="true" tabindex="-1"></a><span class="fu"># GLMM example: Write the model code **in R**</span></span>
-<span id="cb53-103"><a href="#cb53-103" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-106"><a href="#cb53-106" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-107"><a href="#cb53-107" aria-hidden="true" tabindex="-1"></a>DEcode <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
-<span id="cb53-108"><a href="#cb53-108" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
-<span id="cb53-109"><a href="#cb53-109" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Priors for intercepts and length coefficients for sex = 1 (male), 2 (female)</span></span>
-<span id="cb53-110"><a href="#cb53-110" aria-hidden="true" tabindex="-1"></a>    sex_int[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
-<span id="cb53-111"><a href="#cb53-111" aria-hidden="true" tabindex="-1"></a>    length_coef[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
-<span id="cb53-112"><a href="#cb53-112" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb53-113"><a href="#cb53-113" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-114"><a href="#cb53-114" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Priors for farm random effects and their standard deviation.</span></span>
-<span id="cb53-115"><a href="#cb53-115" aria-hidden="true" tabindex="-1"></a>  farm_sd <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">20</span>)</span>
-<span id="cb53-116"><a href="#cb53-116" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_farms) {</span>
-<span id="cb53-117"><a href="#cb53-117" aria-hidden="true" tabindex="-1"></a>    farm_effect[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> farm_sd)</span>
-<span id="cb53-118"><a href="#cb53-118" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb53-119"><a href="#cb53-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-120"><a href="#cb53-120" aria-hidden="true" tabindex="-1"></a>  <span class="co"># logit link and Bernoulli data probabilities</span></span>
-<span id="cb53-121"><a href="#cb53-121" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_animals) {</span>
-<span id="cb53-122"><a href="#cb53-122" aria-hidden="true" tabindex="-1"></a>    <span class="fu">logit</span>(disease_probability[i]) <span class="ot">&lt;-</span></span>
-<span id="cb53-123"><a href="#cb53-123" aria-hidden="true" tabindex="-1"></a>      sex_int[ sex[i] ] <span class="sc">+</span></span>
-<span id="cb53-124"><a href="#cb53-124" aria-hidden="true" tabindex="-1"></a>      length_coef[ sex[i] ]<span class="sc">*</span>length[i] <span class="sc">+</span></span>
-<span id="cb53-125"><a href="#cb53-125" aria-hidden="true" tabindex="-1"></a>      farm_effect[ farm_ids[i] ]</span>
-<span id="cb53-126"><a href="#cb53-126" aria-hidden="true" tabindex="-1"></a>    Ecervi_01[i] <span class="sc">~</span> <span class="fu">dbern</span>(disease_probability[i])</span>
-<span id="cb53-127"><a href="#cb53-127" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb53-128"><a href="#cb53-128" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb53-129"><a href="#cb53-129" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-130"><a href="#cb53-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-131"><a href="#cb53-131" aria-hidden="true" tabindex="-1"></a>GLMM Example: Steps to use NIMBLE:</span>
-<span id="cb53-132"><a href="#cb53-132" aria-hidden="true" tabindex="-1"></a><span class="fu">===============</span></span>
-<span id="cb53-133"><a href="#cb53-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-134"><a href="#cb53-134" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Build the model.  It is an R object.</span>
-<span id="cb53-135"><a href="#cb53-135" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Build the MCMC.</span>
-<span id="cb53-136"><a href="#cb53-136" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-137"><a href="#cb53-137" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>2a. Configure the MCMC.</span>
-<span id="cb53-138"><a href="#cb53-138" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>2b. Customize the MCMC.</span>
-<span id="cb53-139"><a href="#cb53-139" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>2c. Build the MCMC.</span>
-<span id="cb53-140"><a href="#cb53-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-141"><a href="#cb53-141" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Compile the model and MCMC.</span>
-<span id="cb53-142"><a href="#cb53-142" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Run the MCMC.</span>
-<span id="cb53-143"><a href="#cb53-143" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Extract the results.</span>
-<span id="cb53-144"><a href="#cb53-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-145"><a href="#cb53-145" aria-hidden="true" tabindex="-1"></a>More about NIMBLE's MCMC workflows is shown in <span class="co">[</span><span class="ot">this figure</span><span class="co">](./NIMBLE_workflow.html)</span> (also available as <span class="co">[</span><span class="ot">pdf</span><span class="co">](./NIMBLE_workflow.pdf)</span>).</span>
-<span id="cb53-146"><a href="#cb53-146" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb53-147"><a href="#cb53-147" aria-hidden="true" tabindex="-1"></a>GLMM Example: 1. Build the model</span>
-<span id="cb53-148"><a href="#cb53-148" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-149"><a href="#cb53-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-152"><a href="#cb53-152" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-153"><a href="#cb53-153" aria-hidden="true" tabindex="-1"></a>DEconstants <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">num_farms =</span> <span class="dv">24</span>,</span>
-<span id="cb53-154"><a href="#cb53-154" aria-hidden="true" tabindex="-1"></a>                    <span class="at">num_animals =</span> <span class="dv">826</span>,</span>
-<span id="cb53-155"><a href="#cb53-155" aria-hidden="true" tabindex="-1"></a>                    <span class="at">length =</span> DeerEcervi<span class="sc">$</span>ctrLength,</span>
-<span id="cb53-156"><a href="#cb53-156" aria-hidden="true" tabindex="-1"></a>                    <span class="at">sex =</span> DeerEcervi<span class="sc">$</span>Sex,</span>
-<span id="cb53-157"><a href="#cb53-157" aria-hidden="true" tabindex="-1"></a>                    <span class="at">farm_ids =</span> DeerEcervi<span class="sc">$</span>farm_ids)</span>
-<span id="cb53-158"><a href="#cb53-158" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-159"><a href="#cb53-159" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode,</span>
-<span id="cb53-160"><a href="#cb53-160" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constants =</span> DEconstants)</span>
-<span id="cb53-161"><a href="#cb53-161" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-162"><a href="#cb53-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-163"><a href="#cb53-163" aria-hidden="true" tabindex="-1"></a>GLMM Example: 1b. Set data and inits</span>
-<span id="cb53-164"><a href="#cb53-164" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-165"><a href="#cb53-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-166"><a href="#cb53-166" aria-hidden="true" tabindex="-1"></a>These can be provided at the <span class="in">`nimbleModel`</span> step (above) or now:</span>
-<span id="cb53-169"><a href="#cb53-169" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-170"><a href="#cb53-170" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setData</span>(<span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
-<span id="cb53-171"><a href="#cb53-171" aria-hidden="true" tabindex="-1"></a><span class="co"># This sets the values and *flags the nodes as data*.</span></span>
-<span id="cb53-172"><a href="#cb53-172" aria-hidden="true" tabindex="-1"></a>DEinits <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb53-173"><a href="#cb53-173" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">sex_int =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb53-174"><a href="#cb53-174" aria-hidden="true" tabindex="-1"></a>       <span class="at">length_coef =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
-<span id="cb53-175"><a href="#cb53-175" aria-hidden="true" tabindex="-1"></a>       <span class="at">farm_sd =</span> <span class="dv">1</span>,</span>
-<span id="cb53-176"><a href="#cb53-176" aria-hidden="true" tabindex="-1"></a>       <span class="at">farm_effect =</span> <span class="fu">rnorm</span>(<span class="dv">24</span>, <span class="dv">0</span>, <span class="dv">1</span>) )</span>
-<span id="cb53-177"><a href="#cb53-177" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb53-178"><a href="#cb53-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-179"><a href="#cb53-179" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb53-180"><a href="#cb53-180" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setInits</span>(<span class="fu">DEinits</span>())</span>
-<span id="cb53-181"><a href="#cb53-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-182"><a href="#cb53-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-183"><a href="#cb53-183" aria-hidden="true" tabindex="-1"></a>GLMM Example: 2. Build the MCMC</span>
-<span id="cb53-184"><a href="#cb53-184" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-187"><a href="#cb53-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-188"><a href="#cb53-188" aria-hidden="true" tabindex="-1"></a>DEmcmc <span class="ot">&lt;-</span> <span class="fu">buildMCMC</span>(DEmodel, <span class="at">enableWAIC =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb53-189"><a href="#cb53-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-190"><a href="#cb53-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-191"><a href="#cb53-191" aria-hidden="true" tabindex="-1"></a>GLMM Example: 3. Compile the model and MCMC.</span>
-<span id="cb53-192"><a href="#cb53-192" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-193"><a href="#cb53-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-194"><a href="#cb53-194" aria-hidden="true" tabindex="-1"></a>This can be done in one step or two.  We'll use two.</span>
-<span id="cb53-195"><a href="#cb53-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-198"><a href="#cb53-198" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-199"><a href="#cb53-199" aria-hidden="true" tabindex="-1"></a>cDEmodel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmodel)</span>
-<span id="cb53-200"><a href="#cb53-200" aria-hidden="true" tabindex="-1"></a><span class="co"># First call to compileNimble in a session is slower than later calls.</span></span>
-<span id="cb53-201"><a href="#cb53-201" aria-hidden="true" tabindex="-1"></a>cDEmcmc <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmcmc, <span class="at">project =</span> DEmodel)</span>
-<span id="cb53-202"><a href="#cb53-202" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-203"><a href="#cb53-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-204"><a href="#cb53-204" aria-hidden="true" tabindex="-1"></a>GLMM Example: 4. Run the MCMC</span>
-<span id="cb53-205"><a href="#cb53-205" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-208"><a href="#cb53-208" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-209"><a href="#cb53-209" aria-hidden="true" tabindex="-1"></a>DEresults <span class="ot">&lt;-</span> <span class="fu">runMCMC</span>(cDEmcmc, <span class="at">niter=</span><span class="dv">11000</span>, <span class="at">nburnin=</span><span class="dv">1000</span>, <span class="at">WAIC=</span><span class="cn">TRUE</span>)</span>
-<span id="cb53-210"><a href="#cb53-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-211"><a href="#cb53-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-212"><a href="#cb53-212" aria-hidden="true" tabindex="-1"></a>GLMM Example: 5. Extract the samples and WAIC</span>
-<span id="cb53-213"><a href="#cb53-213" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-216"><a href="#cb53-216" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-217"><a href="#cb53-217" aria-hidden="true" tabindex="-1"></a><span class="co"># Samples</span></span>
-<span id="cb53-218"><a href="#cb53-218" aria-hidden="true" tabindex="-1"></a>samples1 <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>samples</span>
-<span id="cb53-219"><a href="#cb53-219" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-220"><a href="#cb53-220" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-223"><a href="#cb53-223" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-224"><a href="#cb53-224" aria-hidden="true" tabindex="-1"></a><span class="co"># WAIC (Note: there are different flavors of WAIC that can be chosen earlier.)</span></span>
-<span id="cb53-225"><a href="#cb53-225" aria-hidden="true" tabindex="-1"></a>WAIC <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>WAIC</span>
-<span id="cb53-226"><a href="#cb53-226" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-227"><a href="#cb53-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-228"><a href="#cb53-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-229"><a href="#cb53-229" aria-hidden="true" tabindex="-1"></a>GLMM Example: Look at results:</span>
-<span id="cb53-230"><a href="#cb53-230" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-231"><a href="#cb53-231" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-232"><a href="#cb53-232" aria-hidden="true" tabindex="-1"></a>There are many packages for summarizing and plotting MCMC samples.  NIMBLE does not try to re-invent these wheels.</span>
-<span id="cb53-233"><a href="#cb53-233" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-234"><a href="#cb53-234" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="in">`mcmcplots`</span></span>
-<span id="cb53-235"><a href="#cb53-235" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-236"><a href="#cb53-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
-<span id="cb53-237"><a href="#cb53-237" aria-hidden="true" tabindex="-1"></a><span class="co"># Run this code if you want to generate your own results.</span></span>
-<span id="cb53-238"><a href="#cb53-238" aria-hidden="true" tabindex="-1"></a><span class="co"># They won't over-write results that come with these slides.</span></span>
-<span id="cb53-239"><a href="#cb53-239" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots)</span>
-<span id="cb53-240"><a href="#cb53-240" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmcplot</span>(samples1, <span class="at">dir =</span> <span class="st">"."</span>, <span class="at">filename =</span> <span class="st">"Ecervi_samples_mcmcplot"</span>)</span>
-<span id="cb53-241"><a href="#cb53-241" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-242"><a href="#cb53-242" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-245"><a href="#cb53-245" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-246"><a href="#cb53-246" aria-hidden="true" tabindex="-1"></a>WAIC</span>
-<span id="cb53-247"><a href="#cb53-247" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-248"><a href="#cb53-248" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-249"><a href="#cb53-249" aria-hidden="true" tabindex="-1"></a><span class="in">```{r echo=FALSE, eval=(has_mcmcplots &amp; generate_original_results)}</span></span>
-<span id="cb53-250"><a href="#cb53-250" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the previous code to generate your own results.</span></span>
-<span id="cb53-251"><a href="#cb53-251" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots)</span>
-<span id="cb53-252"><a href="#cb53-252" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmcplot</span>(samples1, <span class="at">dir =</span> <span class="st">"."</span>, <span class="at">filename =</span> <span class="st">"orig_Ecervi_samples_mcmcplot"</span>)</span>
-<span id="cb53-253"><a href="#cb53-253" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-254"><a href="#cb53-254" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-255"><a href="#cb53-255" aria-hidden="true" tabindex="-1"></a>Results that comes with these slides are <span class="co">[</span><span class="ot">here</span><span class="co">](orig_Ecervi_samples_mcmcplot.html)</span>.</span>
-<span id="cb53-256"><a href="#cb53-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-257"><a href="#cb53-257" aria-hidden="true" tabindex="-1"></a>Results if you generated your own will be <span class="co">[</span><span class="ot">here</span><span class="co">](Ecervi_samples_mcmcplot.html)</span>.</span>
-<span id="cb53-258"><a href="#cb53-258" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-259"><a href="#cb53-259" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span><span class="in">`coda`</span></span>
-<span id="cb53-260"><a href="#cb53-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-261"><a href="#cb53-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval = FALSE}</span></span>
-<span id="cb53-262"><a href="#cb53-262" aria-hidden="true" tabindex="-1"></a><span class="co"># We haven't provided coda figures, but you can make make them if you want.</span></span>
-<span id="cb53-263"><a href="#cb53-263" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
-<span id="cb53-264"><a href="#cb53-264" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(<span class="st">"Ecervi_samples_coda.pdf"</span>)</span>
-<span id="cb53-265"><a href="#cb53-265" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.mcmc</span>(samples1))</span>
-<span id="cb53-266"><a href="#cb53-266" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
-<span id="cb53-267"><a href="#cb53-267" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-268"><a href="#cb53-268" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-269"><a href="#cb53-269" aria-hidden="true" tabindex="-1"></a>Results if you generate the coda pdf will be <span class="co">[</span><span class="ot">here</span><span class="co">](Ecervi_samples_coda.pdf)</span>.</span>
-<span id="cb53-270"><a href="#cb53-270" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-271"><a href="#cb53-271" aria-hidden="true" tabindex="-1"></a>MCMC workflow in NIMBLE</span>
-<span id="cb53-272"><a href="#cb53-272" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-273"><a href="#cb53-273" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-274"><a href="#cb53-274" aria-hidden="true" tabindex="-1"></a>Let's review again the <span class="co">[</span><span class="ot">MCMC workflows in NIMBLE</span><span class="co">](./NIMBLE_workflow.html)</span> (also available as <span class="co">[</span><span class="ot">pdf</span><span class="co">](./NIMBLE_workflow.pdf)</span>).</span>
-<span id="cb53-275"><a href="#cb53-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-276"><a href="#cb53-276" aria-hidden="true" tabindex="-1"></a>GLMM Example: Doing it all at once with <span class="in">`nimbleMCMC`</span></span>
-<span id="cb53-277"><a href="#cb53-277" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-278"><a href="#cb53-278" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-279"><a href="#cb53-279" aria-hidden="true" tabindex="-1"></a>Start from:</span>
-<span id="cb53-280"><a href="#cb53-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-281"><a href="#cb53-281" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>code</span>
-<span id="cb53-282"><a href="#cb53-282" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>constants + data</span>
-<span id="cb53-283"><a href="#cb53-283" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>inits</span>
-<span id="cb53-284"><a href="#cb53-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-287"><a href="#cb53-287" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-288"><a href="#cb53-288" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb53-289"><a href="#cb53-289" aria-hidden="true" tabindex="-1"></a>DEdataAndConstants <span class="ot">&lt;-</span> <span class="fu">c</span>(DEconstants, </span>
-<span id="cb53-290"><a href="#cb53-290" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
-<span id="cb53-291"><a href="#cb53-291" aria-hidden="true" tabindex="-1"></a>samples2 <span class="ot">&lt;-</span> <span class="fu">nimbleMCMC</span>(DEcode,</span>
-<span id="cb53-292"><a href="#cb53-292" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constants =</span> DEdataAndConstants,</span>
-<span id="cb53-293"><a href="#cb53-293" aria-hidden="true" tabindex="-1"></a>                       <span class="at">inits =</span> DEinits,</span>
-<span id="cb53-294"><a href="#cb53-294" aria-hidden="true" tabindex="-1"></a>                       <span class="at">niter =</span> <span class="dv">10000</span>,</span>
-<span id="cb53-295"><a href="#cb53-295" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nburnin =</span> <span class="dv">1000</span>,</span>
-<span id="cb53-296"><a href="#cb53-296" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nchains =</span> <span class="dv">2</span>,</span>
-<span id="cb53-297"><a href="#cb53-297" aria-hidden="true" tabindex="-1"></a>                       <span class="at">samplesAsCodaMCMC =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb53-298"><a href="#cb53-298" aria-hidden="true" tabindex="-1"></a>                       <span class="at">WAIC =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb53-299"><a href="#cb53-299" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples2<span class="sc">$</span>samples) <span class="do">## from coda</span></span>
-<span id="cb53-300"><a href="#cb53-300" aria-hidden="true" tabindex="-1"></a>samples2<span class="sc">$</span>WAIC</span>
-<span id="cb53-301"><a href="#cb53-301" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-302"><a href="#cb53-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-303"><a href="#cb53-303" aria-hidden="true" tabindex="-1"></a>GLMM Example: Managing the run at the lowest level with <span class="in">`mcmc$run`</span>"</span>
-<span id="cb53-304"><a href="#cb53-304" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-305"><a href="#cb53-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-306"><a href="#cb53-306" aria-hidden="true" tabindex="-1"></a>Start from:</span>
-<span id="cb53-307"><a href="#cb53-307" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-308"><a href="#cb53-308" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Compiled MCMC</span>
-<span id="cb53-309"><a href="#cb53-309" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-312"><a href="#cb53-312" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb53-313"><a href="#cb53-313" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">run</span>(<span class="at">niter =</span> <span class="dv">11000</span>, <span class="at">nburnin=</span><span class="dv">1000</span>)</span>
-<span id="cb53-314"><a href="#cb53-314" aria-hidden="true" tabindex="-1"></a>samples3 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(cDEmcmc<span class="sc">$</span>mvSamples)</span>
-<span id="cb53-315"><a href="#cb53-315" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples3)</span>
-<span id="cb53-316"><a href="#cb53-316" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">getWAIC</span>()</span>
-<span id="cb53-317"><a href="#cb53-317" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb53-318"><a href="#cb53-318" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-319"><a href="#cb53-319" aria-hidden="true" tabindex="-1"></a>Other notes</span>
-<span id="cb53-320"><a href="#cb53-320" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
-<span id="cb53-321"><a href="#cb53-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-322"><a href="#cb53-322" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`readBUGSmodel`</span> will read BUGS/JAGS model code and variables from their standard file formats.</span>
+<div class="sourceCode" id="cb51" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Introduction to NIMBLE"</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "NIMBLE Alaska ASA 2026 Workshop"</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "NIMBLE Development Team"</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "June 2026"</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="co">    css: ../styles.css</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-copy: true</span></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-block-background: true</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a><span class="co">  freeze: auto</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>slides <span class="op">&gt;</span> slide {</span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-y</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a>                      <span class="at">cache =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tidy.opts =</span> <span class="fu">list</span>(<span class="at">width.cutoff =</span> <span class="dv">60</span>),</span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a>                      <span class="at">tidy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a>has_ggplot2 <span class="ot">&lt;-</span> <span class="fu">require</span>(ggplot2)</span>
+<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>has_mcmcplots <span class="ot">&lt;-</span> <span class="fu">require</span>(mcmcplots)</span>
+<span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>has_coda <span class="ot">&lt;-</span> <span class="fu">require</span>(coda)</span>
+<span id="cb51-34"><a href="#cb51-34" aria-hidden="true" tabindex="-1"></a>generate_original_results <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a><span class="fu"># What Is NIMBLE?</span></span>
+<span id="cb51-38"><a href="#cb51-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-39"><a href="#cb51-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A framework for hierarchical statistical models and methods.</span>
+<span id="cb51-40"><a href="#cb51-40" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A nearly drop-in alternative to WinBUGS, OpenBUGS and JAGS.</span>
+<span id="cb51-41"><a href="#cb51-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>An extension of the BUGS language for writing new functions and distributions.</span>
+<span id="cb51-42"><a href="#cb51-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A configurable system for MCMC.</span>
+<span id="cb51-43"><a href="#cb51-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A library of other methods.</span>
+<span id="cb51-44"><a href="#cb51-44" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Hamiltonian Monte Carlo (via the <span class="in">`nimbleHMC`</span> package)</span>
+<span id="cb51-45"><a href="#cb51-45" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Laplace approximation (via the <span class="in">`nimbleQuad`</span> package)</span>
+<span id="cb51-46"><a href="#cb51-46" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>INLA-like nested approximation (via the <span class="in">`nimbleQuad`</span> package)</span>
+<span id="cb51-47"><a href="#cb51-47" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Sequential Monte Carlo (particle filtering) (via the <span class="in">`nimbleSMC`</span> package)</span>
+<span id="cb51-48"><a href="#cb51-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A model-generic programming system to write new analysis methods.</span>
+<span id="cb51-49"><a href="#cb51-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>"NIMBLE" = Numerical Inference for statistical Models using Bayesian and Likelihood Estimation.</span>
+<span id="cb51-50"><a href="#cb51-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-51"><a href="#cb51-51" aria-hidden="true" tabindex="-1"></a><span class="fu"># First example: A generalized linear mixed model (GLMM)</span></span>
+<span id="cb51-52"><a href="#cb51-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-53"><a href="#cb51-53" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>There are plenty of specialized GLMM packages.</span>
+<span id="cb51-54"><a href="#cb51-54" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>We start with a GLMM because it will be familiar to many of you.</span>
+<span id="cb51-55"><a href="#cb51-55" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>This example is from <span class="co">[</span><span class="ot">Zuur et al. (2009, Mixed Effects Models and Extensions in Ecology with R)</span><span class="co">](https://www.highstat.com/index.php/mixed-effects-models-and-extensions-in-ecology-with-r)</span> (chapter 13).</span>
+<span id="cb51-56"><a href="#cb51-56" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>*Elaphostrongylus cervi* (E. cervi) is a nematode parasite of deer.  On each of 24 farms in Spain, multiple deer were sampled for E. cervi.</span>
+<span id="cb51-57"><a href="#cb51-57" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Original data from Vicente et al. (2005), citing <span class="co">[</span><span class="ot">this</span><span class="co">](https://doi.org/10.1051/vetres:2005044)</span>, although I'm not sure they cited the right paper!</span>
+<span id="cb51-58"><a href="#cb51-58" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>826 total deer.</span>
+<span id="cb51-59"><a href="#cb51-59" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`Sex`</span> (M/F) and (centered) body <span class="in">`Length`</span> are explanatory variables (fixed effects).</span>
+<span id="cb51-60"><a href="#cb51-60" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`Farm`</span> is a random effect.</span>
+<span id="cb51-61"><a href="#cb51-61" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Response variable is presence (1) or absence (0) of the parasite E. cervi.</span>
+<span id="cb51-62"><a href="#cb51-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-63"><a href="#cb51-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-64"><a href="#cb51-64" aria-hidden="true" tabindex="-1"></a><span class="fu"># GLMM example: Load data</span></span>
+<span id="cb51-65"><a href="#cb51-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-68"><a href="#cb51-68" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-69"><a href="#cb51-69" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimble)</span>
+<span id="cb51-70"><a href="#cb51-70" aria-hidden="true" tabindex="-1"></a>DeerEcervi <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">file.path</span>(<span class="st">'..'</span>, <span class="st">'examples'</span>, <span class="st">'DeerEcervi'</span>, <span class="st">'DeerEcervi.txt'</span>), <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-71"><a href="#cb51-71" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(DeerEcervi)</span>
+<span id="cb51-72"><a href="#cb51-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-73"><a href="#cb51-73" aria-hidden="true" tabindex="-1"></a><span class="do">## Create presence/absence data from counts.</span></span>
+<span id="cb51-74"><a href="#cb51-74" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01 <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Ecervi</span>
+<span id="cb51-75"><a href="#cb51-75" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>Ecervi_01[DeerEcervi<span class="sc">$</span>Ecervi<span class="sc">&gt;</span><span class="dv">0</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb51-76"><a href="#cb51-76" aria-hidden="true" tabindex="-1"></a><span class="do">## Set up naming convention for centered and uncentered lengths for exercises later</span></span>
+<span id="cb51-77"><a href="#cb51-77" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>unctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length</span>
+<span id="cb51-78"><a href="#cb51-78" aria-hidden="true" tabindex="-1"></a><span class="do">## Center Length for better interpretation</span></span>
+<span id="cb51-79"><a href="#cb51-79" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>ctrLength <span class="ot">&lt;-</span> DeerEcervi<span class="sc">$</span>Length <span class="sc">-</span> <span class="fu">mean</span>(DeerEcervi<span class="sc">$</span>Length)</span>
+<span id="cb51-80"><a href="#cb51-80" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor version of Sex for plotting</span></span>
+<span id="cb51-81"><a href="#cb51-81" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fSex <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Sex)</span>
+<span id="cb51-82"><a href="#cb51-82" aria-hidden="true" tabindex="-1"></a><span class="do">## Make a factor and id version of Farm</span></span>
+<span id="cb51-83"><a href="#cb51-83" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>fFarm <span class="ot">&lt;-</span> <span class="fu">factor</span>(DeerEcervi<span class="sc">$</span>Farm)</span>
+<span id="cb51-84"><a href="#cb51-84" aria-hidden="true" tabindex="-1"></a>DeerEcervi<span class="sc">$</span>farm_ids <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(DeerEcervi<span class="sc">$</span>fFarm)</span>
+<span id="cb51-85"><a href="#cb51-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-86"><a href="#cb51-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-87"><a href="#cb51-87" aria-hidden="true" tabindex="-1"></a><span class="fu"># GLMM example: Look at data</span></span>
+<span id="cb51-88"><a href="#cb51-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-89"><a href="#cb51-89" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=has_ggplot2}</span></span>
+<span id="cb51-90"><a href="#cb51-90" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> DeerEcervi, </span>
+<span id="cb51-91"><a href="#cb51-91" aria-hidden="true" tabindex="-1"></a>        <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> ctrLength, <span class="at">y =</span> Ecervi_01, <span class="at">color =</span> fSex)) <span class="sc">+</span> </span>
+<span id="cb51-92"><a href="#cb51-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb51-93"><a href="#cb51-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb51-94"><a href="#cb51-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Farm)</span>
+<span id="cb51-95"><a href="#cb51-95" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-96"><a href="#cb51-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-97"><a href="#cb51-97" aria-hidden="true" tabindex="-1"></a><span class="in">`fSex`</span> is 1 for males, 2 for females.</span>
+<span id="cb51-98"><a href="#cb51-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-99"><a href="#cb51-99" aria-hidden="true" tabindex="-1"></a><span class="fu"># GLMM example: Write the model code **in R**</span></span>
+<span id="cb51-100"><a href="#cb51-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-103"><a href="#cb51-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-104"><a href="#cb51-104" aria-hidden="true" tabindex="-1"></a>DEcode <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
+<span id="cb51-105"><a href="#cb51-105" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb51-106"><a href="#cb51-106" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Priors for intercepts and length coefficients for sex = 1 (male), 2 (female)</span></span>
+<span id="cb51-107"><a href="#cb51-107" aria-hidden="true" tabindex="-1"></a>    sex_int[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb51-108"><a href="#cb51-108" aria-hidden="true" tabindex="-1"></a>    length_coef[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
+<span id="cb51-109"><a href="#cb51-109" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb51-110"><a href="#cb51-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-111"><a href="#cb51-111" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Priors for farm random effects and their standard deviation.</span></span>
+<span id="cb51-112"><a href="#cb51-112" aria-hidden="true" tabindex="-1"></a>  farm_sd <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">20</span>)</span>
+<span id="cb51-113"><a href="#cb51-113" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_farms) {</span>
+<span id="cb51-114"><a href="#cb51-114" aria-hidden="true" tabindex="-1"></a>    farm_effect[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> farm_sd)</span>
+<span id="cb51-115"><a href="#cb51-115" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb51-116"><a href="#cb51-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-117"><a href="#cb51-117" aria-hidden="true" tabindex="-1"></a>  <span class="co"># logit link and Bernoulli data probabilities</span></span>
+<span id="cb51-118"><a href="#cb51-118" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_animals) {</span>
+<span id="cb51-119"><a href="#cb51-119" aria-hidden="true" tabindex="-1"></a>    <span class="fu">logit</span>(disease_probability[i]) <span class="ot">&lt;-</span></span>
+<span id="cb51-120"><a href="#cb51-120" aria-hidden="true" tabindex="-1"></a>      sex_int[ sex[i] ] <span class="sc">+</span></span>
+<span id="cb51-121"><a href="#cb51-121" aria-hidden="true" tabindex="-1"></a>      length_coef[ sex[i] ]<span class="sc">*</span>length[i] <span class="sc">+</span></span>
+<span id="cb51-122"><a href="#cb51-122" aria-hidden="true" tabindex="-1"></a>      farm_effect[ farm_ids[i] ]</span>
+<span id="cb51-123"><a href="#cb51-123" aria-hidden="true" tabindex="-1"></a>    Ecervi_01[i] <span class="sc">~</span> <span class="fu">dbern</span>(disease_probability[i])</span>
+<span id="cb51-124"><a href="#cb51-124" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb51-125"><a href="#cb51-125" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb51-126"><a href="#cb51-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-127"><a href="#cb51-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-128"><a href="#cb51-128" aria-hidden="true" tabindex="-1"></a>GLMM Example: Steps to use NIMBLE:</span>
+<span id="cb51-129"><a href="#cb51-129" aria-hidden="true" tabindex="-1"></a><span class="fu">===============</span></span>
+<span id="cb51-130"><a href="#cb51-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-131"><a href="#cb51-131" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Build the model.  It is an R object.</span>
+<span id="cb51-132"><a href="#cb51-132" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Build the MCMC.</span>
+<span id="cb51-133"><a href="#cb51-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-134"><a href="#cb51-134" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>2a. Configure the MCMC.</span>
+<span id="cb51-135"><a href="#cb51-135" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>2b. Customize the MCMC.</span>
+<span id="cb51-136"><a href="#cb51-136" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>2c. Build the MCMC.</span>
+<span id="cb51-137"><a href="#cb51-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-138"><a href="#cb51-138" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Compile the model and MCMC.</span>
+<span id="cb51-139"><a href="#cb51-139" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Run the MCMC.</span>
+<span id="cb51-140"><a href="#cb51-140" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Extract the results.</span>
+<span id="cb51-141"><a href="#cb51-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-142"><a href="#cb51-142" aria-hidden="true" tabindex="-1"></a>More about NIMBLE's MCMC workflows is shown in <span class="co">[</span><span class="ot">this figure</span><span class="co">](./NIMBLE_workflow.html)</span> (also available as <span class="co">[</span><span class="ot">pdf</span><span class="co">](./NIMBLE_workflow.pdf)</span>).</span>
+<span id="cb51-143"><a href="#cb51-143" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb51-144"><a href="#cb51-144" aria-hidden="true" tabindex="-1"></a>GLMM Example: 1. Build the model</span>
+<span id="cb51-145"><a href="#cb51-145" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-146"><a href="#cb51-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-149"><a href="#cb51-149" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-150"><a href="#cb51-150" aria-hidden="true" tabindex="-1"></a>DEconstants <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">num_farms =</span> <span class="dv">24</span>,</span>
+<span id="cb51-151"><a href="#cb51-151" aria-hidden="true" tabindex="-1"></a>                    <span class="at">num_animals =</span> <span class="dv">826</span>,</span>
+<span id="cb51-152"><a href="#cb51-152" aria-hidden="true" tabindex="-1"></a>                    <span class="at">length =</span> DeerEcervi<span class="sc">$</span>ctrLength,</span>
+<span id="cb51-153"><a href="#cb51-153" aria-hidden="true" tabindex="-1"></a>                    <span class="at">sex =</span> DeerEcervi<span class="sc">$</span>Sex,</span>
+<span id="cb51-154"><a href="#cb51-154" aria-hidden="true" tabindex="-1"></a>                    <span class="at">farm_ids =</span> DeerEcervi<span class="sc">$</span>farm_ids)</span>
+<span id="cb51-155"><a href="#cb51-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-156"><a href="#cb51-156" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode,</span>
+<span id="cb51-157"><a href="#cb51-157" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constants =</span> DEconstants)</span>
+<span id="cb51-158"><a href="#cb51-158" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-159"><a href="#cb51-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-160"><a href="#cb51-160" aria-hidden="true" tabindex="-1"></a>GLMM Example: 1b. Set data and inits</span>
+<span id="cb51-161"><a href="#cb51-161" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-162"><a href="#cb51-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-163"><a href="#cb51-163" aria-hidden="true" tabindex="-1"></a>These can be provided at the <span class="in">`nimbleModel`</span> step (above) or now:</span>
+<span id="cb51-166"><a href="#cb51-166" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-167"><a href="#cb51-167" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setData</span>(<span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
+<span id="cb51-168"><a href="#cb51-168" aria-hidden="true" tabindex="-1"></a><span class="co"># This sets the values and *flags the nodes as data*.</span></span>
+<span id="cb51-169"><a href="#cb51-169" aria-hidden="true" tabindex="-1"></a>DEinits <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb51-170"><a href="#cb51-170" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">sex_int =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb51-171"><a href="#cb51-171" aria-hidden="true" tabindex="-1"></a>       <span class="at">length_coef =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb51-172"><a href="#cb51-172" aria-hidden="true" tabindex="-1"></a>       <span class="at">farm_sd =</span> <span class="dv">1</span>,</span>
+<span id="cb51-173"><a href="#cb51-173" aria-hidden="true" tabindex="-1"></a>       <span class="at">farm_effect =</span> <span class="fu">rnorm</span>(<span class="dv">24</span>, <span class="dv">0</span>, <span class="dv">1</span>) )</span>
+<span id="cb51-174"><a href="#cb51-174" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb51-175"><a href="#cb51-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-176"><a href="#cb51-176" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb51-177"><a href="#cb51-177" aria-hidden="true" tabindex="-1"></a>DEmodel<span class="sc">$</span><span class="fu">setInits</span>(<span class="fu">DEinits</span>())</span>
+<span id="cb51-178"><a href="#cb51-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-179"><a href="#cb51-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-180"><a href="#cb51-180" aria-hidden="true" tabindex="-1"></a>GLMM Example: 2. Build the MCMC</span>
+<span id="cb51-181"><a href="#cb51-181" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-184"><a href="#cb51-184" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-185"><a href="#cb51-185" aria-hidden="true" tabindex="-1"></a>DEmcmc <span class="ot">&lt;-</span> <span class="fu">buildMCMC</span>(DEmodel, <span class="at">enableWAIC =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-186"><a href="#cb51-186" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-187"><a href="#cb51-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-188"><a href="#cb51-188" aria-hidden="true" tabindex="-1"></a>GLMM Example: 3. Compile the model and MCMC.</span>
+<span id="cb51-189"><a href="#cb51-189" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-190"><a href="#cb51-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-191"><a href="#cb51-191" aria-hidden="true" tabindex="-1"></a>This can be done in one step or two.  We'll use two.</span>
+<span id="cb51-192"><a href="#cb51-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-195"><a href="#cb51-195" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-196"><a href="#cb51-196" aria-hidden="true" tabindex="-1"></a>cDEmodel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmodel)</span>
+<span id="cb51-197"><a href="#cb51-197" aria-hidden="true" tabindex="-1"></a><span class="co"># First call to compileNimble in a session is slower than later calls.</span></span>
+<span id="cb51-198"><a href="#cb51-198" aria-hidden="true" tabindex="-1"></a>cDEmcmc <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(DEmcmc, <span class="at">project =</span> DEmodel)</span>
+<span id="cb51-199"><a href="#cb51-199" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-200"><a href="#cb51-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-201"><a href="#cb51-201" aria-hidden="true" tabindex="-1"></a>GLMM Example: 4. Run the MCMC</span>
+<span id="cb51-202"><a href="#cb51-202" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-205"><a href="#cb51-205" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-206"><a href="#cb51-206" aria-hidden="true" tabindex="-1"></a>DEresults <span class="ot">&lt;-</span> <span class="fu">runMCMC</span>(cDEmcmc, <span class="at">niter=</span><span class="dv">11000</span>, <span class="at">nburnin=</span><span class="dv">1000</span>, <span class="at">WAIC=</span><span class="cn">TRUE</span>)</span>
+<span id="cb51-207"><a href="#cb51-207" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-208"><a href="#cb51-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-209"><a href="#cb51-209" aria-hidden="true" tabindex="-1"></a>GLMM Example: 5. Extract the samples and WAIC</span>
+<span id="cb51-210"><a href="#cb51-210" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-213"><a href="#cb51-213" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-214"><a href="#cb51-214" aria-hidden="true" tabindex="-1"></a><span class="co"># Samples</span></span>
+<span id="cb51-215"><a href="#cb51-215" aria-hidden="true" tabindex="-1"></a>samples1 <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>samples</span>
+<span id="cb51-216"><a href="#cb51-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-217"><a href="#cb51-217" aria-hidden="true" tabindex="-1"></a><span class="co"># WAIC (Note: there are different flavors of WAIC that can be chosen earlier.)</span></span>
+<span id="cb51-218"><a href="#cb51-218" aria-hidden="true" tabindex="-1"></a>WAIC <span class="ot">&lt;-</span> DEresults<span class="sc">$</span>WAIC</span>
+<span id="cb51-219"><a href="#cb51-219" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-220"><a href="#cb51-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-221"><a href="#cb51-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-222"><a href="#cb51-222" aria-hidden="true" tabindex="-1"></a>GLMM Example: Look at results (1. mcmcplots)</span>
+<span id="cb51-223"><a href="#cb51-223" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-224"><a href="#cb51-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-225"><a href="#cb51-225" aria-hidden="true" tabindex="-1"></a>There are many packages for summarizing and plotting MCMC samples.  NIMBLE does not try to re-invent these wheels.</span>
+<span id="cb51-226"><a href="#cb51-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-227"><a href="#cb51-227" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span><span class="in">`mcmcplots`</span></span>
+<span id="cb51-228"><a href="#cb51-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-229"><a href="#cb51-229" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval=FALSE}</span></span>
+<span id="cb51-230"><a href="#cb51-230" aria-hidden="true" tabindex="-1"></a><span class="co"># Run this code if you want to generate your own results.</span></span>
+<span id="cb51-231"><a href="#cb51-231" aria-hidden="true" tabindex="-1"></a><span class="co"># They won't over-write results that come with these slides.</span></span>
+<span id="cb51-232"><a href="#cb51-232" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots)</span>
+<span id="cb51-233"><a href="#cb51-233" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmcplot</span>(samples1, <span class="at">dir =</span> <span class="st">"."</span>, <span class="at">filename =</span> <span class="st">"Ecervi_samples_mcmcplot"</span>)</span>
+<span id="cb51-234"><a href="#cb51-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-235"><a href="#cb51-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-238"><a href="#cb51-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-239"><a href="#cb51-239" aria-hidden="true" tabindex="-1"></a>WAIC</span>
+<span id="cb51-240"><a href="#cb51-240" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-241"><a href="#cb51-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-242"><a href="#cb51-242" aria-hidden="true" tabindex="-1"></a><span class="in">```{r echo=FALSE, eval=(has_mcmcplots &amp; generate_original_results)}</span></span>
+<span id="cb51-243"><a href="#cb51-243" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the previous code to generate your own results.</span></span>
+<span id="cb51-244"><a href="#cb51-244" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mcmcplots)</span>
+<span id="cb51-245"><a href="#cb51-245" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmcplot</span>(samples1, <span class="at">dir =</span> <span class="st">"."</span>, <span class="at">filename =</span> <span class="st">"orig_Ecervi_samples_mcmcplot"</span>)</span>
+<span id="cb51-246"><a href="#cb51-246" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-247"><a href="#cb51-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-248"><a href="#cb51-248" aria-hidden="true" tabindex="-1"></a>Results that comes with these slides are <span class="co">[</span><span class="ot">here</span><span class="co">](orig_Ecervi_samples_mcmcplot.html)</span>.</span>
+<span id="cb51-249"><a href="#cb51-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-250"><a href="#cb51-250" aria-hidden="true" tabindex="-1"></a>Results if you generated your own will be <span class="co">[</span><span class="ot">here</span><span class="co">](Ecervi_samples_mcmcplot.html)</span>.</span>
+<span id="cb51-251"><a href="#cb51-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-252"><a href="#cb51-252" aria-hidden="true" tabindex="-1"></a>GLMM Example: Look at results (2. coda)</span>
+<span id="cb51-253"><a href="#cb51-253" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-254"><a href="#cb51-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-255"><a href="#cb51-255" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval = FALSE}</span></span>
+<span id="cb51-256"><a href="#cb51-256" aria-hidden="true" tabindex="-1"></a><span class="co"># We haven't provided coda figures, but you can make make them if you want.</span></span>
+<span id="cb51-257"><a href="#cb51-257" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
+<span id="cb51-258"><a href="#cb51-258" aria-hidden="true" tabindex="-1"></a><span class="fu">pdf</span>(<span class="st">"Ecervi_samples_coda.pdf"</span>)</span>
+<span id="cb51-259"><a href="#cb51-259" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.mcmc</span>(samples1))</span>
+<span id="cb51-260"><a href="#cb51-260" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span>
+<span id="cb51-261"><a href="#cb51-261" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-262"><a href="#cb51-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-263"><a href="#cb51-263" aria-hidden="true" tabindex="-1"></a>Results if you generate the coda pdf will be <span class="co">[</span><span class="ot">here</span><span class="co">](Ecervi_samples_coda.pdf)</span>.</span>
+<span id="cb51-264"><a href="#cb51-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-265"><a href="#cb51-265" aria-hidden="true" tabindex="-1"></a>MCMC workflow in NIMBLE</span>
+<span id="cb51-266"><a href="#cb51-266" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-267"><a href="#cb51-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-268"><a href="#cb51-268" aria-hidden="true" tabindex="-1"></a>Let's review again the <span class="co">[</span><span class="ot">MCMC workflows in NIMBLE</span><span class="co">](./NIMBLE_workflow.html)</span> (also available as <span class="co">[</span><span class="ot">pdf</span><span class="co">](./NIMBLE_workflow.pdf)</span>).</span>
+<span id="cb51-269"><a href="#cb51-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-270"><a href="#cb51-270" aria-hidden="true" tabindex="-1"></a>GLMM Example: Doing it all at once with <span class="in">`nimbleMCMC`</span></span>
+<span id="cb51-271"><a href="#cb51-271" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-272"><a href="#cb51-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-273"><a href="#cb51-273" aria-hidden="true" tabindex="-1"></a>Start from:</span>
+<span id="cb51-274"><a href="#cb51-274" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-275"><a href="#cb51-275" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>code</span>
+<span id="cb51-276"><a href="#cb51-276" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>constants + data</span>
+<span id="cb51-277"><a href="#cb51-277" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>inits</span>
+<span id="cb51-278"><a href="#cb51-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-281"><a href="#cb51-281" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-282"><a href="#cb51-282" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb51-283"><a href="#cb51-283" aria-hidden="true" tabindex="-1"></a>DEdataAndConstants <span class="ot">&lt;-</span> <span class="fu">c</span>(DEconstants, </span>
+<span id="cb51-284"><a href="#cb51-284" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01))</span>
+<span id="cb51-285"><a href="#cb51-285" aria-hidden="true" tabindex="-1"></a>samples2 <span class="ot">&lt;-</span> <span class="fu">nimbleMCMC</span>(DEcode,</span>
+<span id="cb51-286"><a href="#cb51-286" aria-hidden="true" tabindex="-1"></a>                       <span class="at">constants =</span> DEdataAndConstants,</span>
+<span id="cb51-287"><a href="#cb51-287" aria-hidden="true" tabindex="-1"></a>                       <span class="at">inits =</span> DEinits,</span>
+<span id="cb51-288"><a href="#cb51-288" aria-hidden="true" tabindex="-1"></a>                       <span class="at">niter =</span> <span class="dv">10000</span>,</span>
+<span id="cb51-289"><a href="#cb51-289" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nburnin =</span> <span class="dv">1000</span>,</span>
+<span id="cb51-290"><a href="#cb51-290" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nchains =</span> <span class="dv">2</span>,</span>
+<span id="cb51-291"><a href="#cb51-291" aria-hidden="true" tabindex="-1"></a>                       <span class="at">samplesAsCodaMCMC =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-292"><a href="#cb51-292" aria-hidden="true" tabindex="-1"></a>                       <span class="at">WAIC =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-293"><a href="#cb51-293" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples2<span class="sc">$</span>samples) <span class="do">## from coda</span></span>
+<span id="cb51-294"><a href="#cb51-294" aria-hidden="true" tabindex="-1"></a>samples2<span class="sc">$</span>WAIC</span>
+<span id="cb51-295"><a href="#cb51-295" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-296"><a href="#cb51-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-297"><a href="#cb51-297" aria-hidden="true" tabindex="-1"></a>GLMM Example: Managing the run at the lowest level with <span class="in">`mcmc$run`</span>"</span>
+<span id="cb51-298"><a href="#cb51-298" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb51-299"><a href="#cb51-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-300"><a href="#cb51-300" aria-hidden="true" tabindex="-1"></a>Start from:</span>
+<span id="cb51-301"><a href="#cb51-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-302"><a href="#cb51-302" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Compiled MCMC</span>
+<span id="cb51-303"><a href="#cb51-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-306"><a href="#cb51-306" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-307"><a href="#cb51-307" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">run</span>(<span class="at">niter =</span> <span class="dv">11000</span>, <span class="at">nburnin=</span><span class="dv">1000</span>)</span>
+<span id="cb51-308"><a href="#cb51-308" aria-hidden="true" tabindex="-1"></a>samples3 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(cDEmcmc<span class="sc">$</span>mvSamples)</span>
+<span id="cb51-309"><a href="#cb51-309" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(samples3)</span>
+<span id="cb51-310"><a href="#cb51-310" aria-hidden="true" tabindex="-1"></a>cDEmcmc<span class="sc">$</span><span class="fu">getWAIC</span>()</span>
+<span id="cb51-311"><a href="#cb51-311" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

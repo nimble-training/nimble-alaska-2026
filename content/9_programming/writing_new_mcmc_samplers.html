@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="NIMBLE Development Team">
+<meta name="dcterms.date" content="2026-06-01">
+
+<title>Writing new MCMC samplers (or other nimbleFunctions)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-a9ac95982dfa497af26296eb1ce0c91d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../content/9_programming/writing_new_mcmc_samplers.html">Module 9b: Programming and user samplers</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">NIMBLE Alaska ASA Workshop</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/nimble-training/nimble-alaska-2026" title="" class="quarto-navigation-tool px-1" aria-label="GitHub"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/1_introduction_to_nimble/introduction_to_nimble.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 1: Intro</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/2_nimble_models/nimble_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 2: Models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/3_comparing_and_customizing_mcmc/comparing_and_customizing_mcmc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 3: MCMC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/4_improving_mcmc/improving_mcmc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 4: Improving MCMC</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/5_spatial_models/spatial_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 5: Spatial models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/6_user_defined/extending_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 6: Extending models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/7_ecological_models/ecological_models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 7: Ecological models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/8_intro_nimblefunctions/intro_nimblefunctions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 8: Introduction to nimbleFunctions</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/9_programming/nimblefunction_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 9a: Programming and user samplers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/9_programming/writing_new_mcmc_samplers.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Module 9b: Programming and user samplers</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/10_laplace/laplace.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 10: Laplace and related approximations</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../content/11_future_directions_for_nimble/future_directions_for_nimble.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Module 11: Towards NIMBLE 2.0</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda</a></li>
+  <li><a href="#load-deer-e.-cervi-example" id="toc-load-deer-e.-cervi-example" class="nav-link" data-scroll-target="#load-deer-e.-cervi-example">Load Deer E. cervi example</a></li>
+  <li><a href="#design-of-nimbles-mcmc-system" id="toc-design-of-nimbles-mcmc-system" class="nav-link" data-scroll-target="#design-of-nimbles-mcmc-system">Design of <code>nimble</code>’s MCMC system</a></li>
+  <li><a href="#example-of-mcmc-configuration-object" id="toc-example-of-mcmc-configuration-object" class="nav-link" data-scroll-target="#example-of-mcmc-configuration-object">Example of MCMC configuration object</a></li>
+  <li><a href="#what-happens-from-an-mcmc-configuration-object" id="toc-what-happens-from-an-mcmc-configuration-object" class="nav-link" data-scroll-target="#what-happens-from-an-mcmc-configuration-object">What happens from an MCMC configuration object?</a></li>
+  <li><a href="#two-stage-evaluation-in-nimblefunctions" id="toc-two-stage-evaluation-in-nimblefunctions" class="nav-link" data-scroll-target="#two-stage-evaluation-in-nimblefunctions">Two-stage evaluation in nimbleFunctions</a></li>
+  <li><a href="#two-stage-evaluation-in-nimblefunctions-1" id="toc-two-stage-evaluation-in-nimblefunctions-1" class="nav-link" data-scroll-target="#two-stage-evaluation-in-nimblefunctions-1">Two-stage evaluation in nimbleFunctions</a></li>
+  <li><a href="#go-to-r-to-demonstrate-uncompiled-browsingdebugging." id="toc-go-to-r-to-demonstrate-uncompiled-browsingdebugging." class="nav-link" data-scroll-target="#go-to-r-to-demonstrate-uncompiled-browsingdebugging.">Go to R to demonstrate uncompiled browsing/debugging.</a></li>
+  <li><a href="#more-about-nimblefunctions" id="toc-more-about-nimblefunctions" class="nav-link" data-scroll-target="#more-about-nimblefunctions">More about nimbleFunctions</a>
+  <ul class="collapse">
+  <li><a href="#nimblefunction-class-definitions-i.e-with-setup-code" id="toc-nimblefunction-class-definitions-i.e-with-setup-code" class="nav-link" data-scroll-target="#nimblefunction-class-definitions-i.e-with-setup-code">nimbleFunction class definitions (i.e with setup code)</a></li>
+  </ul></li>
+  <li><a href="#a-basic-random-walk-metropolis-hastings-sampler" id="toc-a-basic-random-walk-metropolis-hastings-sampler" class="nav-link" data-scroll-target="#a-basic-random-walk-metropolis-hastings-sampler">A basic Random-Walk Metropolis-Hastings sampler</a></li>
+  <li><a href="#rules-for-each-sampler" id="toc-rules-for-each-sampler" class="nav-link" data-scroll-target="#rules-for-each-sampler">Rules for each sampler</a>
+  <ul class="collapse">
+  <li><a href="#setup-function" id="toc-setup-function" class="nav-link" data-scroll-target="#setup-function">setup function</a></li>
+  <li><a href="#run-function" id="toc-run-function" class="nav-link" data-scroll-target="#run-function">run function</a></li>
+  <li><a href="#reset-function" id="toc-reset-function" class="nav-link" data-scroll-target="#reset-function">reset function</a></li>
+  </ul></li>
+  <li><a href="#introduction-to-modelvalues" id="toc-introduction-to-modelvalues" class="nav-link" data-scroll-target="#introduction-to-modelvalues">Introduction to <code>modelValues</code></a></li>
+  <li><a href="#stepping-through-uncompiled-execution" id="toc-stepping-through-uncompiled-execution" class="nav-link" data-scroll-target="#stepping-through-uncompiled-execution">Stepping through uncompiled execution</a></li>
+  <li><a href="#stepping-through-uncompiled-execution-1" id="toc-stepping-through-uncompiled-execution-1" class="nav-link" data-scroll-target="#stepping-through-uncompiled-execution-1">Stepping through uncompiled execution</a></li>
+  <li><a href="#simplified-barker-sampler" id="toc-simplified-barker-sampler" class="nav-link" data-scroll-target="#simplified-barker-sampler">Simplified Barker sampler</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Writing new MCMC samplers (or other nimbleFunctions)</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">NIMBLE Alaska ASA Workshop</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>NIMBLE Development Team </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 1, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
+<section id="agenda" class="level1">
+<h1>Agenda</h1>
+<ol type="1">
+<li>Design of NIMBLE’s MCMC system</li>
+<li>Two-stage evaluation of nimbleFunctions with setup code.</li>
+<li>Setting up a new sampler: A simple Metropolis-Hastings example</li>
+<li>Worked example: sampler that jointly updates intercepts and random effects in the E. cervi example.</li>
+</ol>
+</section>
+<section id="load-deer-e.-cervi-example" class="level1">
+<h1>Load Deer E. cervi example</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"examples"</span>, <span class="st">"DeerEcervi"</span>, <span class="st">"load_DeerEcervi.R"</span>), </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">chdir =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">constants =</span> DEconstants,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> <span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">inits =</span> <span class="fu">DEinits</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Defining model</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Building model</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Setting data and initial values</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Running calculate on model
+  [Note] Any error reports that follow may simply reflect missing values in model variables.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Checking model sizes and dimensions</code></pre>
+</div>
+</div>
+</section>
+<section id="design-of-nimbles-mcmc-system" class="level1">
+<h1>Design of <code>nimble</code>’s MCMC system</h1>
+<p>Here is a figure of MCMC configuration and MCMCs:<a href="nimble_MCMC_design.pdf">nimble_MCMC_design.pdf</a></p>
+<ol type="1">
+<li>MCMC configuration object: Contains a list of sampler assignments, not actual samplers.</li>
+<li>MCMC object: Contains a list of sampler objects.</li>
+</ol>
+<p>To write new samplers, we need to understand:</p>
+<ul>
+<li>Two-stage evaluation of nimbleFunctions with setup code.</li>
+<li>Setup (configuration) rules for using a new MCMC sampler</li>
+<li>Run-time rules for management of model calculations and saved states.</li>
+<li>More about nimbleFunction programming.</li>
+</ul>
+</section>
+<section id="example-of-mcmc-configuration-object" class="level1">
+<h1>Example of MCMC configuration object</h1>
+<p>Look at MCMC configuration object for just a few nodes</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mcmcConf <span class="ot">&lt;-</span> <span class="fu">configureMCMC</span>(DEmodel, <span class="at">nodes =</span> <span class="st">'farm_effect[1:3]'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>===== Monitors =====
+thin = 1: farm_sd, length_coef, sex_int
+===== Samplers =====
+RW sampler (3)
+  - farm_effect[]  (3 elements)
+===== Comments =====</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>  [Warning] No samplers assigned for 26 nodes, use conf$getUnsampledNodes() for node names.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(mcmcConf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "MCMCconf"
+attr(,"package")
+[1] "nimble"</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span>(mcmcConf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "addConjugateSampler"            "addDefaultSampler"             
+ [3] "addDerivedQuantity"             "addMonitors"                   
+ [5] "addMonitors2"                   "addOneDerivedQuantity"         
+ [7] "addOneSampler"                  "addSampler"                    
+ [9] "allowData_global"               "controlDefaults"               
+[11] "controlWAIC"                    "derivedConfs"                  
+[13] "enableWAIC"                     "filterOutDataNodes"            
+[15] "findSamplersOnNodes"            "getSamplers"                   
+[17] "initialize"                     "isMvSamplesReady"              
+[19] "model"                          "monitors"                      
+[21] "monitors2"                      "mvSamples1Conf"                
+[23] "mvSamples2Conf"                 "postPredSamplerDownstreamNodes"
+[25] "printComments"                  "printDerivedQuantities"        
+[27] "printDerivedQuantitiesByType"   "printMonitors"                 
+[29] "printSamplers"                  "printSamplersByType"           
+[31] "removeSamplers"                 "samplerConfs"                  
+[33] "samplerExecutionOrder"          "setThin"                       
+[35] "setThin2"                       "setUnsampledNodes"             
+[37] "show"                           "thin"                          
+[39] "thin2"                          "unsampledNodes"                
+[41] "warnUnsampledNodes"            </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fe1_sampler <span class="ot">&lt;-</span> mcmcConf<span class="sc">$</span><span class="fu">getSamplers</span>(<span class="st">"farm_effect[1]"</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(fe1_sampler)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "samplerConf"
+attr(,"package")
+[1] "nimble"</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span>(fe1_sampler)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "baseClassName"   "control"         "initialize"      "name"           
+ [5] "samplerFunction" "setControl"      "setFunction"     "setName"        
+ [9] "setTarget"       "target"          "targetAsScalar" </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fe1_sampler<span class="sc">$</span>target</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "farm_effect[1]"</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>fe1_sampler<span class="sc">$</span>control</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>list()</code></pre>
+</div>
+</div>
+</section>
+<section id="what-happens-from-an-mcmc-configuration-object" class="level1">
+<h1>What happens from an MCMC configuration object?</h1>
+<p>Eventually, an MCMC sampler object is created by a call like this (for adaptive random-walk MH):</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sampler_RW</span>(model, mvSaved, target, control)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>This is stage one of two-stage evaluation. It instantiates an object of a <code>sampler_RW</code> class.</li>
+<li><code>model</code> is the model</li>
+<li><code>mvSaved</code> is a <code>modelValues</code> object for keeping a set of saved model states.</li>
+<li><code>target</code> is a vector of target node names</li>
+<li><code>control</code> is a list of whatever sampler-specific configuration settings are needed.</li>
+</ul>
+</section>
+<section id="two-stage-evaluation-in-nimblefunctions" class="level1">
+<h1>Two-stage evaluation in nimbleFunctions</h1>
+<p>Say we want a nimbleFunction to calculate some nodes and their dependencies.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>calcDepsNF <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, nodes) { <span class="co"># setup function gives first stage of evalution</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(nodes)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {               <span class="co"># run function (or other methods) give sectond stage of evaluation</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    ans <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ans)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="two-stage-evaluation-in-nimblefunctions-1" class="level1">
+<h1>Two-stage evaluation in nimbleFunctions</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1 <span class="ot">&lt;-</span> <span class="fu">calcDepsNF</span>(DEmodel, <span class="st">'farm_effect[1]'</span>) <span class="do">## first stage: setup code</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1<span class="sc">$</span><span class="fu">run</span>() <span class="do">## second stage: run code</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -11.21395</code></pre>
+</div>
+</div>
+<p>We could compiled <code>calcDeps_farm1</code>. Then <code>run</code> would become a method of a C++ class.</p>
+<p>Notice that:</p>
+<ul>
+<li><code>calcDeps_farm1</code> is an R reference class object of a custom-generated class.</li>
+<li><code>model</code> and <code>calcNodes</code> are fields in the class</li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(calcDeps_farm1) <span class="do">## We could have used nimbleFunction's name argument to set the class name</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "nfRefClass_R_GlobalEnv15"
+attr(,"package")
+[1] ".GlobalEnv"</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1<span class="sc">$</span>calcNodes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "farm_effect[1]"          "disease_probability[1]" 
+ [3] "disease_probability[2]"  "disease_probability[3]" 
+ [5] "disease_probability[4]"  "disease_probability[5]" 
+ [7] "disease_probability[6]"  "disease_probability[7]" 
+ [9] "disease_probability[8]"  "disease_probability[9]" 
+[11] "disease_probability[10]" "disease_probability[11]"
+[13] "disease_probability[12]" "disease_probability[13]"
+[15] "disease_probability[14]" "disease_probability[15]"
+[17] "Ecervi_01[1]"            "Ecervi_01[2]"           
+[19] "Ecervi_01[3]"            "Ecervi_01[4]"           
+[21] "Ecervi_01[5]"            "Ecervi_01[6]"           
+[23] "Ecervi_01[7]"            "Ecervi_01[8]"           
+[25] "Ecervi_01[9]"            "Ecervi_01[10]"          
+[27] "Ecervi_01[11]"           "Ecervi_01[12]"          
+[29] "Ecervi_01[13]"           "Ecervi_01[14]"          
+[31] "Ecervi_01[15]"          </code></pre>
+</div>
+</div>
+</section>
+<section id="go-to-r-to-demonstrate-uncompiled-browsingdebugging." class="level1">
+<h1>Go to R to demonstrate uncompiled browsing/debugging.</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>calcDepsNF <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, nodes) {</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(nodes)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    ans <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ans)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>) <span class="do">## warning about not being able to compiled with browser() is expected.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Stepping through debugging from <code>browser()</code> will not work well in Rmarkdown, so this code is not evaluated. Run it in your own R session.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1 <span class="ot">&lt;-</span> <span class="fu">calcDepsNF</span>(DEmodel, <span class="st">'farm_effect[1]'</span>) <span class="do">## We'll see the setup code followed by internal code.</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1<span class="sc">$</span><span class="fu">run</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="more-about-nimblefunctions" class="level1">
+<h1>More about nimbleFunctions</h1>
+<ul>
+<li>Without setup code, a <code>nimbleFunction</code> becomes an R function (uncompiled) and a C++ function (compiled).</li>
+<li>With setup code, a <code>nimbleFunction</code> becomes an R reference class definition (uncompiled) and a C++ class definition (compiled).
+<ul>
+<li><code>nimbleFunction</code> returns a generator (aka constructor, aka initializer) of new class objects.</li>
+</ul></li>
+</ul>
+<section id="nimblefunction-class-definitions-i.e-with-setup-code" class="level3">
+<h3 class="anchored" data-anchor-id="nimblefunction-class-definitions-i.e-with-setup-code">nimbleFunction class definitions (i.e with setup code)</h3>
+<ul>
+<li><code>setup</code> is always executed in R.
+<ul>
+<li>Typically one-time, high-level processing such as querying model structure.</li>
+</ul></li>
+<li><code>run</code> and other methods can be run uncompiled (in R) or compiled (via C++).
+<ul>
+<li>Typically repeated “actual algorithm” calculations such as MCMC sampler updates.</li>
+<li>Can operate models.</li>
+</ul></li>
+<li>Any objects (e.g.&nbsp;<code>calcNodes</code> and <code>model</code>) in <code>setup</code> can be used in <code>run</code>.
+<ul>
+<li>Internally, these are automatically set up as class member data.</li>
+<li>You do not need to explicitly declare class member data.</li>
+<li>Nodes used in model operations are “baked in” (aka partially evaluated) during compilation.
+<ul>
+<li>Node vectors must be created in setup code and used in run code.</li>
+<li>They can’t be dynamically modified in run code.</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="a-basic-random-walk-metropolis-hastings-sampler" class="level1">
+<h1>A basic Random-Walk Metropolis-Hastings sampler</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>ourMH <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">'ourMH'</span>,                              <span class="co"># Convenient for class name of R reference class and generated C++ class</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">contains =</span> sampler_BASE,                     <span class="co"># There is a simple class inheritance system.</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, mvSaved, target, control) {                 <span class="co"># REQUIRED setup arguments</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    scale <span class="ot">&lt;-</span> <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.null</span>(control<span class="sc">$</span>scale)) control<span class="sc">$</span>scale <span class="cf">else</span> <span class="dv">1</span>         <span class="co"># Typical extraction of control choices</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(target)                        <span class="co"># Typical query of model structure</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  },                                                                  <span class="co"># setup can't return anything</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    currentValue <span class="ot">&lt;-</span> model[[target]]                                   <span class="co"># extract current value</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    currentLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getLogProb</span>(calcNodes)                     <span class="co"># get log "denominator" from cached values</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    proposalValue <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> currentValue, <span class="at">sd =</span> scale)        <span class="co"># generate proposal value</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    model[[target]] <span class="ot">&lt;&lt;-</span> proposalValue                                 <span class="co"># put proposal value in model</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    proposalLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)                     <span class="co"># calculate log "numerator" </span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    logAcceptanceRatio <span class="ot">&lt;-</span> currentLogProb <span class="sc">-</span> proposalLogProb            <span class="co"># log acceptance ratio</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Alternative:</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># logAcceptanceRatio &lt;- model$calculateDiff(calcNodes)</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    accept <span class="ot">&lt;-</span> <span class="fu">decide</span>(logMHR)                                          <span class="co"># utility function to generate accept/reject decision</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(accept)                                                        <span class="co"># accept synchronize model -&gt; mvSaved</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> model, <span class="at">to =</span> mvSaved, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>                                                              <span class="co"># reject: synchronize mvSaved -&gt; model</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> mvSaved, <span class="at">to =</span> model, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(                              <span class="co"># required method for sampler_BASE base class</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">reset =</span> <span class="cf">function</span>() {}</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="rules-for-each-sampler" class="level1">
+<h1>Rules for each sampler</h1>
+<section id="setup-function" class="level3">
+<h3 class="anchored" data-anchor-id="setup-function">setup function</h3>
+<ul>
+<li>The four arguments, named exactly as shown, are required. This allows <code>buildMCMC</code> to create any sampler correctly.</li>
+</ul>
+</section>
+<section id="run-function" class="level3">
+<h3 class="anchored" data-anchor-id="run-function">run function</h3>
+<ul>
+<li>The <code>mvSaved</code> (“modelValues saved”) has a saved copy of all model variables and log probabilities</li>
+<li>Upon entry, <code>run()</code> can assume:
+<ul>
+<li>the model is fully calculated (so <code>getLogProb</code> and <code>calculateDiff</code> make sense).</li>
+<li><code>mvSaved</code> and the model are synchronized (have the same values).</li>
+</ul></li>
+<li>Upon exit, <code>run()</code> must ensure those conditions are met.
+<ul>
+<li>That way the next sampler can operator correctly.</li>
+</ul></li>
+<li>Between entry and exit, <code>run()</code> can manipulate the model in any way necessary.</li>
+</ul>
+</section>
+<section id="reset-function" class="level3">
+<h3 class="anchored" data-anchor-id="reset-function">reset function</h3>
+<ul>
+<li>To match the <code>sampler_BASE</code> definition, all samplers must have a <code>reset()</code> function.</li>
+</ul>
+</section>
+</section>
+<section id="introduction-to-modelvalues" class="level1">
+<h1>Introduction to <code>modelValues</code></h1>
+<ul>
+<li>A <code>modelValues</code> class does the job of holding multiple sets of values of
+<ul>
+<li>model variables and</li>
+<li>log probabilities (“logProbs”) of stochastic nodes.</li>
+</ul></li>
+<li>We think of each set of values as a “row”.</li>
+<li><code>modelValues</code> classes are like <code>nimbleFunctions</code> in that:
+<ul>
+<li>They can be compiled.</li>
+<li>They should work the same way compiled and uncompiled.</li>
+</ul></li>
+<li>MCMC output is stored in a <code>modelValues</code> object (called <code>mvSamples</code>).</li>
+<li>Each <code>modelValues</code> class comes from a configuration of what variables are needed (and their types and sizes).
+<ul>
+<li>Typically the configuration is generated from a model or from variables monitored in MCMC.</li>
+<li>(Actually, one can hand-configure a <code>modelValues</code> in any way one wants.)</li>
+</ul></li>
+<li>MCMC uses one <code>modelValues</code> object configured for <strong>all</strong> model variables and logProbs.
+<ul>
+<li>Only a single “row” is needed.</li>
+</ul></li>
+<li>This is the <code>mvSaved</code> and must be synchronized with the model at entry and exit of each sampler.</li>
+</ul>
+</section>
+<section id="stepping-through-uncompiled-execution" class="level1">
+<h1>Stepping through uncompiled execution</h1>
+<p>Version with <code>browser()</code>s</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>ourMH_debug <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">'ourMH_debug'</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">contains =</span> sampler_BASE,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, mvSaved, target, control) {</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    scale <span class="ot">&lt;-</span> <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.null</span>(control<span class="sc">$</span>scale)) control<span class="sc">$</span>scale <span class="cf">else</span> <span class="dv">1</span> </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(target)                </span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  },                                                          </span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    currentValue <span class="ot">&lt;-</span> model[[target]]                           </span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    currentLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getLogProb</span>(calcNodes)             </span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    proposalValue <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> currentValue, <span class="at">sd =</span> scale)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>    model[[target]] <span class="ot">&lt;&lt;-</span> proposalValue                             </span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    proposalLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)             </span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>    logAcceptanceRatio <span class="ot">&lt;-</span> currentLogProb <span class="sc">-</span> proposalLogProb    </span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    accept <span class="ot">&lt;-</span> <span class="fu">decide</span>(logMHR)                                     </span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(accept)                                                   </span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> model, <span class="at">to =</span> mvSaved, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>                                                         </span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> mvSaved, <span class="at">to =</span> model, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(                              </span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">reset =</span> <span class="cf">function</span>() {}</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>  [Note] Detected possible use of R functions in nimbleFunction run code.
+         For this nimbleFunction to compile, 'browser' must be defined as a nimbleFunction, nimbleFunctionList, or nimbleList.</code></pre>
+</div>
+</div>
+</section>
+<section id="stepping-through-uncompiled-execution-1" class="level1">
+<h1>Stepping through uncompiled execution</h1>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>mcmcConf <span class="ot">&lt;-</span> <span class="fu">configureMCMC</span>(DEmodel, <span class="at">nodes =</span> <span class="cn">NULL</span>) <span class="do">## Make an empty configuration</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>===== Monitors =====
+thin = 1: farm_sd, length_coef, sex_int
+===== Samplers =====
+(no samplers assigned)
+===== Comments =====</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>  [Warning] No samplers assigned for 29 nodes, use conf$getUnsampledNodes() for node names.</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>mcmcConf<span class="sc">$</span><span class="fu">addSampler</span>(<span class="at">type =</span> <span class="st">"ourMH_debug"</span>, <span class="at">target =</span> <span class="st">'farm_effect[1]'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run this on your own to step through in debug (browser) mode.</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>mcmc <span class="ot">&lt;-</span> <span class="fu">buildMCMC</span>(mcmcConf)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>mcmc<span class="sc">$</span><span class="fu">run</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="simplified-barker-sampler" class="level1">
+<h1>Simplified Barker sampler</h1>
+<p>The Barker sampler is a built-in sampler in NIMBLE.</p>
+<p>Since all samplers are just nimbleFunctions with a few special requirements, we can easily inspect the code, modify/extend a sampler, and use a modified or new sampler in a NIMBLE MCMC.</p>
+<p>Let’s see what this looks like for a (simplified) Barker sampler.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>sampler_barker <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">contains =</span> sampler_BASE,  <span class="co"># Required class inheritance to work within NIMBLE's MCMC engine</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">setup =</span> <span class="cf">function</span>(model, mvSaved, target, control) {</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Set algorithm control knobs.</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>        scale <span class="ot">&lt;-</span> <span class="dv">1</span>; sigma <span class="ot">&lt;-</span> <span class="fl">0.1</span>; adaptIntervalCov <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>        adaptFactorExponent <span class="ot">&lt;-</span> <span class="fl">0.6</span>  <span class="co"># Per Livingstone &amp; Zanella 2022.</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>        targetAcceptanceRate <span class="ot">&lt;-</span> <span class="fl">0.574</span>  <span class="co"># Per Vogrinc et al. 2023.</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Determine relevant nodes in the model.</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>        targetNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">expandNodeNames</span>(target)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>        targetNodesAsScalars <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">expandNodeNames</span>(target, <span class="at">returnScalarComponents =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>        calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(targetNodes)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Process bounds and transformations as sampler works on whole real line.</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>        my_parameterTransform <span class="ot">&lt;-</span> <span class="fu">parameterTransform</span>(model, targetNodesAsScalars)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>        d <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">getTransformedLength</span>()</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>        nimDerivs_wrt <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>d</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Boilerplate code to set up node information needed for AD.</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>        derivsInfo_return <span class="ot">&lt;-</span> <span class="fu">makeModelDerivsInfo</span>(model, targetNodes, calcNodes)</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>        nimDerivs_updateNodes   <span class="ot">&lt;-</span> derivsInfo_return<span class="sc">$</span>updateNodes</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>        nimDerivs_constantNodes <span class="ot">&lt;-</span> derivsInfo_return<span class="sc">$</span>constantNodes</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Set up proposal covariance structures.</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>        propCov <span class="ot">&lt;-</span> <span class="fu">diag</span>(d)</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>        U <span class="ot">&lt;-</span> <span class="fu">chol</span>(propCov)</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a>        empirSamp <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> adaptIntervalCov, <span class="at">ncol =</span> d)</span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>        zeros <span class="ot">&lt;-</span> <span class="fu">nimNumeric</span>(d, <span class="at">value =</span> <span class="dv">0</span>)</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>        gradCurrent <span class="ot">&lt;-</span> <span class="fu">numeric</span>(d); gradProposed <span class="ot">&lt;-</span> <span class="fu">numeric</span>(d)</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>        current <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">transform</span>(<span class="fu">values</span>(model, targetNodes))</span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a>        oldLogDetJacobian <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">logDetJacobian</span>(current)</span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Implement Barker proposal following Livingstone and Zanella (2022).</span></span>
+<span id="cb40-37"><a href="#cb40-37" aria-hidden="true" tabindex="-1"></a>        gradCurrent <span class="ot">&lt;&lt;-</span> <span class="fu">gradient</span>(current)</span>
+<span id="cb40-38"><a href="#cb40-38" aria-hidden="true" tabindex="-1"></a>        z <span class="ot">&lt;-</span> scale <span class="sc">*</span> <span class="fu">rnorm</span>(d, <span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">-</span>sigma<span class="sc">^</span><span class="dv">2</span>), sigma)</span>
+<span id="cb40-39"><a href="#cb40-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-40"><a href="#cb40-40" aria-hidden="true" tabindex="-1"></a>        noflipProb <span class="ot">&lt;-</span> <span class="fu">expit</span>((U<span class="sc">%*%</span>gradCurrent)[,<span class="dv">1</span>]<span class="sc">*</span>z)</span>
+<span id="cb40-41"><a href="#cb40-41" aria-hidden="true" tabindex="-1"></a>        noflip <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (<span class="fu">runif</span>(d) <span class="sc">&lt;</span> noflipProb) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb40-42"><a href="#cb40-42" aria-hidden="true" tabindex="-1"></a>        diff <span class="ot">&lt;-</span> noflip <span class="sc">*</span> z</span>
+<span id="cb40-43"><a href="#cb40-43" aria-hidden="true" tabindex="-1"></a>        proposal <span class="ot">&lt;-</span> current <span class="sc">+</span> (L <span class="sc">%*%</span> diff)[,<span class="dv">1</span>]</span>
+<span id="cb40-44"><a href="#cb40-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-45"><a href="#cb40-45" aria-hidden="true" tabindex="-1"></a>        <span class="fu">values</span>(model, targetNodes) <span class="ot">&lt;&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">inverseTransform</span>(proposal)</span>
+<span id="cb40-46"><a href="#cb40-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-47"><a href="#cb40-47" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Determine accept/reject.</span></span>
+<span id="cb40-48"><a href="#cb40-48" aria-hidden="true" tabindex="-1"></a>        gradProposed <span class="ot">&lt;&lt;-</span> <span class="fu">gradient</span>(proposal)</span>
+<span id="cb40-49"><a href="#cb40-49" aria-hidden="true" tabindex="-1"></a>        newLogDetJacobian <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">logDetJacobian</span>(proposal)</span>
+<span id="cb40-50"><a href="#cb40-50" aria-hidden="true" tabindex="-1"></a>        lpD <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculateDiff</span>(calcNodes) <span class="sc">+</span> newLogDetJacobian <span class="sc">-</span></span>
+<span id="cb40-51"><a href="#cb40-51" aria-hidden="true" tabindex="-1"></a>            oldLogDetJacobian <span class="sc">+</span> <span class="fu">calculateLogHastingsRatio</span>(diff)</span>
+<span id="cb40-52"><a href="#cb40-52" aria-hidden="true" tabindex="-1"></a>        jump <span class="ot">&lt;-</span> <span class="fu">decide</span>(lpD)</span>
+<span id="cb40-53"><a href="#cb40-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-54"><a href="#cb40-54" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Cache current state of model in a "modelValues" data structure.</span></span>
+<span id="cb40-55"><a href="#cb40-55" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>(jump) <span class="fu">nimCopy</span>(<span class="at">from =</span> model, <span class="at">to =</span> mvSaved, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-56"><a href="#cb40-56" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>     <span class="fu">nimCopy</span>(<span class="at">from =</span> mvSaved, <span class="at">to =</span> model, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-57"><a href="#cb40-57" aria-hidden="true" tabindex="-1"></a>        <span class="fu">adaptPropCov</span>(<span class="fu">min</span>(<span class="dv">1</span>,<span class="fu">exp</span>(lpD))</span>
+<span id="cb40-58"><a href="#cb40-58" aria-hidden="true" tabindex="-1"></a>    <span class="er">}</span>,</span>
+<span id="cb40-59"><a href="#cb40-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb40-60"><a href="#cb40-60" aria-hidden="true" tabindex="-1"></a>        <span class="at">gradient =</span> <span class="cf">function</span>(<span class="at">values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb40-61"><a href="#cb40-61" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use NIMBLE's AD system to get first derivative of model log-density w.r.t. parameters.</span></span>
+<span id="cb40-62"><a href="#cb40-62" aria-hidden="true" tabindex="-1"></a>            derivsOutput <span class="ot">&lt;-</span> <span class="fu">nimDerivs</span>(<span class="fu">calcLogProb</span>(values), <span class="at">order =</span> <span class="dv">1</span>, <span class="at">wrt =</span> nimDerivs_wrt,</span>
+<span id="cb40-63"><a href="#cb40-63" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">model =</span> model, <span class="at">updateNodes =</span> nimDerivs_updateNodes,</span>
+<span id="cb40-64"><a href="#cb40-64" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">constantNodes =</span> nimDerivs_constantNodes)</span>
+<span id="cb40-65"><a href="#cb40-65" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>(<span class="dv">1</span>))</span>
+<span id="cb40-66"><a href="#cb40-66" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(derivsOutput<span class="sc">$</span>jacobian[<span class="dv">1</span>, <span class="dv">1</span><span class="sc">:</span>d])</span>
+<span id="cb40-67"><a href="#cb40-67" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb40-68"><a href="#cb40-68" aria-hidden="true" tabindex="-1"></a>        <span class="at">inverseTransformStoreCalculate =</span> <span class="cf">function</span>(<span class="at">values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb40-69"><a href="#cb40-69" aria-hidden="true" tabindex="-1"></a>            <span class="fu">values</span>(model, targetNodes) <span class="ot">&lt;&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">inverseTransform</span>(values)</span>
+<span id="cb40-70"><a href="#cb40-70" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes))</span>
+<span id="cb40-71"><a href="#cb40-71" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb40-72"><a href="#cb40-72" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb40-73"><a href="#cb40-73" aria-hidden="true" tabindex="-1"></a>        <span class="at">calcLogProb =</span> <span class="cf">function</span>(<span class="at">values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb40-74"><a href="#cb40-74" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(<span class="fu">inverseTransformStoreCalculate</span>(values) <span class="sc">+</span> my_parameterTransform<span class="sc">$</span><span class="fu">logDetJacobian</span>(values))</span>
+<span id="cb40-75"><a href="#cb40-75" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb40-76"><a href="#cb40-76" aria-hidden="true" tabindex="-1"></a>        },       </span>
+<span id="cb40-77"><a href="#cb40-77" aria-hidden="true" tabindex="-1"></a>        <span class="at">calculateLogHastingsRatio =</span> <span class="cf">function</span>(<span class="at">diff =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb40-78"><a href="#cb40-78" aria-hidden="true" tabindex="-1"></a>            beta1 <span class="ot">&lt;-</span> (U <span class="sc">%*%</span> gradProposed)[,<span class="dv">1</span>] <span class="sc">*</span> diff</span>
+<span id="cb40-79"><a href="#cb40-79" aria-hidden="true" tabindex="-1"></a>            beta2 <span class="ot">&lt;-</span> <span class="sc">-</span> (U <span class="sc">%*%</span> gradCurrent)[,<span class="dv">1</span>] <span class="sc">*</span> diff</span>
+<span id="cb40-80"><a href="#cb40-80" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(<span class="fu">sum</span>(<span class="fu">pmax</span>(beta2, zeros) <span class="sc">-</span> <span class="fu">pmax</span>(beta1, zeros)) <span class="sc">+</span></span>
+<span id="cb40-81"><a href="#cb40-81" aria-hidden="true" tabindex="-1"></a>                <span class="fu">sum</span>(<span class="fu">log1p</span>(<span class="fu">exp</span>(<span class="sc">-</span><span class="fu">abs</span>(beta2))) <span class="sc">-</span> <span class="fu">log1p</span>(<span class="fu">exp</span>(<span class="sc">-</span><span class="fu">abs</span>(beta1)))))</span>
+<span id="cb40-82"><a href="#cb40-82" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb40-83"><a href="#cb40-83" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb40-84"><a href="#cb40-84" aria-hidden="true" tabindex="-1"></a>        <span class="at">adaptPropCov =</span> <span class="cf">function</span>(<span class="at">acceptProb =</span> <span class="fu">double</span>()) {</span>
+<span id="cb40-85"><a href="#cb40-85" aria-hidden="true" tabindex="-1"></a>            <span class="do">## Adapt the proposal covariance using `adaptFactorExponent`,  `targetAcceptanceRate`,</span></span>
+<span id="cb40-86"><a href="#cb40-86" aria-hidden="true" tabindex="-1"></a>            <span class="do">## `empirSamp`, etc.</span></span>
+<span id="cb40-87"><a href="#cb40-87" aria-hidden="true" tabindex="-1"></a>            <span class="do">## Code omitted for brevity. See `nimble::sampler_barker`.            }</span></span>
+<span id="cb40-88"><a href="#cb40-88" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb40-89"><a href="#cb40-89" aria-hidden="true" tabindex="-1"></a>        <span class="at">reset =</span> <span class="cf">function</span>() {</span>
+<span id="cb40-90"><a href="#cb40-90" aria-hidden="true" tabindex="-1"></a>            <span class="do">## Not shown: boilerplate code to reset state of sampler</span></span>
+<span id="cb40-91"><a href="#cb40-91" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb40-92"><a href="#cb40-92" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb40-93"><a href="#cb40-93" aria-hidden="true" tabindex="-1"></a>    <span class="at">buildDerivs =</span> <span class="fu">list</span>(</span>
+<span id="cb40-94"><a href="#cb40-94" aria-hidden="true" tabindex="-1"></a>        <span class="at">inverseTransformStoreCalculate =</span> <span class="fu">list</span>(), <span class="at">calcLogProb =</span> <span class="fu">list</span>(), <span class="at">gradient_aux =</span> <span class="fu">list</span>()</span>
+<span id="cb40-95"><a href="#cb40-95" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-96"><a href="#cb40-96" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/nimble-training\.github\.io\/nimble-alaska-2026");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb41" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Writing new MCMC samplers (or other nimbleFunctions)"</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "NIMBLE Alaska ASA Workshop"</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "NIMBLE Development Team"</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "June 2026"</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a><span class="co">    css: ../styles.css</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a><span class="co">    toc: true</span></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a><span class="co">    code-copy: true</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a><span class="co">    code-block-background: true</span></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: show</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a><span class="an">execute:</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a><span class="co">  freeze: auto</span></span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>slides <span class="op">&gt;</span> slide {</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-x</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">overflow-y</span><span class="ch">:</span> <span class="bu">auto</span> <span class="at">!important</span><span class="op">;</span></span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">style</span><span class="dt">&gt;</span></span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nimble)</span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(coda))</span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"This Rmd file needs package coda"</span>)</span>
+<span id="cb41-30"><a href="#cb41-30" aria-hidden="true" tabindex="-1"></a>has_compareMCMCs <span class="ot">&lt;-</span> <span class="fu">require</span>(compareMCMCs)</span>
+<span id="cb41-31"><a href="#cb41-31" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span>has_compareMCMCs)</span>
+<span id="cb41-32"><a href="#cb41-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">"This Rmd file uses package compareMCMCs from github.  Sections using it will be skipped."</span>)</span>
+<span id="cb41-33"><a href="#cb41-33" aria-hidden="true" tabindex="-1"></a>generate_orig_results <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb41-34"><a href="#cb41-34" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-35"><a href="#cb41-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-36"><a href="#cb41-36" aria-hidden="true" tabindex="-1"></a>Agenda</span>
+<span id="cb41-37"><a href="#cb41-37" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-38"><a href="#cb41-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-39"><a href="#cb41-39" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Design of NIMBLE's MCMC system</span>
+<span id="cb41-40"><a href="#cb41-40" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Two-stage evaluation of nimbleFunctions with setup code.</span>
+<span id="cb41-41"><a href="#cb41-41" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Setting up a new sampler: A simple Metropolis-Hastings example</span>
+<span id="cb41-42"><a href="#cb41-42" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Worked example: sampler that jointly updates intercepts and random effects in the E. cervi example.</span>
+<span id="cb41-43"><a href="#cb41-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-44"><a href="#cb41-44" aria-hidden="true" tabindex="-1"></a>Load Deer E. cervi example</span>
+<span id="cb41-45"><a href="#cb41-45" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-46"><a href="#cb41-46" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-DeerEcervi}</span></span>
+<span id="cb41-47"><a href="#cb41-47" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"examples"</span>, <span class="st">"DeerEcervi"</span>, <span class="st">"load_DeerEcervi.R"</span>), </span>
+<span id="cb41-48"><a href="#cb41-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">chdir =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-49"><a href="#cb41-49" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb41-50"><a href="#cb41-50" aria-hidden="true" tabindex="-1"></a>DEmodel <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(DEcode,</span>
+<span id="cb41-51"><a href="#cb41-51" aria-hidden="true" tabindex="-1"></a>                        <span class="at">constants =</span> DEconstants,</span>
+<span id="cb41-52"><a href="#cb41-52" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> <span class="fu">list</span>(<span class="at">Ecervi_01 =</span> DeerEcervi<span class="sc">$</span>Ecervi_01),</span>
+<span id="cb41-53"><a href="#cb41-53" aria-hidden="true" tabindex="-1"></a>                        <span class="at">inits =</span> <span class="fu">DEinits</span>())</span>
+<span id="cb41-54"><a href="#cb41-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-55"><a href="#cb41-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-56"><a href="#cb41-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-57"><a href="#cb41-57" aria-hidden="true" tabindex="-1"></a>Design of <span class="in">`nimble`</span>'s MCMC system</span>
+<span id="cb41-58"><a href="#cb41-58" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-59"><a href="#cb41-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-60"><a href="#cb41-60" aria-hidden="true" tabindex="-1"></a>Here is a figure of MCMC configuration and MCMCs:<span class="co">[</span><span class="ot">nimble_MCMC_design.pdf</span><span class="co">](nimble_MCMC_design.pdf)</span></span>
+<span id="cb41-61"><a href="#cb41-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-62"><a href="#cb41-62" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>MCMC configuration object: Contains a list of sampler assignments, not actual samplers.</span>
+<span id="cb41-63"><a href="#cb41-63" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>MCMC object: Contains a list of sampler objects.</span>
+<span id="cb41-64"><a href="#cb41-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-65"><a href="#cb41-65" aria-hidden="true" tabindex="-1"></a>To write new samplers, we need to understand:</span>
+<span id="cb41-66"><a href="#cb41-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-67"><a href="#cb41-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Two-stage evaluation of nimbleFunctions with setup code.</span>
+<span id="cb41-68"><a href="#cb41-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Setup (configuration) rules for using a new MCMC sampler</span>
+<span id="cb41-69"><a href="#cb41-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Run-time rules for management of model calculations and saved states.</span>
+<span id="cb41-70"><a href="#cb41-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>More about nimbleFunction programming.</span>
+<span id="cb41-71"><a href="#cb41-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-72"><a href="#cb41-72" aria-hidden="true" tabindex="-1"></a>Example of MCMC configuration object</span>
+<span id="cb41-73"><a href="#cb41-73" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-74"><a href="#cb41-74" aria-hidden="true" tabindex="-1"></a>Look at MCMC configuration object for just a few nodes</span>
+<span id="cb41-77"><a href="#cb41-77" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-78"><a href="#cb41-78" aria-hidden="true" tabindex="-1"></a>mcmcConf <span class="ot">&lt;-</span> <span class="fu">configureMCMC</span>(DEmodel, <span class="at">nodes =</span> <span class="st">'farm_effect[1:3]'</span>)</span>
+<span id="cb41-79"><a href="#cb41-79" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(mcmcConf)</span>
+<span id="cb41-80"><a href="#cb41-80" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span>(mcmcConf)</span>
+<span id="cb41-81"><a href="#cb41-81" aria-hidden="true" tabindex="-1"></a>fe1_sampler <span class="ot">&lt;-</span> mcmcConf<span class="sc">$</span><span class="fu">getSamplers</span>(<span class="st">"farm_effect[1]"</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb41-82"><a href="#cb41-82" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(fe1_sampler)</span>
+<span id="cb41-83"><a href="#cb41-83" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span>(fe1_sampler)</span>
+<span id="cb41-84"><a href="#cb41-84" aria-hidden="true" tabindex="-1"></a>fe1_sampler<span class="sc">$</span>target</span>
+<span id="cb41-85"><a href="#cb41-85" aria-hidden="true" tabindex="-1"></a>fe1_sampler<span class="sc">$</span>control</span>
+<span id="cb41-86"><a href="#cb41-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-87"><a href="#cb41-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-88"><a href="#cb41-88" aria-hidden="true" tabindex="-1"></a>What happens from an MCMC configuration object?</span>
+<span id="cb41-89"><a href="#cb41-89" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-90"><a href="#cb41-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-91"><a href="#cb41-91" aria-hidden="true" tabindex="-1"></a>Eventually, an MCMC sampler object is created by a call like this (for adaptive random-walk MH):</span>
+<span id="cb41-92"><a href="#cb41-92" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb41-93"><a href="#cb41-93" aria-hidden="true" tabindex="-1"></a><span class="fu">sampler_RW</span>(model, mvSaved, target, control)</span>
+<span id="cb41-94"><a href="#cb41-94" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-95"><a href="#cb41-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-96"><a href="#cb41-96" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>This is stage one of two-stage evaluation.  It instantiates an object of a <span class="in">`sampler_RW`</span> class.</span>
+<span id="cb41-97"><a href="#cb41-97" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`model`</span> is the model</span>
+<span id="cb41-98"><a href="#cb41-98" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mvSaved`</span> is a <span class="in">`modelValues`</span> object for keeping a set of saved model states.</span>
+<span id="cb41-99"><a href="#cb41-99" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`target`</span> is a vector of target node names</span>
+<span id="cb41-100"><a href="#cb41-100" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`control`</span> is a list of whatever sampler-specific configuration settings are needed.</span>
+<span id="cb41-101"><a href="#cb41-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-102"><a href="#cb41-102" aria-hidden="true" tabindex="-1"></a>Two-stage evaluation in nimbleFunctions</span>
+<span id="cb41-103"><a href="#cb41-103" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-104"><a href="#cb41-104" aria-hidden="true" tabindex="-1"></a>Say we want a nimbleFunction to calculate some nodes and their dependencies.</span>
+<span id="cb41-105"><a href="#cb41-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-108"><a href="#cb41-108" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-109"><a href="#cb41-109" aria-hidden="true" tabindex="-1"></a>calcDepsNF <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb41-110"><a href="#cb41-110" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, nodes) { <span class="co"># setup function gives first stage of evalution</span></span>
+<span id="cb41-111"><a href="#cb41-111" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(nodes)</span>
+<span id="cb41-112"><a href="#cb41-112" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb41-113"><a href="#cb41-113" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {               <span class="co"># run function (or other methods) give sectond stage of evaluation</span></span>
+<span id="cb41-114"><a href="#cb41-114" aria-hidden="true" tabindex="-1"></a>    ans <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)</span>
+<span id="cb41-115"><a href="#cb41-115" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ans)</span>
+<span id="cb41-116"><a href="#cb41-116" aria-hidden="true" tabindex="-1"></a>    <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb41-117"><a href="#cb41-117" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb41-118"><a href="#cb41-118" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-119"><a href="#cb41-119" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-120"><a href="#cb41-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-121"><a href="#cb41-121" aria-hidden="true" tabindex="-1"></a>Two-stage evaluation in nimbleFunctions</span>
+<span id="cb41-122"><a href="#cb41-122" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-125"><a href="#cb41-125" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-126"><a href="#cb41-126" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1 <span class="ot">&lt;-</span> <span class="fu">calcDepsNF</span>(DEmodel, <span class="st">'farm_effect[1]'</span>) <span class="do">## first stage: setup code</span></span>
+<span id="cb41-127"><a href="#cb41-127" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1<span class="sc">$</span><span class="fu">run</span>() <span class="do">## second stage: run code</span></span>
+<span id="cb41-128"><a href="#cb41-128" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-129"><a href="#cb41-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-130"><a href="#cb41-130" aria-hidden="true" tabindex="-1"></a>We could compiled <span class="in">`calcDeps_farm1`</span>.  Then <span class="in">`run`</span> would become a method of a C++ class.</span>
+<span id="cb41-131"><a href="#cb41-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-132"><a href="#cb41-132" aria-hidden="true" tabindex="-1"></a>Notice that:</span>
+<span id="cb41-133"><a href="#cb41-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-134"><a href="#cb41-134" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`calcDeps_farm1`</span> is an R reference class object of a custom-generated class.</span>
+<span id="cb41-135"><a href="#cb41-135" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`model`</span> and <span class="in">`calcNodes`</span> are fields in the class</span>
+<span id="cb41-136"><a href="#cb41-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-139"><a href="#cb41-139" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-140"><a href="#cb41-140" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(calcDeps_farm1) <span class="do">## We could have used nimbleFunction's name argument to set the class name</span></span>
+<span id="cb41-141"><a href="#cb41-141" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1<span class="sc">$</span>calcNodes</span>
+<span id="cb41-142"><a href="#cb41-142" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-143"><a href="#cb41-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-144"><a href="#cb41-144" aria-hidden="true" tabindex="-1"></a>Go to R to demonstrate uncompiled browsing/debugging.</span>
+<span id="cb41-145"><a href="#cb41-145" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-146"><a href="#cb41-146" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb41-147"><a href="#cb41-147" aria-hidden="true" tabindex="-1"></a>calcDepsNF <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb41-148"><a href="#cb41-148" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, nodes) {</span>
+<span id="cb41-149"><a href="#cb41-149" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb41-150"><a href="#cb41-150" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(nodes)</span>
+<span id="cb41-151"><a href="#cb41-151" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb41-152"><a href="#cb41-152" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb41-153"><a href="#cb41-153" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb41-154"><a href="#cb41-154" aria-hidden="true" tabindex="-1"></a>    ans <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)</span>
+<span id="cb41-155"><a href="#cb41-155" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(ans)</span>
+<span id="cb41-156"><a href="#cb41-156" aria-hidden="true" tabindex="-1"></a>    <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb41-157"><a href="#cb41-157" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb41-158"><a href="#cb41-158" aria-hidden="true" tabindex="-1"></a>) <span class="do">## warning about not being able to compiled with browser() is expected.</span></span>
+<span id="cb41-159"><a href="#cb41-159" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-160"><a href="#cb41-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-161"><a href="#cb41-161" aria-hidden="true" tabindex="-1"></a>Stepping through debugging from <span class="in">`browser()`</span> will not work well in Rmarkdown, so this code is not evaluated.  Run it in your own R session.</span>
+<span id="cb41-162"><a href="#cb41-162" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb41-163"><a href="#cb41-163" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1 <span class="ot">&lt;-</span> <span class="fu">calcDepsNF</span>(DEmodel, <span class="st">'farm_effect[1]'</span>) <span class="do">## We'll see the setup code followed by internal code.</span></span>
+<span id="cb41-164"><a href="#cb41-164" aria-hidden="true" tabindex="-1"></a>calcDeps_farm1<span class="sc">$</span><span class="fu">run</span>()</span>
+<span id="cb41-165"><a href="#cb41-165" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-166"><a href="#cb41-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-167"><a href="#cb41-167" aria-hidden="true" tabindex="-1"></a>More about nimbleFunctions</span>
+<span id="cb41-168"><a href="#cb41-168" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-169"><a href="#cb41-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-170"><a href="#cb41-170" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Without setup code, a <span class="in">`nimbleFunction`</span> becomes an R function (uncompiled) and a C++ function (compiled).</span>
+<span id="cb41-171"><a href="#cb41-171" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>With setup code, a <span class="in">`nimbleFunction`</span> becomes an R reference class definition (uncompiled) and a C++ class definition (compiled).</span>
+<span id="cb41-172"><a href="#cb41-172" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`nimbleFunction`</span> returns a generator (aka constructor, aka initializer) of new class objects.</span>
+<span id="cb41-173"><a href="#cb41-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-174"><a href="#cb41-174" aria-hidden="true" tabindex="-1"></a><span class="fu">### nimbleFunction class definitions (i.e with setup code)</span></span>
+<span id="cb41-175"><a href="#cb41-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-176"><a href="#cb41-176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`setup`</span> is always executed in R.</span>
+<span id="cb41-177"><a href="#cb41-177" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Typically one-time, high-level processing such as querying model structure.</span>
+<span id="cb41-178"><a href="#cb41-178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`run`</span> and other methods can be run uncompiled (in R) or compiled (via C++).</span>
+<span id="cb41-179"><a href="#cb41-179" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Typically repeated "actual algorithm" calculations such as MCMC sampler updates.</span>
+<span id="cb41-180"><a href="#cb41-180" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Can operate models.</span>
+<span id="cb41-181"><a href="#cb41-181" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Any objects (e.g. <span class="in">`calcNodes`</span> and <span class="in">`model`</span>) in <span class="in">`setup`</span> can be used in <span class="in">`run`</span>.</span>
+<span id="cb41-182"><a href="#cb41-182" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Internally, these are automatically set up as class member data.</span>
+<span id="cb41-183"><a href="#cb41-183" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>You do not need to explicitly declare class member data.</span>
+<span id="cb41-184"><a href="#cb41-184" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Nodes used in model operations are "baked in" (aka partially evaluated) during compilation. </span>
+<span id="cb41-185"><a href="#cb41-185" aria-hidden="true" tabindex="-1"></a><span class="ss">        - </span>Node vectors must be created in setup code and used in run code.</span>
+<span id="cb41-186"><a href="#cb41-186" aria-hidden="true" tabindex="-1"></a><span class="ss">        - </span>They can't be dynamically modified in run code.</span>
+<span id="cb41-187"><a href="#cb41-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-188"><a href="#cb41-188" aria-hidden="true" tabindex="-1"></a>A basic Random-Walk Metropolis-Hastings sampler</span>
+<span id="cb41-189"><a href="#cb41-189" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-192"><a href="#cb41-192" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-193"><a href="#cb41-193" aria-hidden="true" tabindex="-1"></a>ourMH <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb41-194"><a href="#cb41-194" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">'ourMH'</span>,                              <span class="co"># Convenient for class name of R reference class and generated C++ class</span></span>
+<span id="cb41-195"><a href="#cb41-195" aria-hidden="true" tabindex="-1"></a>  <span class="at">contains =</span> sampler_BASE,                     <span class="co"># There is a simple class inheritance system.</span></span>
+<span id="cb41-196"><a href="#cb41-196" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, mvSaved, target, control) {                 <span class="co"># REQUIRED setup arguments</span></span>
+<span id="cb41-197"><a href="#cb41-197" aria-hidden="true" tabindex="-1"></a>    scale <span class="ot">&lt;-</span> <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.null</span>(control<span class="sc">$</span>scale)) control<span class="sc">$</span>scale <span class="cf">else</span> <span class="dv">1</span>         <span class="co"># Typical extraction of control choices</span></span>
+<span id="cb41-198"><a href="#cb41-198" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(target)                        <span class="co"># Typical query of model structure</span></span>
+<span id="cb41-199"><a href="#cb41-199" aria-hidden="true" tabindex="-1"></a>  },                                                                  <span class="co"># setup can't return anything</span></span>
+<span id="cb41-200"><a href="#cb41-200" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb41-201"><a href="#cb41-201" aria-hidden="true" tabindex="-1"></a>    currentValue <span class="ot">&lt;-</span> model[[target]]                                   <span class="co"># extract current value</span></span>
+<span id="cb41-202"><a href="#cb41-202" aria-hidden="true" tabindex="-1"></a>    currentLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getLogProb</span>(calcNodes)                     <span class="co"># get log "denominator" from cached values</span></span>
+<span id="cb41-203"><a href="#cb41-203" aria-hidden="true" tabindex="-1"></a>    proposalValue <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> currentValue, <span class="at">sd =</span> scale)        <span class="co"># generate proposal value</span></span>
+<span id="cb41-204"><a href="#cb41-204" aria-hidden="true" tabindex="-1"></a>    model[[target]] <span class="ot">&lt;&lt;-</span> proposalValue                                 <span class="co"># put proposal value in model</span></span>
+<span id="cb41-205"><a href="#cb41-205" aria-hidden="true" tabindex="-1"></a>    proposalLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)                     <span class="co"># calculate log "numerator" </span></span>
+<span id="cb41-206"><a href="#cb41-206" aria-hidden="true" tabindex="-1"></a>    logAcceptanceRatio <span class="ot">&lt;-</span> currentLogProb <span class="sc">-</span> proposalLogProb            <span class="co"># log acceptance ratio</span></span>
+<span id="cb41-207"><a href="#cb41-207" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Alternative:</span></span>
+<span id="cb41-208"><a href="#cb41-208" aria-hidden="true" tabindex="-1"></a>    <span class="co"># logAcceptanceRatio &lt;- model$calculateDiff(calcNodes)</span></span>
+<span id="cb41-209"><a href="#cb41-209" aria-hidden="true" tabindex="-1"></a>    accept <span class="ot">&lt;-</span> <span class="fu">decide</span>(logMHR)                                          <span class="co"># utility function to generate accept/reject decision</span></span>
+<span id="cb41-210"><a href="#cb41-210" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(accept)                                                        <span class="co"># accept synchronize model -&gt; mvSaved</span></span>
+<span id="cb41-211"><a href="#cb41-211" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> model, <span class="at">to =</span> mvSaved, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-212"><a href="#cb41-212" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>                                                              <span class="co"># reject: synchronize mvSaved -&gt; model</span></span>
+<span id="cb41-213"><a href="#cb41-213" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> mvSaved, <span class="at">to =</span> model, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-214"><a href="#cb41-214" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb41-215"><a href="#cb41-215" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(                              <span class="co"># required method for sampler_BASE base class</span></span>
+<span id="cb41-216"><a href="#cb41-216" aria-hidden="true" tabindex="-1"></a>    <span class="at">reset =</span> <span class="cf">function</span>() {}</span>
+<span id="cb41-217"><a href="#cb41-217" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb41-218"><a href="#cb41-218" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-219"><a href="#cb41-219" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-220"><a href="#cb41-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-221"><a href="#cb41-221" aria-hidden="true" tabindex="-1"></a>Rules for each sampler</span>
+<span id="cb41-222"><a href="#cb41-222" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-223"><a href="#cb41-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-224"><a href="#cb41-224" aria-hidden="true" tabindex="-1"></a><span class="fu">### setup function</span></span>
+<span id="cb41-225"><a href="#cb41-225" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb41-226"><a href="#cb41-226" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The four arguments, named exactly as shown, are required.  This allows <span class="in">`buildMCMC`</span> to create any sampler correctly.</span>
+<span id="cb41-227"><a href="#cb41-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-228"><a href="#cb41-228" aria-hidden="true" tabindex="-1"></a><span class="fu">### run function</span></span>
+<span id="cb41-229"><a href="#cb41-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-230"><a href="#cb41-230" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The <span class="in">`mvSaved`</span> ("modelValues saved") has a saved copy of all model variables and log probabilities</span>
+<span id="cb41-231"><a href="#cb41-231" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Upon entry, <span class="in">`run()`</span> can assume:</span>
+<span id="cb41-232"><a href="#cb41-232" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>the model is fully calculated (so <span class="in">`getLogProb`</span> and <span class="in">`calculateDiff`</span> make sense).</span>
+<span id="cb41-233"><a href="#cb41-233" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span><span class="in">`mvSaved`</span> and the model are synchronized (have the same values).</span>
+<span id="cb41-234"><a href="#cb41-234" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Upon exit, <span class="in">`run()`</span> must ensure those conditions are met.</span>
+<span id="cb41-235"><a href="#cb41-235" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>That way the next sampler can operator correctly.</span>
+<span id="cb41-236"><a href="#cb41-236" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Between entry and exit, <span class="in">`run()`</span> can manipulate the model in any way necessary.</span>
+<span id="cb41-237"><a href="#cb41-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-238"><a href="#cb41-238" aria-hidden="true" tabindex="-1"></a><span class="fu">### reset function</span></span>
+<span id="cb41-239"><a href="#cb41-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-240"><a href="#cb41-240" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>To match the <span class="in">`sampler_BASE`</span> definition, all samplers must have a <span class="in">`reset()`</span> function.</span>
+<span id="cb41-241"><a href="#cb41-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-242"><a href="#cb41-242" aria-hidden="true" tabindex="-1"></a>Introduction to <span class="in">`modelValues`</span></span>
+<span id="cb41-243"><a href="#cb41-243" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-244"><a href="#cb41-244" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A <span class="in">`modelValues`</span> class does the job of holding multiple sets of values of </span>
+<span id="cb41-245"><a href="#cb41-245" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>model variables and</span>
+<span id="cb41-246"><a href="#cb41-246" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>log probabilities ("logProbs") of stochastic nodes.</span>
+<span id="cb41-247"><a href="#cb41-247" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>We think of each set of values as a "row".</span>
+<span id="cb41-248"><a href="#cb41-248" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`modelValues`</span> classes are like <span class="in">`nimbleFunctions`</span> in that:</span>
+<span id="cb41-249"><a href="#cb41-249" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>They can be compiled.</span>
+<span id="cb41-250"><a href="#cb41-250" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>They should work the same way compiled and uncompiled.</span>
+<span id="cb41-251"><a href="#cb41-251" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>MCMC output is stored in a <span class="in">`modelValues`</span> object (called <span class="in">`mvSamples`</span>).</span>
+<span id="cb41-252"><a href="#cb41-252" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Each <span class="in">`modelValues`</span> class comes from a configuration of what variables are needed (and their types and sizes).</span>
+<span id="cb41-253"><a href="#cb41-253" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Typically the configuration is generated from a model or from variables monitored in MCMC.</span>
+<span id="cb41-254"><a href="#cb41-254" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>(Actually, one can hand-configure a <span class="in">`modelValues`</span> in any way one wants.)</span>
+<span id="cb41-255"><a href="#cb41-255" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>MCMC uses one <span class="in">`modelValues`</span> object configured for **all** model variables and logProbs.</span>
+<span id="cb41-256"><a href="#cb41-256" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>Only a single "row" is needed.</span>
+<span id="cb41-257"><a href="#cb41-257" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>This is the <span class="in">`mvSaved`</span> and must be synchronized with the model at entry and exit of each sampler.</span>
+<span id="cb41-258"><a href="#cb41-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-259"><a href="#cb41-259" aria-hidden="true" tabindex="-1"></a>Stepping through uncompiled execution</span>
+<span id="cb41-260"><a href="#cb41-260" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-261"><a href="#cb41-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-262"><a href="#cb41-262" aria-hidden="true" tabindex="-1"></a>Version with <span class="in">`browser()`</span>s</span>
+<span id="cb41-263"><a href="#cb41-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-266"><a href="#cb41-266" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-267"><a href="#cb41-267" aria-hidden="true" tabindex="-1"></a>ourMH_debug <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb41-268"><a href="#cb41-268" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">'ourMH_debug'</span>,</span>
+<span id="cb41-269"><a href="#cb41-269" aria-hidden="true" tabindex="-1"></a>  <span class="at">contains =</span> sampler_BASE,</span>
+<span id="cb41-270"><a href="#cb41-270" aria-hidden="true" tabindex="-1"></a>  <span class="at">setup =</span> <span class="cf">function</span>(model, mvSaved, target, control) {</span>
+<span id="cb41-271"><a href="#cb41-271" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb41-272"><a href="#cb41-272" aria-hidden="true" tabindex="-1"></a>    scale <span class="ot">&lt;-</span> <span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.null</span>(control<span class="sc">$</span>scale)) control<span class="sc">$</span>scale <span class="cf">else</span> <span class="dv">1</span> </span>
+<span id="cb41-273"><a href="#cb41-273" aria-hidden="true" tabindex="-1"></a>    calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(target)                </span>
+<span id="cb41-274"><a href="#cb41-274" aria-hidden="true" tabindex="-1"></a>  },                                                          </span>
+<span id="cb41-275"><a href="#cb41-275" aria-hidden="true" tabindex="-1"></a>  <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb41-276"><a href="#cb41-276" aria-hidden="true" tabindex="-1"></a>    <span class="fu">browser</span>()</span>
+<span id="cb41-277"><a href="#cb41-277" aria-hidden="true" tabindex="-1"></a>    currentValue <span class="ot">&lt;-</span> model[[target]]                           </span>
+<span id="cb41-278"><a href="#cb41-278" aria-hidden="true" tabindex="-1"></a>    currentLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getLogProb</span>(calcNodes)             </span>
+<span id="cb41-279"><a href="#cb41-279" aria-hidden="true" tabindex="-1"></a>    proposalValue <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> currentValue, <span class="at">sd =</span> scale)</span>
+<span id="cb41-280"><a href="#cb41-280" aria-hidden="true" tabindex="-1"></a>    model[[target]] <span class="ot">&lt;&lt;-</span> proposalValue                             </span>
+<span id="cb41-281"><a href="#cb41-281" aria-hidden="true" tabindex="-1"></a>    proposalLogProb <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes)             </span>
+<span id="cb41-282"><a href="#cb41-282" aria-hidden="true" tabindex="-1"></a>    logAcceptanceRatio <span class="ot">&lt;-</span> currentLogProb <span class="sc">-</span> proposalLogProb    </span>
+<span id="cb41-283"><a href="#cb41-283" aria-hidden="true" tabindex="-1"></a>    accept <span class="ot">&lt;-</span> <span class="fu">decide</span>(logMHR)                                     </span>
+<span id="cb41-284"><a href="#cb41-284" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(accept)                                                   </span>
+<span id="cb41-285"><a href="#cb41-285" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> model, <span class="at">to =</span> mvSaved, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-286"><a href="#cb41-286" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>                                                         </span>
+<span id="cb41-287"><a href="#cb41-287" aria-hidden="true" tabindex="-1"></a>      <span class="fu">copy</span>(<span class="at">from =</span> mvSaved, <span class="at">to =</span> model, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-288"><a href="#cb41-288" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb41-289"><a href="#cb41-289" aria-hidden="true" tabindex="-1"></a>  <span class="at">methods =</span> <span class="fu">list</span>(                              </span>
+<span id="cb41-290"><a href="#cb41-290" aria-hidden="true" tabindex="-1"></a>    <span class="at">reset =</span> <span class="cf">function</span>() {}</span>
+<span id="cb41-291"><a href="#cb41-291" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb41-292"><a href="#cb41-292" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-293"><a href="#cb41-293" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-294"><a href="#cb41-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-295"><a href="#cb41-295" aria-hidden="true" tabindex="-1"></a>Stepping through uncompiled execution</span>
+<span id="cb41-296"><a href="#cb41-296" aria-hidden="true" tabindex="-1"></a><span class="fu">=====</span></span>
+<span id="cb41-299"><a href="#cb41-299" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-300"><a href="#cb41-300" aria-hidden="true" tabindex="-1"></a>mcmcConf <span class="ot">&lt;-</span> <span class="fu">configureMCMC</span>(DEmodel, <span class="at">nodes =</span> <span class="cn">NULL</span>) <span class="do">## Make an empty configuration</span></span>
+<span id="cb41-301"><a href="#cb41-301" aria-hidden="true" tabindex="-1"></a>mcmcConf<span class="sc">$</span><span class="fu">addSampler</span>(<span class="at">type =</span> <span class="st">"ourMH_debug"</span>, <span class="at">target =</span> <span class="st">'farm_effect[1]'</span>)</span>
+<span id="cb41-302"><a href="#cb41-302" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-303"><a href="#cb41-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-304"><a href="#cb41-304" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb41-305"><a href="#cb41-305" aria-hidden="true" tabindex="-1"></a><span class="co"># run this on your own to step through in debug (browser) mode.</span></span>
+<span id="cb41-306"><a href="#cb41-306" aria-hidden="true" tabindex="-1"></a>mcmc <span class="ot">&lt;-</span> <span class="fu">buildMCMC</span>(mcmcConf)</span>
+<span id="cb41-307"><a href="#cb41-307" aria-hidden="true" tabindex="-1"></a>mcmc<span class="sc">$</span><span class="fu">run</span>(<span class="dv">5</span>)</span>
+<span id="cb41-308"><a href="#cb41-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb41-309"><a href="#cb41-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-310"><a href="#cb41-310" aria-hidden="true" tabindex="-1"></a>Simplified Barker sampler</span>
+<span id="cb41-311"><a href="#cb41-311" aria-hidden="true" tabindex="-1"></a><span class="fu">====</span></span>
+<span id="cb41-312"><a href="#cb41-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-313"><a href="#cb41-313" aria-hidden="true" tabindex="-1"></a>The Barker sampler is a built-in sampler in NIMBLE.</span>
+<span id="cb41-314"><a href="#cb41-314" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-315"><a href="#cb41-315" aria-hidden="true" tabindex="-1"></a>Since all samplers are just nimbleFunctions with a few special requirements, we can easily inspect the code, modify/extend a sampler, and use a modified or new sampler in a NIMBLE MCMC.</span>
+<span id="cb41-316"><a href="#cb41-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-317"><a href="#cb41-317" aria-hidden="true" tabindex="-1"></a>Let's see what this looks like for a (simplified) Barker sampler.</span>
+<span id="cb41-318"><a href="#cb41-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-321"><a href="#cb41-321" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb41-322"><a href="#cb41-322" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb41-323"><a href="#cb41-323" aria-hidden="true" tabindex="-1"></a>sampler_barker <span class="ot">&lt;-</span> <span class="fu">nimbleFunction</span>(</span>
+<span id="cb41-324"><a href="#cb41-324" aria-hidden="true" tabindex="-1"></a>    <span class="at">contains =</span> sampler_BASE,  <span class="co"># Required class inheritance to work within NIMBLE's MCMC engine</span></span>
+<span id="cb41-325"><a href="#cb41-325" aria-hidden="true" tabindex="-1"></a>    <span class="at">setup =</span> <span class="cf">function</span>(model, mvSaved, target, control) {</span>
+<span id="cb41-326"><a href="#cb41-326" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Set algorithm control knobs.</span></span>
+<span id="cb41-327"><a href="#cb41-327" aria-hidden="true" tabindex="-1"></a>        scale <span class="ot">&lt;-</span> <span class="dv">1</span>; sigma <span class="ot">&lt;-</span> <span class="fl">0.1</span>; adaptIntervalCov <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb41-328"><a href="#cb41-328" aria-hidden="true" tabindex="-1"></a>        adaptFactorExponent <span class="ot">&lt;-</span> <span class="fl">0.6</span>  <span class="co"># Per Livingstone &amp; Zanella 2022.</span></span>
+<span id="cb41-329"><a href="#cb41-329" aria-hidden="true" tabindex="-1"></a>        targetAcceptanceRate <span class="ot">&lt;-</span> <span class="fl">0.574</span>  <span class="co"># Per Vogrinc et al. 2023.</span></span>
+<span id="cb41-330"><a href="#cb41-330" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-331"><a href="#cb41-331" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Determine relevant nodes in the model.</span></span>
+<span id="cb41-332"><a href="#cb41-332" aria-hidden="true" tabindex="-1"></a>        targetNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">expandNodeNames</span>(target)</span>
+<span id="cb41-333"><a href="#cb41-333" aria-hidden="true" tabindex="-1"></a>        targetNodesAsScalars <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">expandNodeNames</span>(target, <span class="at">returnScalarComponents =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-334"><a href="#cb41-334" aria-hidden="true" tabindex="-1"></a>        calcNodes <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(targetNodes)</span>
+<span id="cb41-335"><a href="#cb41-335" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-336"><a href="#cb41-336" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Process bounds and transformations as sampler works on whole real line.</span></span>
+<span id="cb41-337"><a href="#cb41-337" aria-hidden="true" tabindex="-1"></a>        my_parameterTransform <span class="ot">&lt;-</span> <span class="fu">parameterTransform</span>(model, targetNodesAsScalars)</span>
+<span id="cb41-338"><a href="#cb41-338" aria-hidden="true" tabindex="-1"></a>        d <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">getTransformedLength</span>()</span>
+<span id="cb41-339"><a href="#cb41-339" aria-hidden="true" tabindex="-1"></a>        nimDerivs_wrt <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>d</span>
+<span id="cb41-340"><a href="#cb41-340" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Boilerplate code to set up node information needed for AD.</span></span>
+<span id="cb41-341"><a href="#cb41-341" aria-hidden="true" tabindex="-1"></a>        derivsInfo_return <span class="ot">&lt;-</span> <span class="fu">makeModelDerivsInfo</span>(model, targetNodes, calcNodes)</span>
+<span id="cb41-342"><a href="#cb41-342" aria-hidden="true" tabindex="-1"></a>        nimDerivs_updateNodes   <span class="ot">&lt;-</span> derivsInfo_return<span class="sc">$</span>updateNodes</span>
+<span id="cb41-343"><a href="#cb41-343" aria-hidden="true" tabindex="-1"></a>        nimDerivs_constantNodes <span class="ot">&lt;-</span> derivsInfo_return<span class="sc">$</span>constantNodes</span>
+<span id="cb41-344"><a href="#cb41-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-345"><a href="#cb41-345" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Set up proposal covariance structures.</span></span>
+<span id="cb41-346"><a href="#cb41-346" aria-hidden="true" tabindex="-1"></a>        propCov <span class="ot">&lt;-</span> <span class="fu">diag</span>(d)</span>
+<span id="cb41-347"><a href="#cb41-347" aria-hidden="true" tabindex="-1"></a>        U <span class="ot">&lt;-</span> <span class="fu">chol</span>(propCov)</span>
+<span id="cb41-348"><a href="#cb41-348" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb41-349"><a href="#cb41-349" aria-hidden="true" tabindex="-1"></a>        empirSamp <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> adaptIntervalCov, <span class="at">ncol =</span> d)</span>
+<span id="cb41-350"><a href="#cb41-350" aria-hidden="true" tabindex="-1"></a>        zeros <span class="ot">&lt;-</span> <span class="fu">nimNumeric</span>(d, <span class="at">value =</span> <span class="dv">0</span>)</span>
+<span id="cb41-351"><a href="#cb41-351" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb41-352"><a href="#cb41-352" aria-hidden="true" tabindex="-1"></a>        gradCurrent <span class="ot">&lt;-</span> <span class="fu">numeric</span>(d); gradProposed <span class="ot">&lt;-</span> <span class="fu">numeric</span>(d)</span>
+<span id="cb41-353"><a href="#cb41-353" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb41-354"><a href="#cb41-354" aria-hidden="true" tabindex="-1"></a>    <span class="at">run =</span> <span class="cf">function</span>() {</span>
+<span id="cb41-355"><a href="#cb41-355" aria-hidden="true" tabindex="-1"></a>        current <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">transform</span>(<span class="fu">values</span>(model, targetNodes))</span>
+<span id="cb41-356"><a href="#cb41-356" aria-hidden="true" tabindex="-1"></a>        oldLogDetJacobian <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">logDetJacobian</span>(current)</span>
+<span id="cb41-357"><a href="#cb41-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-358"><a href="#cb41-358" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Implement Barker proposal following Livingstone and Zanella (2022).</span></span>
+<span id="cb41-359"><a href="#cb41-359" aria-hidden="true" tabindex="-1"></a>        gradCurrent <span class="ot">&lt;&lt;-</span> <span class="fu">gradient</span>(current)</span>
+<span id="cb41-360"><a href="#cb41-360" aria-hidden="true" tabindex="-1"></a>        z <span class="ot">&lt;-</span> scale <span class="sc">*</span> <span class="fu">rnorm</span>(d, <span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">-</span>sigma<span class="sc">^</span><span class="dv">2</span>), sigma)</span>
+<span id="cb41-361"><a href="#cb41-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-362"><a href="#cb41-362" aria-hidden="true" tabindex="-1"></a>        noflipProb <span class="ot">&lt;-</span> <span class="fu">expit</span>((U<span class="sc">%*%</span>gradCurrent)[,<span class="dv">1</span>]<span class="sc">*</span>z)</span>
+<span id="cb41-363"><a href="#cb41-363" aria-hidden="true" tabindex="-1"></a>        noflip <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (<span class="fu">runif</span>(d) <span class="sc">&lt;</span> noflipProb) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb41-364"><a href="#cb41-364" aria-hidden="true" tabindex="-1"></a>        diff <span class="ot">&lt;-</span> noflip <span class="sc">*</span> z</span>
+<span id="cb41-365"><a href="#cb41-365" aria-hidden="true" tabindex="-1"></a>        proposal <span class="ot">&lt;-</span> current <span class="sc">+</span> (L <span class="sc">%*%</span> diff)[,<span class="dv">1</span>]</span>
+<span id="cb41-366"><a href="#cb41-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-367"><a href="#cb41-367" aria-hidden="true" tabindex="-1"></a>        <span class="fu">values</span>(model, targetNodes) <span class="ot">&lt;&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">inverseTransform</span>(proposal)</span>
+<span id="cb41-368"><a href="#cb41-368" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-369"><a href="#cb41-369" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Determine accept/reject.</span></span>
+<span id="cb41-370"><a href="#cb41-370" aria-hidden="true" tabindex="-1"></a>        gradProposed <span class="ot">&lt;&lt;-</span> <span class="fu">gradient</span>(proposal)</span>
+<span id="cb41-371"><a href="#cb41-371" aria-hidden="true" tabindex="-1"></a>        newLogDetJacobian <span class="ot">&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">logDetJacobian</span>(proposal)</span>
+<span id="cb41-372"><a href="#cb41-372" aria-hidden="true" tabindex="-1"></a>        lpD <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">calculateDiff</span>(calcNodes) <span class="sc">+</span> newLogDetJacobian <span class="sc">-</span></span>
+<span id="cb41-373"><a href="#cb41-373" aria-hidden="true" tabindex="-1"></a>            oldLogDetJacobian <span class="sc">+</span> <span class="fu">calculateLogHastingsRatio</span>(diff)</span>
+<span id="cb41-374"><a href="#cb41-374" aria-hidden="true" tabindex="-1"></a>        jump <span class="ot">&lt;-</span> <span class="fu">decide</span>(lpD)</span>
+<span id="cb41-375"><a href="#cb41-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-376"><a href="#cb41-376" aria-hidden="true" tabindex="-1"></a>        <span class="do">## Cache current state of model in a "modelValues" data structure.</span></span>
+<span id="cb41-377"><a href="#cb41-377" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>(jump) <span class="fu">nimCopy</span>(<span class="at">from =</span> model, <span class="at">to =</span> mvSaved, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-378"><a href="#cb41-378" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>     <span class="fu">nimCopy</span>(<span class="at">from =</span> mvSaved, <span class="at">to =</span> model, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-379"><a href="#cb41-379" aria-hidden="true" tabindex="-1"></a>        <span class="fu">adaptPropCov</span>(<span class="fu">min</span>(<span class="dv">1</span>,<span class="fu">exp</span>(lpD))</span>
+<span id="cb41-380"><a href="#cb41-380" aria-hidden="true" tabindex="-1"></a>    <span class="er">}</span>,</span>
+<span id="cb41-381"><a href="#cb41-381" aria-hidden="true" tabindex="-1"></a>    <span class="at">methods =</span> <span class="fu">list</span>(</span>
+<span id="cb41-382"><a href="#cb41-382" aria-hidden="true" tabindex="-1"></a>        <span class="at">gradient =</span> <span class="cf">function</span>(<span class="at">values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb41-383"><a href="#cb41-383" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Use NIMBLE's AD system to get first derivative of model log-density w.r.t. parameters.</span></span>
+<span id="cb41-384"><a href="#cb41-384" aria-hidden="true" tabindex="-1"></a>            derivsOutput <span class="ot">&lt;-</span> <span class="fu">nimDerivs</span>(<span class="fu">calcLogProb</span>(values), <span class="at">order =</span> <span class="dv">1</span>, <span class="at">wrt =</span> nimDerivs_wrt,</span>
+<span id="cb41-385"><a href="#cb41-385" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">model =</span> model, <span class="at">updateNodes =</span> nimDerivs_updateNodes,</span>
+<span id="cb41-386"><a href="#cb41-386" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">constantNodes =</span> nimDerivs_constantNodes)</span>
+<span id="cb41-387"><a href="#cb41-387" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>(<span class="dv">1</span>))</span>
+<span id="cb41-388"><a href="#cb41-388" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(derivsOutput<span class="sc">$</span>jacobian[<span class="dv">1</span>, <span class="dv">1</span><span class="sc">:</span>d])</span>
+<span id="cb41-389"><a href="#cb41-389" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb41-390"><a href="#cb41-390" aria-hidden="true" tabindex="-1"></a>        <span class="at">inverseTransformStoreCalculate =</span> <span class="cf">function</span>(<span class="at">values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb41-391"><a href="#cb41-391" aria-hidden="true" tabindex="-1"></a>            <span class="fu">values</span>(model, targetNodes) <span class="ot">&lt;&lt;-</span> my_parameterTransform<span class="sc">$</span><span class="fu">inverseTransform</span>(values)</span>
+<span id="cb41-392"><a href="#cb41-392" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(model<span class="sc">$</span><span class="fu">calculate</span>(calcNodes))</span>
+<span id="cb41-393"><a href="#cb41-393" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb41-394"><a href="#cb41-394" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb41-395"><a href="#cb41-395" aria-hidden="true" tabindex="-1"></a>        <span class="at">calcLogProb =</span> <span class="cf">function</span>(<span class="at">values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb41-396"><a href="#cb41-396" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(<span class="fu">inverseTransformStoreCalculate</span>(values) <span class="sc">+</span> my_parameterTransform<span class="sc">$</span><span class="fu">logDetJacobian</span>(values))</span>
+<span id="cb41-397"><a href="#cb41-397" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb41-398"><a href="#cb41-398" aria-hidden="true" tabindex="-1"></a>        },       </span>
+<span id="cb41-399"><a href="#cb41-399" aria-hidden="true" tabindex="-1"></a>        <span class="at">calculateLogHastingsRatio =</span> <span class="cf">function</span>(<span class="at">diff =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
+<span id="cb41-400"><a href="#cb41-400" aria-hidden="true" tabindex="-1"></a>            beta1 <span class="ot">&lt;-</span> (U <span class="sc">%*%</span> gradProposed)[,<span class="dv">1</span>] <span class="sc">*</span> diff</span>
+<span id="cb41-401"><a href="#cb41-401" aria-hidden="true" tabindex="-1"></a>            beta2 <span class="ot">&lt;-</span> <span class="sc">-</span> (U <span class="sc">%*%</span> gradCurrent)[,<span class="dv">1</span>] <span class="sc">*</span> diff</span>
+<span id="cb41-402"><a href="#cb41-402" aria-hidden="true" tabindex="-1"></a>            <span class="fu">return</span>(<span class="fu">sum</span>(<span class="fu">pmax</span>(beta2, zeros) <span class="sc">-</span> <span class="fu">pmax</span>(beta1, zeros)) <span class="sc">+</span></span>
+<span id="cb41-403"><a href="#cb41-403" aria-hidden="true" tabindex="-1"></a>                <span class="fu">sum</span>(<span class="fu">log1p</span>(<span class="fu">exp</span>(<span class="sc">-</span><span class="fu">abs</span>(beta2))) <span class="sc">-</span> <span class="fu">log1p</span>(<span class="fu">exp</span>(<span class="sc">-</span><span class="fu">abs</span>(beta1)))))</span>
+<span id="cb41-404"><a href="#cb41-404" aria-hidden="true" tabindex="-1"></a>            <span class="fu">returnType</span>(<span class="fu">double</span>())</span>
+<span id="cb41-405"><a href="#cb41-405" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb41-406"><a href="#cb41-406" aria-hidden="true" tabindex="-1"></a>        <span class="at">adaptPropCov =</span> <span class="cf">function</span>(<span class="at">acceptProb =</span> <span class="fu">double</span>()) {</span>
+<span id="cb41-407"><a href="#cb41-407" aria-hidden="true" tabindex="-1"></a>            <span class="do">## Adapt the proposal covariance using `adaptFactorExponent`,  `targetAcceptanceRate`,</span></span>
+<span id="cb41-408"><a href="#cb41-408" aria-hidden="true" tabindex="-1"></a>            <span class="do">## `empirSamp`, etc.</span></span>
+<span id="cb41-409"><a href="#cb41-409" aria-hidden="true" tabindex="-1"></a>            <span class="do">## Code omitted for brevity. See `nimble::sampler_barker`.            }</span></span>
+<span id="cb41-410"><a href="#cb41-410" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb41-411"><a href="#cb41-411" aria-hidden="true" tabindex="-1"></a>        <span class="at">reset =</span> <span class="cf">function</span>() {</span>
+<span id="cb41-412"><a href="#cb41-412" aria-hidden="true" tabindex="-1"></a>            <span class="do">## Not shown: boilerplate code to reset state of sampler</span></span>
+<span id="cb41-413"><a href="#cb41-413" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb41-414"><a href="#cb41-414" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb41-415"><a href="#cb41-415" aria-hidden="true" tabindex="-1"></a>    <span class="at">buildDerivs =</span> <span class="fu">list</span>(</span>
+<span id="cb41-416"><a href="#cb41-416" aria-hidden="true" tabindex="-1"></a>        <span class="at">inverseTransformStoreCalculate =</span> <span class="fu">list</span>(), <span class="at">calcLogProb =</span> <span class="fu">list</span>(), <span class="at">gradient_aux =</span> <span class="fu">list</span>()</span>
+<span id="cb41-417"><a href="#cb41-417" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb41-418"><a href="#cb41-418" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-419"><a href="#cb41-419" aria-hidden="true" tabindex="-1"></a><span class="st">```</span></span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
