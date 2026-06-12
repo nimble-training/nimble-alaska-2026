@@ -30,9 +30,7 @@ website:
       - href: content/8_intro_nimblefunctions/intro_nimblefunctions.qmd
         text: "Module 8: Introduction to nimbleFunctions"
       - href: content/9_programming/nimblefunction_programming.qmd
-        text: "Module 9a: Programming and user samplers"
-      - href: content/9_programming/writing_new_mcmc_samplers.qmd
-        text: "Module 9b: Programming and user samplers"
+        text: "Module 9: Programming and user samplers"
       - href: content/10_laplace/laplace.qmd
         text: "Module 10: Laplace and related approximations"
       - href: content/11_future_directions_for_nimble/future_directions_for_nimble.qmd
