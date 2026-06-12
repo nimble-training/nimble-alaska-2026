@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/index.html</loc>
-    <lastmod>2026-06-11T16:18:23.276Z</lastmod>
+    <lastmod>2026-06-12T17:08:34.353Z</lastmod>
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/9_programming/writing_new_mcmc_samplers.html</loc>
@@ -14,7 +14,7 @@
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/2_nimble_models/nimble_models.html</loc>
-    <lastmod>2026-06-11T16:49:01.121Z</lastmod>
+    <lastmod>2026-06-12T17:17:08.762Z</lastmod>
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/5_spatial_models/spatial_models.html</loc>
@@ -30,7 +30,7 @@
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/7_ecological_models/ecological_models.html</loc>
-    <lastmod>2026-06-11T18:49:40.792Z</lastmod>
+    <lastmod>2026-06-12T17:07:31.331Z</lastmod>
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/8_intro_nimblefunctions/intro_nimblefunctions.html</loc>
@@ -42,7 +42,7 @@
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/11_future_directions_for_nimble/future_directions_for_nimble.html</loc>
-    <lastmod>2023-01-06T20:52:28.949Z</lastmod>
+    <lastmod>2026-06-12T17:27:54.021Z</lastmod>
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/9_programming/nimblefunction_programming.html</loc>
@@ -50,6 +50,6 @@
   </url>
   <url>
     <loc>https://nimble-training.github.io/nimble-alaska-2026/content/4_improving_mcmc/improving_mcmc.html</loc>
-    <lastmod>2026-06-11T18:06:05.459Z</lastmod>
+    <lastmod>2026-06-12T16:04:49.018Z</lastmod>
   </url>
 </urlset>
