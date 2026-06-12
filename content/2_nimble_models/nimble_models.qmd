@@ -606,6 +606,32 @@ DEmodel$calculate('Ecervi_01')
 head(DEmodel$disease_probability, n = 50)
 ```
 
+# Model macros
+
+A new feature of nimble, available through the nimbleMacros package is the ability to write commonly-used model components/structures using a shorthand syntax. (NIMBLE programmers can also define their own macros, say for a BNP or spatial model formulation.)
+
+```{r}
+library(nimbleMacros)
+code2_macros <- nimbleCode({
+  sigma ~ dunif(0, 100)
+  predicted_y[1:4] <- LINPRED(~x)  
+  for(i in 1:4) {
+    y[i] ~ dnorm(predicted_y[i], sd = sigma)
+  }
+})
+
+model2_macros <- nimbleModel(code2_macros, 
+                      data = list(y = rnorm(4)),
+                      inits = list(beta_Intercept = 0.5,  # See docs for naming (or run once)
+                                   beta_x = 0.2,
+                                   x = c(0.1, 0.2, 0.3, 0.4)))
+
+model2_macros$getCode()
+model2_macros$getNodeNames()
+```
+
+
+
 
 # Exercises
 

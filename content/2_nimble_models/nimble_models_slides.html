@@ -1208,6 +1208,61 @@ tail of a distribution</li>
 <pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA
 ## [26] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
 </div>
+<div id="model-macros" class="slide section level1">
+<h1>Model macros</h1>
+<p>A new feature of nimble, available through the nimbleMacros package
+is the ability to write commonly-used model components/structures using
+a shorthand syntax. (NIMBLE programmers can also define their own
+macros, say for a BNP or spatial model formulation.)</p>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" tabindex="-1"></a><span class="fu">library</span>(nimbleMacros)</span>
+<span id="cb146-2"><a href="#cb146-2" tabindex="-1"></a>code2_macros <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
+<span id="cb146-3"><a href="#cb146-3" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span>
+<span id="cb146-4"><a href="#cb146-4" tabindex="-1"></a>  predicted_y[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fu">LINPRED</span>(<span class="sc">~</span>x)  </span>
+<span id="cb146-5"><a href="#cb146-5" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
+<span id="cb146-6"><a href="#cb146-6" tabindex="-1"></a>    y[i] <span class="sc">~</span> <span class="fu">dnorm</span>(predicted_y[i], <span class="at">sd =</span> sigma)</span>
+<span id="cb146-7"><a href="#cb146-7" tabindex="-1"></a>  }</span>
+<span id="cb146-8"><a href="#cb146-8" tabindex="-1"></a>})</span>
+<span id="cb146-9"><a href="#cb146-9" tabindex="-1"></a></span>
+<span id="cb146-10"><a href="#cb146-10" tabindex="-1"></a>model2_macros <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(code2_macros, </span>
+<span id="cb146-11"><a href="#cb146-11" tabindex="-1"></a>                      <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> <span class="fu">rnorm</span>(<span class="dv">4</span>)),</span>
+<span id="cb146-12"><a href="#cb146-12" tabindex="-1"></a>                      <span class="at">inits =</span> <span class="fu">list</span>(<span class="at">beta_Intercept =</span> <span class="fl">0.5</span>,  <span class="co"># See docs for naming (or run once)</span></span>
+<span id="cb146-13"><a href="#cb146-13" tabindex="-1"></a>                                   <span class="at">beta_x =</span> <span class="fl">0.2</span>,</span>
+<span id="cb146-14"><a href="#cb146-14" tabindex="-1"></a>                                   <span class="at">x =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>)))</span></code></pre></div>
+<pre><code>## Defining model</code></pre>
+<pre><code>##   [Note] Processing model macro `LINPRED`.</code></pre>
+<pre><code>##   [Note] Processing model macro `FORLOOP`.</code></pre>
+<pre><code>##   [Note] Processing model macro `LINPRED_PRIORS`.</code></pre>
+<pre><code>## Building model</code></pre>
+<pre><code>## Setting data and initial values</code></pre>
+<pre><code>## Running calculate on model
+##   [Note] Any error reports that follow may simply reflect missing values in model variables.</code></pre>
+<pre><code>## Checking model sizes and dimensions</code></pre>
+<pre><code>##   [Note] This model is not fully initialized. This is not an error.
+##          To see which variables are not initialized, use model$initializeInfo().
+##          For more information on model initialization, see help(modelInitialization).</code></pre>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="#cb156-1" tabindex="-1"></a>model2_macros<span class="sc">$</span><span class="fu">getCode</span>()</span></code></pre></div>
+<pre><code>## {
+##     sigma ~ dunif(0, 100)
+##     &quot;# LINPRED&quot;
+##     &quot;  ## nimbleMacros::FORLOOP&quot;
+##     for (i_1 in 1:4) {
+##         predicted_y[i_1] &lt;- beta_Intercept + beta_x * x[i_1]
+##     }
+##     &quot;  ## ----&quot;
+##     &quot;  ## nimbleMacros::LINPRED_PRIORS&quot;
+##     beta_Intercept ~ dnorm(0, sd = 1000)
+##     beta_x ~ dnorm(0, sd = 1000)
+##     &quot;  ## ----&quot;
+##     &quot;# ----&quot;
+##     for (i in 1:4) {
+##         y[i] ~ dnorm(predicted_y[i], sd = sigma)
+##     }
+## }</code></pre>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="#cb158-1" tabindex="-1"></a>model2_macros<span class="sc">$</span><span class="fu">getNodeNames</span>()</span></code></pre></div>
+<pre><code>##  [1] &quot;sigma&quot;          &quot;beta_Intercept&quot; &quot;beta_x&quot;         &quot;predicted_y[1]&quot;
+##  [5] &quot;predicted_y[2]&quot; &quot;predicted_y[3]&quot; &quot;predicted_y[4]&quot; &quot;y[1]&quot;          
+##  [9] &quot;y[2]&quot;           &quot;y[3]&quot;           &quot;y[4]&quot;</code></pre>
+</div>
 <div id="exercises" class="slide section level1">
 <h1>Exercises</h1>
 <ol style="list-style-type: decimal">
@@ -1218,12 +1273,12 @@ E. cervi example.</p></li>
 example and given those fixed values, generate random farm effects and
 new observations, as would be needed for a simulation study:</p></li>
 </ol>
-<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" tabindex="-1"></a>model<span class="sc">$</span>farm_sd <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb146-2"><a href="#cb146-2" tabindex="-1"></a>model<span class="sc">$</span>sex_int <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.5</span>, <span class="fl">2.5</span>)</span>
-<span id="cb146-3"><a href="#cb146-3" tabindex="-1"></a>model<span class="sc">$</span>length_coef <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.5</span>)</span>
-<span id="cb146-4"><a href="#cb146-4" tabindex="-1"></a><span class="co"># explore the arguments for `getDependencies` and `simulate`</span></span>
-<span id="cb146-5"><a href="#cb146-5" tabindex="-1"></a>deps <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(<span class="st">&#39;???&#39;</span>)</span>
-<span id="cb146-6"><a href="#cb146-6" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">simulate</span>(???)</span></code></pre></div>
+<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="#cb160-1" tabindex="-1"></a>model<span class="sc">$</span>farm_sd <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb160-2"><a href="#cb160-2" tabindex="-1"></a>model<span class="sc">$</span>sex_int <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.5</span>, <span class="fl">2.5</span>)</span>
+<span id="cb160-3"><a href="#cb160-3" tabindex="-1"></a>model<span class="sc">$</span>length_coef <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.5</span>)</span>
+<span id="cb160-4"><a href="#cb160-4" tabindex="-1"></a><span class="co"># explore the arguments for `getDependencies` and `simulate`</span></span>
+<span id="cb160-5"><a href="#cb160-5" tabindex="-1"></a>deps <span class="ot">&lt;-</span> model<span class="sc">$</span><span class="fu">getDependencies</span>(<span class="st">&#39;???&#39;</span>)</span>
+<span id="cb160-6"><a href="#cb160-6" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">simulate</span>(???)</span></code></pre></div>
 </div>
 
   <!-- dynamically load mathjax for compatibility with self-contained -->

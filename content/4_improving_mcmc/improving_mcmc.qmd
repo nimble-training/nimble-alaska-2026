@@ -44,7 +44,7 @@ Some strategies for improving MCMC (some already seen; some discussed here)
     - Center covariates 
     - Centered versus non-centered random effects parameterization 
     - Rotated coordinates to reduce posterior correlation 
- - Rewrite the model. E.g.,
+ - Rewrite the model. 
     - Rewrite the model to reduce dependencies 
     - Vectorize declarations to improve computational efficiency
     - Marginalize to remove parameters 

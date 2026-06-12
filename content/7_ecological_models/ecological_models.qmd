@@ -88,16 +88,66 @@ dipper_code_basic <- nimbleCode({
   })
 ```
 
-# Dipper example: initialization details
+# Dipper example: initialization problem diagnosis
+
+State-space models are particularly prone to initialization problems.
+
+Here we would not want to initialize `z[i,]` to impossible situations (e.g., animals rising from the dead). 
+
+Suppose we were not being careful.
+
+```{r}
+dipper_constants <- list(N = nrow(y), 
+                         T = ncol(y_orig), 
+                         first = first)
+dipper_data <- list(y = y_orig)   # 0s and 1s
+zinits <- y_orig                  # 0s and 1s
+dipper_inits <- function() list(phi = runif(1,0,1),
+                                  p = runif(1,0,1),
+                                  z = zinits)
+head(zinits)
+
+try(samples <- nimbleMCMC(dipper_code_basic, dipper_constants, dipper_data,
+                      dipper_inits(), niter = 100, samplesAsCodaMCMC = TRUE))
+```
+
+Here the failure is obvious. In other cases, the MCMC might run but get stuck and only be noticed at the end of the MCMC.
+
+# Dipper example: initialization problem debugging
+
+Let's debug. We'll work with the uncompiled model, but we could do some of this with the compiled model instead. 
+
+```{r}
+dipper_model <- nimbleModel(dipper_code_basic, data = dipper_data, inits = dipper_inits(),
+                            constants = dipper_constants)
+                            
+dipper_model$initializeInfo()                            
+dipper_model$calculate()
+dipper_model$calculate('z')
+sapply(seq_len(nrow(dipper_model$z)),
+       function(i) dipper_model$calculate(paste0('z[', i, ',]')))[1:20]
+dipper_model$z[5,]
+dipper_model$y[5,]
+dipper_model$calculate('z[5,1]')
+dipper_model$calculate('z[5,2]')
+dipper_model$calculate('z[5,3]')
+dipper_model$calculate('z[5,4]')
+if(FALSE) {
+  # We couldn't debug into the compiled model nodeFunctions (calculate, simulate).
+  dipper_model$nodeFunctions
+  debugonce(dipper_model$nodeFunctions[[5]]$calculate)
+  dipper_model$calculate('z[5,4]')
+  dipper_model$nodeFunctions[[4]]$calculate
+  dipper_model$nodeFunctions[[4]]$simulate
+}     
+```
+
+# Dipper example: valid initialization 
 
 - `z[i, t]` until time of last capture can be provided as data.
 - `z[i, t]` after last capture need to be sampled by MCMC as latent states.
 
 ```{r}
-first <- apply(y_orig, 1, function(x) min(which(x !=0)))
-dipper_constants <- list(N = nrow(y), 
-                         T = ncol(y_orig), 
-                         first = first)
 zinits <- y_orig
 y <- y_orig
 zdata <- matrix(NA, nrow = nrow(y), ncol = ncol(y))
@@ -110,11 +160,11 @@ head(zinits)
 head(zdata)
 ```
 
+
 # Dipper example: run MCMC
 
 
 ```{r}
-dipper_data <- list(y = y_orig)   # 0s and 1s
 dipper_data$z <- zdata
 dipper_inits <- function() list(phi = runif(1,0,1),
                                 p = runif(1,0,1),
@@ -170,11 +220,6 @@ dipper_inits <- function() list(phi = runif(1,0,1),
                                 z = zinits_dcat)
 samples <- nimbleMCMC(dipper_code_dcat, dipper_constants, dipper_data,
                       dipper_inits(), samplesAsCodaMCMC = TRUE)
-```
-
-# Results from categorical version
-
-```{r}
 plot(samples)
 ```
 
@@ -522,6 +567,8 @@ orchids_info <- list(code=orchids_code,
 
 Note: Some elements of `z` (with perfect observation categories) are provided as `data`.  Others as `inits`.
 
+Some of the runs below may generate model initialization warnings.  They shouldn't be a problem.
+
 ```{r, eval=doDHMMexample}
 orchids_result <- compareMCMCs(
   orchids_info,
@@ -537,7 +584,7 @@ orchids_result <- renameMCMC(orchids_result, "jags", "jags")
 # DHMM version
 
 ```{r}
-orchids_code_DHMM <- quote({
+orchids_code_DHMM <- nimbleCode({
   ## -------------------------------------------------
   ## Parameters:
   ## s: survival probability 
@@ -628,6 +675,11 @@ orchids_info_DHMM <- list(code=orchids_code_DHMM,
                           data = orchids_data_DHMM,
                           inits=orchids_inits_DHMM())
 ```
+
+The length 1 cases cause problems in **uncompiled** execution, because if  `f[i]:(k-1)` is a singleton
+then `probTrans` collapses from a 3-d array to a matrix.
+
+This does not happen in compiled code.
 
 ```{r, eval=doDHMMexample}
 orchids_result_DHMM <- compareMCMCs(
