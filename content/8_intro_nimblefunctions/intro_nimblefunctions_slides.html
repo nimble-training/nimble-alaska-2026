@@ -547,7 +547,7 @@ that algorithms are implemented. They can also be used for</p>
 <ul>
 <li>user-defined distributions (already seen),</li>
 <li>user-defined functions (already seen)</li>
-<li>user-defined MCMC samplers (Module 10), and</li>
+<li>user-defined MCMC samplers (Module 9), and</li>
 <li>compiling parts of R (not shown), without reference to a model.</li>
 </ul>
 <p>But their main purpose is providing a way for developers to implement
@@ -739,7 +739,7 @@ you can use within a nimbleFunction.)</p>
 <p>As discussed, this is actually a nimbleFunction <em>generator</em> –
 we can’t run it yet – we need to create a specialized instance of the
 nimbleFunction that is tailored for some model, in our case the
-marginalized litters model.</p>
+regression model.</p>
 <p>One caveat: we haven’t dealt carefully with the constraint that the
 standard deviation must be positive.</p>
 </div>
@@ -958,10 +958,10 @@ standard deviation must be positive.</p>
 ## Warning in dnorm(model$y[getNodeFunctionIndexedInfo(INDEXEDNODEINFO_, 1)], :
 ## NaNs produced</code></pre>
 <pre><code>##    user  system elapsed 
-##   6.564   0.003   6.569</code></pre>
+##   6.174   0.005   6.218</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">system.time</span>(optC <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), cObjective<span class="sc">$</span>run, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>)))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.002   0.000   0.001</code></pre>
+##   0.002   0.000   0.002</code></pre>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>optR</span></code></pre></div>
 <pre><code>## $par
 ## [1] 0.2551346 0.5781320 0.2329039
@@ -1044,7 +1044,7 @@ a derivative-free method like Nelder-Mead.</p>
 <span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a><span class="fu">system.time</span>(optR <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), rObjective<span class="sc">$</span>fun, <span class="at">gr =</span> rObjective<span class="sc">$</span>grad,</span>
 <span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>                 <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>)))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##  14.855   0.006  14.866</code></pre>
+##  15.562   0.011  17.708</code></pre>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">warn =</span> origWarn)</span>
 <span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="fu">system.time</span>(optC <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), cObjective<span class="sc">$</span>fun, <span class="at">gr =</span> cObjective<span class="sc">$</span>grad,</span>
 <span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>                 <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>)))</span></code></pre></div>

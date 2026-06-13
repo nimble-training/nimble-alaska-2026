@@ -548,7 +548,8 @@ overflow-y: auto !important;
 <li>Design of NIMBLE’s MCMC system</li>
 <li>Setting up a new sampler: A simple Metropolis-Hastings example</li>
 <li>Worked example: sampler that jointly updates intercepts and random
-effects in the E. cervi example.</li>
+effects in the E. cervi example</li>
+<li>Example with gradients (AD): simplified Barker sampler</li>
 </ol></li>
 <li>modelValues for storing values from a model</li>
 <li>nimbleFunctions for post-processing:
@@ -1017,7 +1018,7 @@ from an on-the-fly example.</p>
 ##     ans &lt;- NULL
 ##     invisible(ans)
 ## }
-## &lt;environment: 0x5c347addfb48&gt;</code></pre>
+## &lt;environment: 0x5c1c0f0dfaa0&gt;</code></pre>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" tabindex="-1"></a><span class="do">## See where our sampler of interest is in the sampler configuration list</span></span>
 <span id="cb64-2"><a href="#cb64-2" tabindex="-1"></a>mcmcConf<span class="sc">$</span><span class="fu">printSamplers</span>()</span></code></pre></div>
 <pre><code>## [1]  RW sampler: sex_int[1]
@@ -1148,8 +1149,8 @@ from an on-the-fly example.</p>
 ## function () 
 ## {
 ## }
-## &lt;bytecode: 0x5c34722743a8&gt;
-## &lt;environment: 0x5c34698b76e8&gt;
+## &lt;bytecode: 0x5c1c0a3b4100&gt;
+## &lt;environment: 0x5c1c037dbe50&gt;
 ## Field &quot;CobjectInterface&quot;:
 ## An object of class &quot;uninitializedField&quot;
 ## Slot &quot;field&quot;:
@@ -1198,10 +1199,10 @@ from an on-the-fly example.</p>
 <span id="cb84-2"><a href="#cb84-2" tabindex="-1"></a><span class="do">## we did &quot;by hand&quot;, only iterations via cmcmc$run(), or runMCMC, which calls</span></span>
 <span id="cb84-3"><a href="#cb84-3" tabindex="-1"></a><span class="do">## cmcmc$run).</span></span>
 <span id="cb84-4"><a href="#cb84-4" tabindex="-1"></a>cmcmc<span class="sc">$</span><span class="fu">getTimes</span>()</span></code></pre></div>
-<pre><code>##  [1] 0.050264 0.036560 0.040335 0.034125 0.002595 0.002754 0.004128 0.005862
-##  [9] 0.002400 0.008918 0.001214 0.002763 0.004191 0.003712 0.004238 0.018605
-## [17] 0.003471 0.002866 0.004205 0.006300 0.002885 0.003222 0.003742 0.001546
-## [25] 0.003368 0.002792 0.003282 0.002384 0.001850 0.078164</code></pre>
+<pre><code>##  [1] 0.037457 0.028691 0.032032 0.026633 0.001892 0.002081 0.003242 0.004420
+##  [9] 0.001840 0.006601 0.000960 0.002127 0.003272 0.002898 0.003261 0.015020
+## [17] 0.002788 0.002333 0.003369 0.004846 0.002286 0.002549 0.002901 0.001153
+## [25] 0.002716 0.002221 0.002653 0.001885 0.001443 0.062281</code></pre>
 </div>
 <div id="lets-make-an-interesting-sampler-4" class="slide section level1">
 <h1>Let’s make an interesting sampler (4)</h1>
@@ -1295,8 +1296,8 @@ and use a modified or new sampler in a NIMBLE MCMC.</p>
 <span id="cb88-54"><a href="#cb88-54" tabindex="-1"></a>        <span class="do">## Cache current state of model in a &quot;modelValues&quot; data structure.</span></span>
 <span id="cb88-55"><a href="#cb88-55" tabindex="-1"></a>        <span class="cf">if</span>(jump) <span class="fu">nimCopy</span>(<span class="at">from =</span> model, <span class="at">to =</span> mvSaved, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb88-56"><a href="#cb88-56" tabindex="-1"></a>        <span class="cf">else</span>     <span class="fu">nimCopy</span>(<span class="at">from =</span> mvSaved, <span class="at">to =</span> model, <span class="at">row =</span> <span class="dv">1</span>, <span class="at">nodes =</span> calcNodes, <span class="at">logProb =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb88-57"><a href="#cb88-57" tabindex="-1"></a>        <span class="fu">adaptPropCov</span>(<span class="fu">min</span>(<span class="dv">1</span>,<span class="fu">exp</span>(lpD))</span>
-<span id="cb88-58"><a href="#cb88-58" tabindex="-1"></a>    <span class="er">}</span>,</span>
+<span id="cb88-57"><a href="#cb88-57" tabindex="-1"></a>        <span class="fu">adaptPropCov</span>(<span class="fu">min</span>(<span class="dv">1</span>,<span class="fu">exp</span>(lpD)))</span>
+<span id="cb88-58"><a href="#cb88-58" tabindex="-1"></a>    },</span>
 <span id="cb88-59"><a href="#cb88-59" tabindex="-1"></a>    <span class="at">methods =</span> <span class="fu">list</span>(</span>
 <span id="cb88-60"><a href="#cb88-60" tabindex="-1"></a>        <span class="at">gradient =</span> <span class="cf">function</span>(<span class="at">values =</span> <span class="fu">double</span>(<span class="dv">1</span>)) {</span>
 <span id="cb88-61"><a href="#cb88-61" tabindex="-1"></a>            <span class="co"># Use NIMBLE&#39;s AD system to get first derivative of model log-density w.r.t. parameters.</span></span>
@@ -1499,7 +1500,7 @@ would be ok too, but slower) to simulate new datasets.</p>
 <span id="cb112-7"><a href="#cb112-7" tabindex="-1"></a>}</span>
 <span id="cb112-8"><a href="#cb112-8" tabindex="-1"></a>})</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   1.522   0.001   1.522</code></pre>
+##   1.204   0.000   1.204</code></pre>
 </div>
 <div id="posterior-predictive-sampling-in-r-2" class="slide section level1">
 <h1>Posterior predictive sampling in R (2)</h1>
@@ -1577,7 +1578,7 @@ the setup code.</p>
 <div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
 <span id="cb123-2"><a href="#cb123-2" tabindex="-1"></a><span class="fu">system.time</span>(ppSamples_via_nf <span class="ot">&lt;-</span> cppSampler_basic<span class="sc">$</span><span class="fu">run</span>(samples))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.002   0.000   0.002</code></pre>
+##   0.001   0.000   0.001</code></pre>
 <div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" tabindex="-1"></a><span class="fu">identical</span>(ppSamples, ppSamples_via_nf)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>So we get exactly the same results (note the use of

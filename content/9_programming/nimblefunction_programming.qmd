@@ -532,7 +532,7 @@ sampler_barker <- nimbleFunction(
         ## Cache current state of model in a "modelValues" data structure.
         if(jump) nimCopy(from = model, to = mvSaved, row = 1, nodes = calcNodes, logProb = TRUE)
         else     nimCopy(from = mvSaved, to = model, row = 1, nodes = calcNodes, logProb = TRUE)
-        adaptPropCov(min(1,exp(lpD))
+        adaptPropCov(min(1,exp(lpD)))
     },
     methods = list(
         gradient = function(values = double(1)) {

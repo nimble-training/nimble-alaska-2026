@@ -179,7 +179,7 @@ objective <- nimbleFunction(
 )
 ```
 
-As discussed, this is actually a nimbleFunction *generator* -- we can't run it yet -- we need to create a specialized instance of the nimbleFunction that is tailored for some model, in our case the marginalized litters model. 
+As discussed, this is actually a nimbleFunction *generator* -- we can't run it yet -- we need to create a specialized instance of the nimbleFunction that is tailored for some model, in our case the regression model.
 
 One caveat: we haven't dealt carefully with the constraint that the standard deviation must be positive.
 

@@ -306,7 +306,7 @@ comp2$nf3obj$derivs_run(x)
 * `values(model, nodes) <<- x` is the *only* way to put values into model nodes that will be recorded on the AD tape.
 * `model$x <<- value` and `model[[node]] <<- value` will not be recorded and are errors.  They may be supported in the future. 
 * In example 3, only derivatives with respect to (wrt) the third input differ from example 2, because example 3 includes `sigma = exp(log_sigma)`.
-* `updateNodes` and `constantNodes` are essential for correct use of the model and correct results.  We will cover these more later.
+* `updateNodes` and `constantNodes` are essential for correct use of the model and correct results.  
 * Other points not covered yet include:
 
     * `reset` argument to `derivs` (aka `nimDerivs`), which resets the AD tape.

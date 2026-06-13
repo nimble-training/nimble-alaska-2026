@@ -727,8 +727,8 @@ code <- nimbleCode({   # Model code is specified in R.
     sd_occ[k] ~ dunif(0, 100)      # Avoid inverse-gamma priors per Gelman (2006).
   }
   for(k in 1:k_detect) { 
-    mu detect[k] ~ dnorm(0, sd = 100)
-    sd detect[k] ~ dunif(0, 100)
+    mu_detect[k] ~ dnorm(0, sd = 100)
+    sd_detect[k] ~ dunif(0, 100)
   }
   for (i in 1:n_species) {
     # Random effects distributions for regression coefficients.
@@ -878,6 +878,9 @@ Modeling choices:
   - Habitat masks
   - Covariates
 - Various space use/detection functions
+
+Sampling design:
+
 - Other detector types (traps, scat/DNA, etc.)
   - multi-animal traps affect independence within an individual (across traps)
   - single-animal traps affect independence across individuals also
@@ -887,14 +890,14 @@ Inference/implementation choices:
 - Categorical sampling of activity centers on a grid vs. continuous sampling (point process approach)
 - Semi-complete likelihood allows estimation of density/population size without data augmentation (see Zhang et al. for details, including nimble code).
 - Maximum likelihood integrates over unknown activity centers
-  - secr R package
+  - `secr` R package
   - possible within nimble as well (perhaps easier with upcoming nimbleSCR work)
 
 
 # nimbleSCR
 
 - Developed in collaboration with Norway's WildMap project
-- Improve computational efficiency for very large datasets
+- Improves (greatly) computational efficiency for very large datasets
 - Can be a bit complicated to understand; we are starting on some work to improve/generalize the package
 
 # nimbleSCR: Four methods to improve efficiency
@@ -956,7 +959,7 @@ code <- nimbleCode({
 
 Avoid computing over many zeroes (lack of detection at most detectors):
 
-- Pack detections (1s) or counts into short vector for each individual (length equal to max number of detections across individuals, e.g., `5`)
+- Pack detections (`1`s) or counts into short vector for each individual (length equal to max number of detections across individuals, e.g., `5`)
   - e.g., `c(1,1,-1,-1,-1)`
 - Separately store IDs of where detections occurred
   - e.g., `c(25, 73)`

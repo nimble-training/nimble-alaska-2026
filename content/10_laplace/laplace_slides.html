@@ -978,8 +978,8 @@ errors. They may be supported in the future.</p></li>
 input differ from example 2, because example 3 includes
 <code>sigma = exp(log_sigma)</code>.</p></li>
 <li><p><code>updateNodes</code> and <code>constantNodes</code> are
-essential for correct use of the model and correct results. We will
-cover these more later.</p></li>
+essential for correct use of the model and correct results.<br />
+</p></li>
 <li><p>Other points not covered yet include:</p>
 <ul>
 <li><code>reset</code> argument to <code>derivs</code> (aka
@@ -1098,7 +1098,7 @@ at it:</p>
 ##   [Note] Use &#39;showCompilerOutput = TRUE&#39; to see C++ compilation details.</code></pre>
 <div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">system.time</span>(laplace_fit <span class="ot">&lt;-</span> <span class="fu">runLaplace</span>(cDE_Laplace)))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##   0.596   0.001   0.598</code></pre>
+##   0.537   0.003   0.564</code></pre>
 <div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a>laplace_fit<span class="sc">$</span>summary<span class="sc">$</span>params</span></code></pre></div>
 <pre><code>##                  estimate    stdError
 ## sex_int[1]     0.93967692 0.357907203
