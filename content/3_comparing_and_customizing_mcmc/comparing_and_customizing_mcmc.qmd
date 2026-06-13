@@ -384,7 +384,7 @@ Code: If $\theta_1$ (`'theta[1]'` in code) is the `target` node for a sampler, t
 
 Different methods require different numbers of calculations of $[Y, \theta]$, so some are slow and some are fast.
 
-Some methods also use derivatives of $[Y, \theta]$.  These include Hamiltonian Monte Carlo (HMC) and Langevin samplers, both recent additions to NIMBLE (see `nimbleHMC`).
+Some methods also use derivatives of $[Y, \theta]$.  These include Hamiltonian Monte Carlo (HMC) and Barker samplers, the latter a recent addition to NIMBLE.
 
 
 Gibbs (conjugate) samplers
@@ -835,7 +835,7 @@ DEmodel <- nimbleModel(DEcode,
                         data = list(Ecervi_01 = DeerEcervi$Ecervi_01),
                         inits = DEinits())
 mcmcConf <- configureMCMC(DEmodel)
-mcmcConf$addDerivedQuantity('logProb', nodes = 'Ecervi_01')
+mcmcConf$addDerivedQuantity('logProb', nodes = list('Ecervi_01'))  # Without `list()`, would get individual logProbs
 mcmcConf$printDerivedQuantities()
 ```
 

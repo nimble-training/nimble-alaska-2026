@@ -82,7 +82,7 @@ Centering refers to two issues:
 - Random effects with a mean of zero (non-centered parameterization) versus centered around a mean (centered parameterization).
     - E.g., `farm_effect ~ N(0, sd)` vs. `farm_effect ~ N(mean, sd)`.
     - Theory shows either parameterization can be better, depending on the model and data, but with reasonable amount of data, centered is often better.
-    - One can use the `sampler_noncentered` in a centered parameterization to be able to sample both ways (interweaving).
+    - One can use NIMBLE's `sampler_noncentered` in a centered parameterization to be able to sample both ways (interweaving).
     - However, for HMC, uncentered is generally better!
     
 # MCMC for an occupancy model
@@ -109,8 +109,8 @@ code <- nimbleCode({   # Model code is specified in R.
     sd_occ[k] ~ dunif(0, 100)      # Avoid inverse-gamma priors per Gelman (2006).
   }
   for(k in 1:k_detect) { 
-    mu detect[k] ~ dnorm(0, sd = 100)
-    sd detect[k] ~ dunif(0, 100)
+    mu_detect[k] ~ dnorm(0, sd = 100)
+    sd_detect[k] ~ dunif(0, 100)
   }
   for (i in 1:n_species) {
     # Random effects distributions for regression coefficients.
@@ -152,6 +152,8 @@ More on user-defined distributions in Module 6.
 
 ```{r}
 #| eval: false
+source('dOcc_multisite.R')
+load('occ_example.Rda')  # Warning: the inputs are not fully fleshed out.
 model <- nimbleModel(code, data = list(y = y),
                      constants = list(n_sites = n_sites, n_species = n_species,
                        max_num_sites = max_num_sites, reps = reps, k_occ = k_occ,
@@ -159,7 +161,6 @@ model <- nimbleModel(code, data = list(y = y),
                        X_detect1 = X_detect1, X_detect2 = X_detect2,
                        X_detect3 = X_detect3, X_detect4 = X_detect4),
                      inits = inits, buildDerivs = TRUE)  # Inits not shown here.
-cmodel <- compileNimble(model)   # Compiled (C++) version of the model.
 ```
 
 # MCMC using blocking and gradients: HMC
@@ -295,9 +296,9 @@ code <- nimbleCode({
   intercept ~ dnorm(0, sd = 1000)
   slope ~ dnorm(0, sd = 1000)
   sigma ~ dunif(0, 100)
-  predicted.y[1:4] <- intercept + slope * x[1:4] # vectorized node
+  predicted_y[1:4] <- intercept + slope * x[1:4] # vectorized node
   for(i in 1:4) {
-    y[i] ~ dnorm(predicted.y[i], sd = sigma)
+    y[i] ~ dnorm(predicted_y[i], sd = sigma)
   }
 })
 model <- nimbleModel(code, data = list(y = rnorm(4)))
@@ -305,25 +306,25 @@ model <- nimbleModel(code, data = list(y = rnorm(4)))
 model$getDependencies('slope')
 ```
 
-Here sampling of `slope` (and `intercept`) will probably be a bit more efficient because of the vectorized definition of `predicted.y`, since all observations depend on `slope` (and `intercept`). 
+Here sampling of `slope` (and `intercept`) will probably be a bit more efficient because of the vectorized definition of `predicted_y`, since all observations depend on `slope` (and `intercept`). 
 
-We avoid some overhead by having one `predicted.y[1:4]` node rather than four `predicted.y[1], ..., predicted.y[4]` nodes.
+We avoid some overhead by having one `predicted_y[1:4]` node rather than four `predicted_y[1], ..., predicted_y[4]` nodes.
 
 Another (manual) step would be to create a user-defined vectorized `dnorm` distribution so `y[1:4]` is a vector node. 
 
 # Think like a graph: when not to vectorize
 
-However, if `x[2]` (and the other 'x's) were a scalar parameter (in this case a random effect), vectorization is likely a bad idea. Any update for `x[2]` will calculate `predicted.y[1:4]` and `y[1],...,y[4]` when only `predicted.y[2]` and `y[2]` need to be calculated.
+However, if `x[2]` (and the other 'x's) were a scalar parameter (in this case a random effect), vectorization is likely a bad idea. Any update for `x[2]` will calculate `predicted_y[1:4]` and `y[1],...,y[4]` when only `predicted_y[2]` and `y[2]` need to be calculated.
 
 ```{r}
 code <- nimbleCode({
   intercept ~ dnorm(0, sd = 1000)
   slope ~ dnorm(0, sd = 1000)
   sigma ~ dunif(0, 100)
-  predicted.y[1:4] <- intercept + slope * x[1:4] # vectorized node
+  predicted_y[1:4] <- intercept + slope * x[1:4] # vectorized node
   for(i in 1:4) {
     x[i] ~ dnorm(0, 1)   # scalar random effects
-    y[i] ~ dnorm(predicted.y[i], sd = sigma)
+    y[i] ~ dnorm(predicted_y[i], sd = sigma)
   }
 })
 model <- nimbleModel(code, data = list(y = rnorm(4)))

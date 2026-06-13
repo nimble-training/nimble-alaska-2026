@@ -546,14 +546,14 @@ conf$addSampler('w[1:134]', 'barker')
 MCMC <- buildMCMC(conf)
 cMCMC <- compileNimble(MCMC, project = cModel)
 set.seed(1)
-system.time(samplesBarker <- runMCMC(cMCMC, niter = 20000, nburnin = 1000, thin = 10))   # 270 sec. on an older machine
+system.time(samplesBarker <- runMCMC(cMCMC, niter = 21000, nburnin = 1000, thin = 10))   # 270 sec. on an older machine
 ```
 
 Burnin is slow for the Barker case for the hyperparameters -- some options:
 
  - consider other non-default (e.g., slice) samplers for the hyperparameters,
  - better starting values, or
- - different tuning parameter values for the Barker sampler.
+ - different tuning parameter values for the Barker sampler (`adaptDelayCov`, `adaptFactorExponent`, `adaptIntervalCov`).
 
 
 # Results
@@ -730,7 +730,7 @@ samplesS <- runMCMC(cmcmcS, niter = 100000, nburnin = 20000, thin = 80)
 
 # Results
 
-Mixing is decent (though that was a pretty long run). It would be worth exploring further to understand the posterior correlation structure and consider other sampling strategies.
+Mixing is decent (though that was a pretty long run). It would be worth exploring further to understand the posterior correlation structure and consider other sampling strategies (e.g., I'd try HMC or Barker here).
 
 ```{r, fig.cap='', fig.width=12, fig.height=6}
 par(mfrow = c(2,3))

@@ -557,7 +557,7 @@ here)</p>
 <li>Centered versus non-centered random effects parameterization</li>
 <li>Rotated coordinates to reduce posterior correlation</li>
 </ul></li>
-<li>Rewrite the model. E.g.,
+<li>Rewrite the model.
 <ul>
 <li>Rewrite the model to reduce dependencies</li>
 <li>Vectorize declarations to improve computational efficiency</li>
@@ -616,7 +616,7 @@ vs. <code>farm_effect ~ N(mean, sd)</code>.</li>
 <li>Theory shows either parameterization can be better, depending on the
 model and data, but with reasonable amount of data, centered is often
 better.</li>
-<li>One can use the <code>sampler_noncentered</code> in a centered
+<li>One can use NIMBLE’s <code>sampler_noncentered</code> in a centered
 parameterization to be able to sample both ways (interweaving).</li>
 <li>However, for HMC, uncentered is generally better!</li>
 </ul></li>
@@ -652,8 +652,8 @@ data from California Department of Fish and Wildlife (CDFW).</p>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    sd_occ[k] <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">100</span>)      <span class="co"># Avoid inverse-gamma priors per Gelman (2006).</span></span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  }</span>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>k_detect) { </span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    mu detect[k] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">100</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    sd detect[k] <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    mu_detect[k] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">100</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    sd_detect[k] <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  }</span>
 <span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_species) {</span>
 <span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="co"># Random effects distributions for regression coefficients.</span></span>
@@ -695,14 +695,15 @@ parameters helps speed and mixing (usually))</li>
 </div>
 <div id="nimble-model-setup" class="slide section level1">
 <h1>NIMBLE model setup</h1>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(code, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> y),</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                     <span class="at">constants =</span> <span class="fu">list</span>(<span class="at">n_sites =</span> n_sites, <span class="at">n_species =</span> n_species,</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                       <span class="at">max_num_sites =</span> max_num_sites, <span class="at">reps =</span> reps, <span class="at">k_occ =</span> k_occ,</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                       <span class="at">k_detect =</span> k_detect, <span class="at">X_occ =</span> X_occ,</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                       <span class="at">X_detect1 =</span> X_detect1, <span class="at">X_detect2 =</span> X_detect2,</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                       <span class="at">X_detect3 =</span> X_detect3, <span class="at">X_detect4 =</span> X_detect4),</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>                     <span class="at">inits =</span> inits, <span class="at">buildDerivs =</span> <span class="cn">TRUE</span>)  <span class="co"># Inits not shown here.</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>cmodel <span class="ot">&lt;-</span> <span class="fu">compileNimble</span>(model)   <span class="co"># Compiled (C++) version of the model.</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&#39;dOcc_multisite.R&#39;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&#39;occ_example.Rda&#39;</span>)  <span class="co"># Warning: the inputs are not fully fleshed out.</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(code, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> y),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                     <span class="at">constants =</span> <span class="fu">list</span>(<span class="at">n_sites =</span> n_sites, <span class="at">n_species =</span> n_species,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                       <span class="at">max_num_sites =</span> max_num_sites, <span class="at">reps =</span> reps, <span class="at">k_occ =</span> k_occ,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                       <span class="at">k_detect =</span> k_detect, <span class="at">X_occ =</span> X_occ,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>                       <span class="at">X_detect1 =</span> X_detect1, <span class="at">X_detect2 =</span> X_detect2,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>                       <span class="at">X_detect3 =</span> X_detect3, <span class="at">X_detect4 =</span> X_detect4),</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>                     <span class="at">inits =</span> inits, <span class="at">buildDerivs =</span> <span class="cn">TRUE</span>)  <span class="co"># Inits not shown here.</span></span></code></pre></div>
 </div>
 <div id="mcmc-using-blocking-and-gradients-hmc" class="slide section level1">
 <h1>MCMC using blocking and gradients: HMC</h1>
@@ -862,9 +863,9 @@ dependencies are introduced).</li>
 <span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>  intercept <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
 <span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>  slope <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
 <span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span>
-<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>  predicted.y[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope <span class="sc">*</span> x[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="co"># vectorized node</span></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>  predicted_y[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope <span class="sc">*</span> x[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="co"># vectorized node</span></span>
 <span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
-<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>    y[i] <span class="sc">~</span> <span class="fu">dnorm</span>(predicted.y[i], <span class="at">sd =</span> sigma)</span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>    y[i] <span class="sc">~</span> <span class="fu">dnorm</span>(predicted_y[i], <span class="at">sd =</span> sigma)</span>
 <span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>  }</span>
 <span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a>})</span>
 <span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(code, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> <span class="fu">rnorm</span>(<span class="dv">4</span>)))</span></code></pre></div>
@@ -878,14 +879,14 @@ dependencies are introduced).</li>
 ##          To see which variables are not initialized, use model$initializeInfo().
 ##          For more information on model initialization, see help(modelInitialization).</code></pre>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">getDependencies</span>(<span class="st">&#39;slope&#39;</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;slope&quot;            &quot;predicted.y[1:4]&quot; &quot;y[1]&quot;             &quot;y[2]&quot;            
+<pre><code>## [1] &quot;slope&quot;            &quot;predicted_y[1:4]&quot; &quot;y[1]&quot;             &quot;y[2]&quot;            
 ## [5] &quot;y[3]&quot;             &quot;y[4]&quot;</code></pre>
 <p>Here sampling of <code>slope</code> (and <code>intercept</code>) will
 probably be a bit more efficient because of the vectorized definition of
-<code>predicted.y</code>, since all observations depend on
+<code>predicted_y</code>, since all observations depend on
 <code>slope</code> (and <code>intercept</code>).</p>
-<p>We avoid some overhead by having one <code>predicted.y[1:4]</code>
-node rather than four <code>predicted.y[1], ..., predicted.y[4]</code>
+<p>We avoid some overhead by having one <code>predicted_y[1:4]</code>
+node rather than four <code>predicted_y[1], ..., predicted_y[4]</code>
 nodes.</p>
 <p>Another (manual) step would be to create a user-defined vectorized
 <code>dnorm</code> distribution so <code>y[1:4]</code> is a vector
@@ -896,17 +897,17 @@ node.</p>
 <p>However, if <code>x[2]</code> (and the other ’x’s) were a scalar
 parameter (in this case a random effect), vectorization is likely a bad
 idea. Any update for <code>x[2]</code> will calculate
-<code>predicted.y[1:4]</code> and <code>y[1],...,y[4]</code> when only
-<code>predicted.y[2]</code> and <code>y[2]</code> need to be
+<code>predicted_y[1:4]</code> and <code>y[1],...,y[4]</code> when only
+<code>predicted_y[2]</code> and <code>y[2]</code> need to be
 calculated.</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a>code <span class="ot">&lt;-</span> <span class="fu">nimbleCode</span>({</span>
 <span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a>  intercept <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
 <span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a>  slope <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1000</span>)</span>
 <span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">100</span>)</span>
-<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a>  predicted.y[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope <span class="sc">*</span> x[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="co"># vectorized node</span></span>
+<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a>  predicted_y[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="ot">&lt;-</span> intercept <span class="sc">+</span> slope <span class="sc">*</span> x[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="co"># vectorized node</span></span>
 <span id="cb40-6"><a href="#cb40-6" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) {</span>
 <span id="cb40-7"><a href="#cb40-7" tabindex="-1"></a>    x[i] <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>, <span class="dv">1</span>)   <span class="co"># scalar random effects</span></span>
-<span id="cb40-8"><a href="#cb40-8" tabindex="-1"></a>    y[i] <span class="sc">~</span> <span class="fu">dnorm</span>(predicted.y[i], <span class="at">sd =</span> sigma)</span>
+<span id="cb40-8"><a href="#cb40-8" tabindex="-1"></a>    y[i] <span class="sc">~</span> <span class="fu">dnorm</span>(predicted_y[i], <span class="at">sd =</span> sigma)</span>
 <span id="cb40-9"><a href="#cb40-9" tabindex="-1"></a>  }</span>
 <span id="cb40-10"><a href="#cb40-10" tabindex="-1"></a>})</span>
 <span id="cb40-11"><a href="#cb40-11" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">nimbleModel</span>(code, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">y =</span> <span class="fu">rnorm</span>(<span class="dv">4</span>)))</span></code></pre></div>
@@ -920,7 +921,7 @@ calculated.</p>
 ##          To see which variables are not initialized, use model$initializeInfo().
 ##          For more information on model initialization, see help(modelInitialization).</code></pre>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">getDependencies</span>(<span class="st">&#39;x[2]&#39;</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;x[2]&quot;             &quot;predicted.y[1:4]&quot; &quot;y[1]&quot;             &quot;y[2]&quot;            
+<pre><code>## [1] &quot;x[2]&quot;             &quot;predicted_y[1:4]&quot; &quot;y[1]&quot;             &quot;y[2]&quot;            
 ## [5] &quot;y[3]&quot;             &quot;y[4]&quot;</code></pre>
 <p>In this case, vectorization has made more dependencies for
 <code>x[2]</code> than should be necessary. This would result in wasted

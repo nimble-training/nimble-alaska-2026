@@ -552,7 +552,7 @@ overflow-y: auto !important;
 <li>Mixing vs. computational cost</li>
 </ul></li>
 <li>Modifying an MCMC configuration in <code>nimble</code></li>
-<li>Using <code>compareMCMCs</code></li>
+<li>(Optional) Using <code>compareMCMCs</code></li>
 </ol>
 </div>
 <div id="load-the-deer-e.-cervi-example-for-later" class="slide section level1">
@@ -819,9 +819,9 @@ performance.</li>
 won’t.</li>
 <li>One needs a reasonable sample just to get a reasonable estimate of
 ESS.</li>
-<li>We generally do not thin when comparing methods because thinning
-always removes some information from a sample. People might disagree on
-this choice.</li>
+<li>We generally do not thin when comparing methods because
+<strong>thinning always removes some information from a
+sample</strong>.</li>
 <li>Sometimes fancy samplers are too slow (computationally costly) to be
 worthwhile.</li>
 </ul>
@@ -844,7 +844,8 @@ parameters</strong></p>
 <li>It is tempting to think mean (across parameters) of MCMC efficiency
 is a good measure of overall performance.</li>
 <li>If some parameters are mixing very well and others very poorly, you
-should not feel the results are acceptable.</li>
+should not feel the results are acceptable (unless you have a solid
+understanding of some non-identifiability in the model).</li>
 </ul>
 </div>
 <div id="alterative-single-number-at-the-kernel-level-multivariate-mcmc-efficiency" class="slide section level1">
@@ -919,9 +920,8 @@ sampler, the nodes needing calculation are obtained by
 <p>Different methods require different numbers of calculations of <span class="math inline">\([Y, \theta]\)</span>, so some are slow and some
 are fast.</p>
 <p>Some methods also use derivatives of <span class="math inline">\([Y,
-\theta]\)</span>. These include Hamiltonian Monte Carlo (HMC) and
-Langevin samplers, both recent additions to NIMBLE (see
-<code>nimbleHMC</code>).</p>
+\theta]\)</span>. These include Hamiltonian Monte Carlo (HMC) and Barker
+samplers, the latter a recent addition to NIMBLE.</p>
 </div>
 <div id="gibbs-conjugate-samplers" class="slide section level1">
 <h1>Gibbs (conjugate) samplers</h1>
@@ -1162,11 +1162,11 @@ with slice samplers in the E. cervi example.</p>
 <pre><code>##        farm_sd length_coef[1] length_coef[2]     sex_int[1]     sex_int[2] 
 ##      837.04180     1139.74222      787.84092       66.76611       73.01064</code></pre>
 </div>
-<div id="using-comparemcmcs" class="slide section level1">
-<h1>Using <code>compareMCMCs</code></h1>
-<p><code>compareMCMCs</code> is a recently released R package available
-for managing performance comparisons among MCMC methods, particularly in
-<code>nimble</code>.</p>
+<div id="optional-using-comparemcmcs" class="slide section level1">
+<h1>(Optional) Using <code>compareMCMCs</code></h1>
+<p><code>compareMCMCs</code> is an R package from the NIMBLE development
+team available for managing performance comparisons among MCMC methods,
+particularly in <code>nimble</code>.</p>
 <ul>
 <li><code>compareMCMCs</code> manages multiple MCMC runs and times steps
 of preparation (compilation) and sampling.</li>
@@ -1186,7 +1186,7 @@ in nimble. The new <code>compareMCMCs</code> package is a re-designed,
 re-written way to manage comparisons among MCMC methods.</p>
 <p>We will illustrate <code>compareMCMCs</code> by example.</p>
 </div>
-<div id="using-comparemcmcs-1" class="slide section level1">
+<div id="using-comparemcmcs" class="slide section level1">
 <h1>Using <code>compareMCMCs</code></h1>
 <p>Say we want to compare a variety of sampling ideas:</p>
 <ol style="list-style-type: decimal">
@@ -1342,9 +1342,9 @@ monitoring.</p>
 ##   - length_coef[]  (2 elements)
 ##   - farm_sd
 ##   - farm_effect[]  (24 elements)</code></pre>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a>mcmcConf<span class="sc">$</span><span class="fu">addDerivedQuantity</span>(<span class="st">&#39;logProb&#39;</span>, <span class="at">nodes =</span> <span class="st">&#39;Ecervi_01&#39;</span>)</span>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a>mcmcConf<span class="sc">$</span><span class="fu">addDerivedQuantity</span>(<span class="st">&#39;logProb&#39;</span>, <span class="at">nodes =</span> <span class="fu">list</span>(<span class="st">&#39;Ecervi_01&#39;</span>))  <span class="co"># Without `list()`, would get individual logProbs</span></span>
 <span id="cb59-2"><a href="#cb59-2" tabindex="-1"></a>mcmcConf<span class="sc">$</span><span class="fu">printDerivedQuantities</span>()</span></code></pre></div>
-<pre><code>## [1] derived quantity: logProb,  execution interval: thin,  nodes: Ecervi_01</code></pre>
+<pre><code>## [1] derived quantity: logProb,  execution interval: thin,  nodes: list(Ecervi_01)</code></pre>
 <p>Let’s get an MCMC sample that includes the derived quantity.</p>
 <div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a>DEmcmc1 <span class="ot">&lt;-</span> <span class="fu">buildMCMC</span>(mcmcConf)</span>
 <span id="cb61-2"><a href="#cb61-2" tabindex="-1"></a><span class="co"># Example of compiling model and MCMC in one call, which returns a list.</span></span>

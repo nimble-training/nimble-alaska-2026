@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE,
                       tidy.opts = list(width.cutoff = 60),
                       tidy = TRUE)
 has_ggplot2 <- require(ggplot2)
-has_mcmcplots <- require(mcmcplots)
+has_bayesplot <- require(bayesplot)
 has_coda <- require(coda)
 generate_original_results <- FALSE
 ```
@@ -203,7 +203,7 @@ WAIC <- DEresults$WAIC
 ```
 
 
-GLMM Example: Look at results (1. mcmcplots)
+GLMM Example: Look at results (1. bayesplot)
 =====
 
 There are many packages for summarizing and plotting MCMC samples.  NIMBLE does not try to re-invent these wheels.
