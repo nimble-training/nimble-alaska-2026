@@ -208,28 +208,16 @@ GLMM Example: Look at results (1. mcmcplots)
 
 There are many packages for summarizing and plotting MCMC samples.  NIMBLE does not try to re-invent these wheels.
 
-1. `mcmcplots`
+1. `bayesplot`
 
-```{r eval=FALSE}
-# Run this code if you want to generate your own results.
-# They won't over-write results that come with these slides.
-library(mcmcplots)
-mcmcplot(samples1, dir = ".", filename = "Ecervi_samples_mcmcplot")
+```{r}
+library(bayesplot)
+mcmc_combo(samples1)
 ```
 
 ```{r}
 WAIC
 ```
-
-```{r echo=FALSE, eval=(has_mcmcplots & generate_original_results)}
-# Run the previous code to generate your own results.
-library(mcmcplots)
-mcmcplot(samples1, dir = ".", filename = "orig_Ecervi_samples_mcmcplot")
-```
-
-Results that comes with these slides are [here](orig_Ecervi_samples_mcmcplot.html).
-
-Results if you generated your own will be [here](Ecervi_samples_mcmcplot.html).
 
 GLMM Example: Look at results (2. coda)
 =====
@@ -282,6 +270,7 @@ Start from:
 - Compiled MCMC
 
 ```{r}
+#| eval: false
 cDEmcmc$run(niter = 11000, nburnin=1000)
 samples3 <- as.matrix(cDEmcmc$mvSamples)
 summary(samples3)

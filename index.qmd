@@ -78,10 +78,10 @@ Some of the packages we will use (beyond those automatically installed with `nim
 
 ```{r}
 #| eval: false
-install.packages(c("compareMCMCs", "mcmcplots",
+install.packages(c("compareMCMCs", "bayesplot", "ggplot2", "gridExtra",
 "CARBayesdata", "sp", "spdep",
 "classInt", "coda", "lme4", "mvtnorm",
-"nimbleHMC", "nimbleEcology", "nimbleEcology", "nimbleSCR", "nimbleMacros"))
+"nimbleHMC", "nimbleQuad", "nimbleEcology", "nimbleEcology", "nimbleSCR", "nimbleMacros"))
 ```
 
 
